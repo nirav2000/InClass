@@ -2,13 +2,14 @@
   const cfg=window.INCLASS_CONFIG||{};
   const demo=(cfg.demoProfile||{userId:"local-user",displayName:"Local user",role:"parent",children:[]});
   let session=JSON.parse(localStorage.getItem("inclass:session")||"null")||{
-    userId:demo.userId,displayName:demo.displayName,role:demo.role,children:demo.children||[],classes:demo.classes||[],provider:"local"
+    userId:demo.userId,dataOwnerId:demo.userId,displayName:demo.displayName,role:demo.role,children:demo.children||[],classes:demo.classes||[],provider:"local"
   };
 
   function persist(){ localStorage.setItem("inclass:session",JSON.stringify(session)); }
   function getSession(){ return Object.assign({},session); }
   function setPreviewRole(role){
     session.role=role;
+    session.dataOwnerId=demo.userId;
     if(role==="learner"){session.userId="sai";session.displayName="Sai";}
     else {session.userId=demo.userId;session.displayName=demo.displayName;}
     session.provider="local";
@@ -27,7 +28,7 @@
     if(window.InClassFirebaseProvider&&typeof window.InClassFirebaseProvider.signOut==="function"){
       await window.InClassFirebaseProvider.signOut();
     }
-    session={userId:demo.userId,displayName:demo.displayName,role:demo.role,children:demo.children||[],classes:demo.classes||[],provider:"local"};
+    session={userId:demo.userId,dataOwnerId:demo.userId,displayName:demo.displayName,role:demo.role,children:demo.children||[],classes:demo.classes||[],provider:"local"};
     persist();
     window.dispatchEvent(new CustomEvent("inclass:authchange",{detail:getSession()}));
   }
