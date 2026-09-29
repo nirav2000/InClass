@@ -90,7 +90,10 @@
 
   function setupFrenchHomeworkFirst(){
     const w=state.week;
-    $$(".wordButton").forEach(b=>b.onclick=()=>{speak(decodeURIComponent(b.dataset.audio),"fr-FR");bump("heard");});
+    $(".wordButton").forEach(b=>b.onclick=()=>{
+      speak(decodeURIComponent(b.dataset.audio),"fr-FR");
+      if(b.closest(".extensionVocab"))bump("extensionHeard");else bump("requiredHeard");
+    });
 
     const core=[];
     w.animals.forEach(x=>core.push({text:x.fr,meaning:x.en}));
@@ -116,11 +119,15 @@
     $("#frSpellPlay").onclick=()=>speak(state.current.frSpell.text,"fr-FR");
     $("#frSpellForm").onsubmit=e=>{
       e.preventDefault();
-      const p=getProgress();p.spellAttempts=(p.spellAttempts||0)+1;
+      const p=getProgress(),mode=$("#frSpellMode").value,isRequired=mode==="core";
       const ok=norm($("#frSpellInput").value)===norm(state.current.frSpell.text);
-      recordLearningAttempt("spelling",state.current.frSpell.text,ok,{scope:$("#frSpellMode").value==="core"?"required":"extension"});
+      if(isRequired)p.spellAttempts=(p.spellAttempts||0)+1;
+      else p.extensionSpellAttempts=(p.extensionSpellAttempts||0)+1;
+      recordLearningAttempt("spelling",state.current.frSpell.text,ok,{scope:isRequired?"required":"extension"});
       if(ok){
-        p.spellCorrect=(p.spellCorrect||0)+1;$("#frSpellFeedback").textContent="Correct ✓";$("#frSpellFeedback").className="feedback good";
+        if(isRequired)p.spellCorrect=(p.spellCorrect||0)+1;
+        else p.extensionSpellCorrect=(p.extensionSpellCorrect||0)+1;
+        $("#frSpellFeedback").textContent="Correct ✓";$("#frSpellFeedback").className="feedback good";
         $("#frSpellInput").disabled=true;$("#nextFrSpell").classList.remove("hidden");
       }else{
         $("#frSpellFeedback").textContent="Try again and listen once more.";$("#frSpellFeedback").className="feedback try";speak(state.current.frSpell.text,"fr-FR");
@@ -176,7 +183,7 @@
       if(count)bump("sentencesBuilt");
     }
     ["#animalSelect","#colourSelect","#qualitySelect"].forEach(x=>$(x).onchange=()=>showSentence(true));
-    $("#hearFrenchSentence").onclick=()=>{speak(currentSentence().school,"fr-FR");bump("heard");};
+    $("#hearFrenchSentence").onclick=()=>{speak(currentSentence().school,"fr-FR");bump("requiredHeard");};
     $("#shuffleFrench").onclick=()=>{
       $("#animalSelect").value=Math.floor(Math.random()*schoolAnimals.length);
       $("#colourSelect").value=Math.floor(Math.random()*schoolColours.length);
@@ -194,7 +201,7 @@
       $("#gardenEnglish").textContent=w.gardenFrame.en.replace("{animal}",a.en);
     }
     $("#gardenAnimalSelect").onchange=showGarden;
-    $("#hearGarden").onclick=()=>{speak(state.current.gardenSentence,"fr-FR");bump("heard");};
+    $("#hearGarden").onclick=()=>{speak(state.current.gardenSentence,"fr-FR");bump("extensionHeard");};
     $("#shuffleGarden").onclick=()=>{$("#gardenAnimalSelect").value=Math.floor(Math.random()*gardenChoices.length);showGarden();};
     showGarden();
 
@@ -221,7 +228,7 @@
       recordLearningAttempt("conversation",state.current.chatType,ok,{scope:"extension",response:t});
       if(ok){bump("chatted");$("#chatNext").classList.remove("hidden");}
     }
-    $("#hearChat").onclick=()=>{speak(state.current.chatQuestion,"fr-FR");bump("heard");};
+    $("#hearChat").onclick=()=>{speak(state.current.chatQuestion,"fr-FR");bump("extensionHeard");};
     $("#chatCheck").onclick=checkChat;
     $("#chatMic").onclick=()=>{
       const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
