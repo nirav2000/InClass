@@ -31,7 +31,7 @@ function addPronunciationLab(){
   section.className='panel';
   section.innerHTML=
     '<div class="sectionHead"><div><p class="eyebrow">STEP 5</p><h3>Match the pronunciation</h3></div><span class="homeworkBadge">test feature</span></div>'+
-    '<p class="tip">Use the sentence you just built. First listen to it. For rhythm and intonation comparison, a parent or teacher can record a model once, then the child records an attempt.</p>'+
+    '<p class="tip">Use the sentence you just built. InClass prepares an AI-generated standard pronunciation automatically. A parent or teacher can replace it with their own model if needed, then the child records an attempt.</p>'+
     '<div id="pronunciationLab"></div>'+
     '<div id="pronunciationHistory" class="miniRule"><strong>Practice history</strong><span>No attempts yet.</span></div>';
   explore.parentNode.insertBefore(section,explore);
@@ -50,10 +50,27 @@ function addPronunciationLab(){
       (Number.isFinite(p.bestPronunciationScore)?' · best prototype score '+p.bestPronunciationScore+'%':'');
   };
 
+  const referenceProvider=async function(payload){
+    const config=window.INCLASS_CONFIG&&window.INCLASS_CONFIG.pronunciation||{};
+    if(config.generatedReference===false||!config.referenceEndpoint)throw new Error('Generated reference disabled');
+    const response=await fetch(config.referenceEndpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({targetText:payload.targetText,lang:payload.lang})
+    });
+    if(!response.ok){
+      let message='Reference generation failed';
+      try{const body=await response.json();if(body&&body.error)message=body.error;}catch(e){}
+      throw new Error(message);
+    }
+    return {blob:await response.blob(),label:'AI-generated standard French model'};
+  };
+
   pronunciationCoach=window.AppsPronunciation.mount(host,{
     lang:'fr-FR',
     targetText:currentTarget(),
-    title:'Match this French sentence'
+    title:'Match this French sentence',
+    referenceProvider:referenceProvider
   });
 
   renderHistory();
