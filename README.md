@@ -2,7 +2,7 @@
 
 A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
 
-Current release: **v2026.09.29.3**
+Current release: **v2026.09.29.4**
 
 ## Current packs
 
@@ -102,3 +102,19 @@ French now includes a parent checklist for handwriting practice. The parent can:
 - play each item aloud
 - tick it correct or incorrect after Sai writes it on paper
 - retain the marks locally for that learner and homework week
+
+
+## Learning glossary and word help
+
+Words in both English and French now have an information icon that opens a short definition, an example sentence and a Sai-relevant example. Examples draw on familiar contexts such as sailing, camping, garden birds, school, music and the book he is reading, without inventing a specific book title.
+
+Grammar terminology is treated as learnable content rather than assumed knowledge. In the English plural lesson, **noun** is underlined/clickable and opens:
+1. a concise definition,
+2. clear examples,
+3. a picture-supported noun-selection activity,
+4. the same task with words only,
+5. a transfer task using new words.
+
+The plural explanation also shows one dog beside several dogs before introducing the written change **dog → dogs**.
+
+The French grammar section explains why French has grammatical gender, why grammatical gender is not the same as biological sex, why **un/une** should be learnt with the noun, and how adjective agreement differs from noun gender.
