@@ -113,3 +113,5 @@ body{min-height:100vh}
 }
 
 @media(max-width:900px){.childCard{grid-template-columns:auto 1fr auto}.childMetric:nth-of-type(n+2){grid-column:auto}.childMetric{min-width:110px}}
+
+@media(max-width:560px){.childCard{grid-template-columns:auto 1fr}.childMetric{min-width:0}}
