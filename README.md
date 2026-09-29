@@ -2,7 +2,7 @@
 
 A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
 
-Current release: **v2026.09.29.6**
+Current release: **v2026.09.29.7**
 
 ## Current packs
 
@@ -46,6 +46,20 @@ Practice includes:
 - adjective agreement for *une souris*
 - listen-and-repeat speaking practice
 - a constrained mini-conversation using the taught vocabulary, with typed input and microphone speech recognition where the browser supports it
+
+## Pronunciation lab prototype
+
+French lessons now include a reusable pronunciation-coaching component loaded from the central `Apps` shared library: `apps-pronunciation.js`.
+
+The prototype provides:
+- a live stylised speech waveform driven by the microphone;
+- browser speech-to-text comparison against the target sentence;
+- optional model-voice recording for rhythm and intonation comparison;
+- separate words, rhythm, intonation and overall prototype scores;
+- learner-facing coaching cues rather than a single unexplained mark;
+- local-first audio handling: recorded audio is not uploaded by the default adapter.
+
+The browser recogniser is **not treated as a phoneme-level pronunciation examiner**. The module exposes a `scoreAdapter` hook so a future specialist pronunciation service can return phoneme/word-level scores without changing the InClass UI. InClass records prototype metrics separately and does not treat the score as proof that pronunciation is mastered.
 
 ## Data model
 
