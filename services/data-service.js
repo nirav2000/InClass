@@ -48,17 +48,30 @@
 
   function learnerSummary(learnerId){
     const attempts=getAttempts(learnerId);
+    const required=attempts.filter(x=>x.scope!=="extension");
+    const extension=attempts.filter(x=>x.scope==="extension");
     const total=attempts.length;
     const correct=attempts.filter(x=>x.correct===true).length;
+    const requiredCorrect=required.filter(x=>x.correct===true).length;
+    const extensionCorrect=extension.filter(x=>x.correct===true).length;
     const byItem={};
-    attempts.forEach(x=>{
+    required.forEach(x=>{
       const k=x.item||x.skill||"Unknown";
       byItem[k]=byItem[k]||{item:k,total:0,wrong:0};
       byItem[k].total++;
       if(x.correct===false)byItem[k].wrong++;
     });
     const issues=Object.values(byItem).filter(x=>x.wrong>0).sort((a,b)=>b.wrong-a.wrong).slice(0,6);
-    return {learnerId,total,correct,accuracy:total?Math.round(correct/total*100):null,issues};
+    return {
+      learnerId,total,correct,accuracy:total?Math.round(correct/total*100):null,
+      requiredTotal:required.length,
+      requiredCorrect,
+      requiredAccuracy:required.length?Math.round(requiredCorrect/required.length*100):null,
+      extensionTotal:extension.length,
+      extensionCorrect,
+      extensionAccuracy:extension.length?Math.round(extensionCorrect/extension.length*100):null,
+      issues
+    };
   }
 
   function classSummary(learnerIds){
@@ -66,7 +79,14 @@
     const common={};
     learners.forEach(l=>l.issues.forEach(x=>{common[x.item]=(common[x.item]||0)+x.wrong;}));
     const commonIssues=Object.entries(common).map(([item,wrong])=>({item,wrong})).sort((a,b)=>b.wrong-a.wrong).slice(0,8);
-    return {learners,commonIssues};
+    const requiredAttempts=learners.reduce((a,l)=>a+l.requiredTotal,0);
+    const requiredCorrect=learners.reduce((a,l)=>a+l.requiredCorrect,0);
+    return {
+      learners,commonIssues,
+      requiredAttempts,
+      requiredAccuracy:requiredAttempts?Math.round(requiredCorrect/requiredAttempts*100):null,
+      extensionAttempts:learners.reduce((a,l)=>a+l.extensionTotal,0)
+    };
   }
 
   async function hydrateUser(){
