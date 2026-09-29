@@ -1,5 +1,5 @@
 window.INCLASS_CONFIG = {
-  release: "2026.09.29.5",
+  release: "2026.09.29.6",
   mode: "local",
   firebase: {
     enabled: false,
