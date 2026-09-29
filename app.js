@@ -220,11 +220,14 @@ function renderProgress(){
 function renderSourceNote(){
   if(state.week.subjectKey==="english"){
     $("#sourceNote").innerHTML=
-      '<strong>From the supplied homework</strong>'+
-      '<p>The lesson keeps the school\'s Year 5 word list, plural rule, irregular-plural warm-up and stated 12-question test structure. The supplied slide leaves the test date blank and says next week\'s rule is <em>Double consonants</em>.</p>'+
-      '<p><strong>Added by InClass:</strong> short learner-friendly definitions and example sentences, because the homework says meaning and sentence use will be tested but does not provide definitions for the 12 Year 5 words.</p>';
+      '<strong>School homework retained</strong>'+
+      '<p>The Year 5 spelling list, plural rule, irregular-plural warm-up and the stated 12-question test structure remain the required path. The supplied slide leaves the test date blank and says next week\'s rule is <em>Double consonants</em>.</p>'+
+      '<p><strong>Understanding layer:</strong> clickable grammar terms, visual examples and learner-friendly definitions sit behind the homework rather than replacing it.</p>';
   } else {
-    $("#sourceNote").innerHTML='<strong>From the supplied homework</strong><p>The French pack uses the pets, colours, descriptions and sentence frame from the uploaded vocabulary sheet.</p>';
+    $("#sourceNote").innerHTML=
+      '<strong>School homework retained</strong>'+
+      '<p>The original pets, colours, descriptions and <em>J’ai + animal + colour + et + description</em> sentence frame stay visible and are the default spelling/dictation sets.</p>'+
+      '<p><strong>Optional layers:</strong> gender explanations, patterns, extra colours, animals, garden birds and conversation are collapsed so they cannot obscure what Sai is likely to be tested on.</p>';
   }
 }
 
