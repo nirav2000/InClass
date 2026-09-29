@@ -18,7 +18,7 @@ window.INCLASS_WEEKS = [
       {title:"What is a plural?",text:"A plural is a word that means more than one of something. Example: dog → dogs."},
       {title:"Most nouns",text:"Add -s to most nouns. Example: book → books."},
       {title:"s, x, z, ch, sh",text:"Add -es to nouns ending in s, x, z, ch or sh. Examples: box → boxes; church → churches."},
-      {title:"Exception to notice",text:"volcano → volcanoes is the exception highlighted by this week's Year 5 list: it takes -es even though the displayed rule does not cover final -o."}
+      {title:"Likely exception to notice",text:"The slide says there is one exception to spot. From this list, volcano → volcanoes appears to be the intended exception because the displayed rule does not cover final -o."}
     ],
     irregulars:[
       {singular:"mouse",plural:"mice"},
@@ -30,7 +30,7 @@ window.INCLASS_WEEKS = [
     words:[
       {singular:"bench",word:"benches",rule:"-es",definition:"long seats, usually for more than one person",example:"The players sat on the benches after the match."},
       {singular:"planet",word:"planets",rule:"-s",definition:"large round objects in space that move around a star",example:"The planets orbit the Sun."},
-      {singular:"volcano",word:"volcanoes",rule:"exception",definition:"openings or mountains from which hot rock, ash or gas can erupt",example:"Some volcanoes can stay quiet for many years."},
+      {singular:"volcano",word:"volcanoes",rule:"likely exception",definition:"openings or mountains from which hot rock, ash or gas can erupt",example:"Some volcanoes can stay quiet for many years."},
       {singular:"statue",word:"statues",rule:"-s",definition:"figures of people, animals or things made from stone, metal or another material",example:"The museum garden contains several statues."},
       {singular:"canyon",word:"canyons",rule:"-s",definition:"deep valleys with steep sides, often cut by rivers",example:"The river has carved deep canyons through the rock."},
       {singular:"torch",word:"torches",rule:"-es",definition:"portable lights that can be carried by hand",example:"We used torches to see inside the cave."},
