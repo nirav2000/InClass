@@ -32,7 +32,8 @@ function addPronunciationLab(){
   section.innerHTML=
     '<div class="sectionHead"><div><p class="eyebrow">STEP 5</p><h3>Match the pronunciation</h3></div><span class="homeworkBadge">test feature</span></div>'+
     '<p class="tip">Use the sentence you just built. First listen to it. For rhythm and intonation comparison, a parent or teacher can record a model once, then the child records an attempt.</p>'+
-    '<div id="pronunciationLab"></div>';
+    '<div id="pronunciationLab"></div>'+
+    '<div id="pronunciationHistory" class="miniRule"><strong>Practice history</strong><span>No attempts yet.</span></div>';
   explore.parentNode.insertBefore(section,explore);
 
   const host=document.getElementById('pronunciationLab');
@@ -41,11 +42,21 @@ function addPronunciationLab(){
     return;
   }
 
+  const renderHistory=function(){
+    const p=getProgress(),el=document.querySelector('#pronunciationHistory span');
+    if(!el)return;
+    if(!p.pronunciationAttempts){el.textContent='No attempts yet.';return;}
+    el.textContent=p.pronunciationAttempts+' attempt'+(p.pronunciationAttempts===1?'':'s')+
+      (Number.isFinite(p.bestPronunciationScore)?' · best prototype score '+p.bestPronunciationScore+'%':'');
+  };
+
   pronunciationCoach=window.AppsPronunciation.mount(host,{
     lang:'fr-FR',
     targetText:currentTarget(),
     title:'Match this French sentence'
   });
+
+  renderHistory();
 
   const syncTarget=function(){
     if(pronunciationCoach)pronunciationCoach.setTarget(currentTarget(),'fr-FR');
@@ -66,6 +77,7 @@ function addPronunciationLab(){
       p.bestPronunciationScore=Math.max(p.bestPronunciationScore||0,Math.round(result.overall));
     }
     saveProgress(p);
+    renderHistory();
     recordLearningAttempt('pronunciation',currentTarget(),null,{
       scope:'required',
       prototype:true,
