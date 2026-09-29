@@ -2,7 +2,7 @@
 
 A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
 
-Current release: **v2026.09.29.7**
+Current release: **v2026.09.29.8**
 
 ## Current packs
 
@@ -54,7 +54,7 @@ French lessons now include a reusable pronunciation-coaching component loaded fr
 The prototype provides:
 - a live stylised speech waveform driven by the microphone;
 - browser speech-to-text comparison against the target sentence;
-- optional model-voice recording for rhythm and intonation comparison;
+- optional model-voice recording for rhythm and intonation comparison, including a model-vs-child contour trace after each attempt;
 - separate words, rhythm, intonation and overall prototype scores;
 - learner-facing coaching cues rather than a single unexplained mark;
 - local-first audio handling: recorded audio is not uploaded by the default adapter.
