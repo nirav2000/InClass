@@ -63,7 +63,9 @@ function addPronunciationLab(){
       try{const body=await response.json();if(body&&body.error)message=body.error;}catch(e){}
       throw new Error(message);
     }
-    return {blob:await response.blob(),label:'AI-generated standard French model'};
+    const model=response.headers.get('X-Pronunciation-Model')||'AI speech model';
+    const label=model.indexOf('melotts')>=0?'AI-generated French model · Cloudflare MeloTTS':'AI-generated standard French model';
+    return {blob:await response.blob(),label:label};
   };
 
   pronunciationCoach=window.AppsPronunciation.mount(host,{
