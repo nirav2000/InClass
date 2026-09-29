@@ -18,16 +18,26 @@
       const m=[Math.min((p.ruleCorrect||0)/4,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.meaningCorrect||0)/6,1),Math.min((p.sentencesGood||0)/4,1),Math.min((p.testsCompleted||0),1)];
       return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
     }
-    const m=[Math.min((p.heard||0)/8,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.sentencesBuilt||0)/4,1),Math.min((p.spoken||0)/3,1),Math.min((p.chatted||0)/2,1)];
+    const heard=p.requiredHeard||p.heard||0;
+    const marks=window.InClassData?window.InClassData.getJson("inclass:dictation:"+pack.id+":"+(window.__progressLearner||"Sai"),{}):{};
+    const core=Object.keys(marks).filter(k=>k.indexOf("core:")===0);
+    const correct=core.filter(k=>marks[k]==="correct").length;
+    const m=[Math.min(heard/8,1),Math.min((p.spellCorrect||0)/8,1),Math.min(correct/8,1),Math.min((p.sentencesBuilt||0)/4,1)];
     return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
+  }
+  function completionFor(pack,learnerName){
+    window.__progressLearner=learnerName;
+    const result=progressPercent(pack,progressFor(pack,learnerName));
+    delete window.__progressLearner;
+    return result;
   }
   function averageCompletion(learnerName){
     if(!WEEKS.length)return 0;
-    return Math.round(WEEKS.reduce((sum,p)=>sum+progressPercent(p,progressFor(p,learnerName)),0)/WEEKS.length);
+    return Math.round(WEEKS.reduce((sum,p)=>sum+completionFor(p,learnerName),0)/WEEKS.length);
   }
   function homeworkCards(learnerName){
     return WEEKS.map(pack=>{
-      const p=progressFor(pack,learnerName),pct=progressPercent(pack,p);
+      const p=progressFor(pack,learnerName),pct=completionFor(pack,learnerName);
       return '<button class="welcomeHomeworkCard" data-pack="'+pack.id+'" data-learner="'+learnerName+'">'+
         '<span class="subjectOrb '+pack.subjectKey+'">'+(pack.subjectKey==="french"?"FR":"EN")+'</span>'+
         '<span class="welcomeHomeworkText"><small>'+pack.subject+' · '+pack.date+'</small><strong>'+pack.title+'</strong><span>'+pct+'% complete</span></span>'+
@@ -46,7 +56,7 @@
         const s=issuesFor(child.name),completion=averageCompletion(child.name);
         return '<section class="parentChildSection">'+
           '<div class="childCard"><div class="childAvatar">'+child.name.charAt(0).toUpperCase()+'</div><div class="childIdentity"><strong>'+child.name+'</strong><span>'+child.yearGroup+'</span></div>'+
-          '<div class="childMetric"><b>'+completion+'%</b><small>homework progress</small></div><div class="childMetric"><b>'+(s.accuracy===null?"—":s.accuracy+"%")+'</b><small>practice accuracy</small></div></div>'+
+          '<div class="childMetric"><b>'+completion+'%</b><small>homework progress</small></div><div class="childMetric"><b>'+(s.requiredAccuracy===null?"—":s.requiredAccuracy+"%")+'</b><small>required accuracy</small></div><div class="childMetric"><b>'+s.extensionTotal+'</b><small>extension attempts</small></div></div>'+
           '<div class="welcomeHomeworkGrid">'+homeworkCards(child.name)+'</div>'+
           '<div class="issuesCard"><strong>Things to revisit</strong><div>'+(s.issues.length?s.issues.map(x=>'<span>'+x.item+' · '+x.wrong+' miss'+(x.wrong===1?"":"es")+'</span>').join(""):'<span>No item-level issues recorded yet. Missed answers will appear here automatically.</span>')+'</div></div>'+
         '</section>';
@@ -59,7 +69,7 @@
     const summary=window.InClassData?.classSummary(names)||{learners:[],commonIssues:[]};
     const rows=kids.map(child=>{
       const l=summary.learners.find(x=>x.learnerId===child.name)||{total:0,accuracy:null,issues:[]};
-      return '<div class="teacherRow"><span><strong>'+child.name+'</strong><small>'+child.yearGroup+'</small></span><span>'+averageCompletion(child.name)+'%</span><span>'+l.total+'</span><span>'+(l.accuracy===null?"—":l.accuracy+"%")+'</span><span>'+(l.issues[0]?.item||"—")+'</span></div>';
+      return '<div class="teacherRow"><span><strong>'+child.name+'</strong><small>'+child.yearGroup+'</small></span><span>'+averageCompletion(child.name)+'%</span><span>'+l.requiredTotal+'</span><span>'+(l.requiredAccuracy===null?"—":l.requiredAccuracy+"%")+'</span><span>'+(l.issues[0]?.item||"—")+'</span></div>';
     }).join("");
     return '<div class="dashboardHeader"><div><p class="eyebrow">TEACHER VIEW · LOCAL PREVIEW</p><h2>Class overview</h2><p>Designed to show every linked learner at a glance, then surface patterns shared across the class.</p></div><span class="dashboardMode">Roster connects with Firebase</span></div>'+
       '<div class="teacherStats"><div><strong>'+kids.length+'</strong><span>linked learner'+(kids.length===1?"":"s")+'</span></div><div><strong>'+summary.commonIssues.length+'</strong><span>common issues</span></div><div><strong>'+Math.round(kids.reduce((a,k)=>a+averageCompletion(k.name),0)/Math.max(kids.length,1))+'%</strong><span>average completion</span></div></div>'+
