@@ -13,23 +13,20 @@
     const key="inclass:"+pack.id+":"+learnerName;
     return window.InClassData?window.InClassData.getJson(key,{}):{};
   }
-  function progressPercent(pack,p){
+  function progressPercent(pack,p,learnerName){
     if(pack.subjectKey==="english"){
       const m=[Math.min((p.ruleCorrect||0)/4,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.meaningCorrect||0)/6,1),Math.min((p.sentencesGood||0)/4,1),Math.min((p.testsCompleted||0),1)];
       return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
     }
     const heard=p.requiredHeard||p.heard||0;
-    const marks=window.InClassData?window.InClassData.getJson("inclass:dictation:"+pack.id+":"+(window.__progressLearner||"Sai"),{}):{};
+    const marks=window.InClassData?window.InClassData.getJson("inclass:dictation:"+pack.id+":"+learnerName,{}):{};
     const core=Object.keys(marks).filter(k=>k.indexOf("core:")===0);
     const correct=core.filter(k=>marks[k]==="correct").length;
     const m=[Math.min(heard/8,1),Math.min((p.spellCorrect||0)/8,1),Math.min(correct/8,1),Math.min((p.sentencesBuilt||0)/4,1)];
     return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
   }
   function completionFor(pack,learnerName){
-    window.__progressLearner=learnerName;
-    const result=progressPercent(pack,progressFor(pack,learnerName));
-    delete window.__progressLearner;
-    return result;
+    return progressPercent(pack,progressFor(pack,learnerName),learnerName);
   }
   function averageCompletion(learnerName){
     if(!WEEKS.length)return 0;
