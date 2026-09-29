@@ -45,13 +45,13 @@ Practice includes:
 - pet + colour + description sentence building
 - adjective agreement for *une souris*
 - listen-and-repeat speaking practice
-- a constrained mini-conversation using the taught vocabulary
+- a constrained mini-conversation using the taught vocabulary, with typed input and microphone speech recognition where the browser supports it
 
 ## Data model
 
-Homework content lives in `data/weeks.js`. Each pack has a permanent ID, subject, year group, source date and structured lesson data. Progress is stored separately for each learner and pack.
+Homework is split into permanent dated pack files under `data/` and loaded through `data/manifest.js`. Each pack has a permanent ID, subject, year group, source date and structured lesson data. Progress is stored separately for each learner and pack.
 
-The interface is deliberately data-driven so later homework weeks can be added without rebuilding the page layout.
+The interface is deliberately data-driven so later homework weeks can be added without rebuilding the page layout. A lightweight spaced-retrieval store schedules correctly answered English words for later review; when a later English pack is active, due words from older packs surface automatically.
 
 ## Learning design
 
