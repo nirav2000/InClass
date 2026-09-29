@@ -1,7 +1,7 @@
 (function(){
   function session(){return window.InClassAuth?window.InClassAuth.getSession():{userId:"local-user"};}
   function provider(){return window.InClassFirebaseProvider||null;}
-  function scoped(key){return "inclass:v2:"+session().userId+":"+key;}
+  function scoped(key){const s=session();return "inclass:v2:"+(s.dataOwnerId||s.userId)+":"+key;}
 
   function getJson(key,fallback){
     try{
