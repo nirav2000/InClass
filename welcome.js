@@ -2,9 +2,15 @@
   const $=s=>document.querySelector(s);
   const $$=s=>Array.from(document.querySelectorAll(s));
 
-  function learnerId(){return (window.InClassAuth?.getSession().role==="learner")?"sai":"sai";}
-  function progressFor(pack,learner){
-    const key="inclass:"+pack.id+":"+learner;
+  function session(){
+    return window.InClassAuth?.getSession()||{displayName:"Parent",role:"parent",children:[{id:"sai",name:"Sai",yearGroup:"Year 5"}],provider:"local"};
+  }
+  function children(){
+    const s=session();
+    return s.children&&s.children.length?s.children:[{id:"sai",name:s.role==="learner"?s.displayName:"Sai",yearGroup:"Year 5"}];
+  }
+  function progressFor(pack,learnerName){
+    const key="inclass:"+pack.id+":"+learnerName;
     return window.InClassData?window.InClassData.getJson(key,{}):{};
   }
   function progressPercent(pack,p){
@@ -15,46 +21,77 @@
     const m=[Math.min((p.heard||0)/8,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.sentencesBuilt||0)/4,1),Math.min((p.spoken||0)/3,1),Math.min((p.chatted||0)/2,1)];
     return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
   }
-  function homeworkCards(){
+  function averageCompletion(learnerName){
+    if(!WEEKS.length)return 0;
+    return Math.round(WEEKS.reduce((sum,p)=>sum+progressPercent(p,progressFor(p,learnerName)),0)/WEEKS.length);
+  }
+  function homeworkCards(learnerName){
     return WEEKS.map(pack=>{
-      const p=progressFor(pack,"Sai"),pct=progressPercent(pack,p);
-      return '<button class="welcomeHomeworkCard" data-pack="'+pack.id+'">'+
+      const p=progressFor(pack,learnerName),pct=progressPercent(pack,p);
+      return '<button class="welcomeHomeworkCard" data-pack="'+pack.id+'" data-learner="'+learnerName+'">'+
         '<span class="subjectOrb '+pack.subjectKey+'">'+(pack.subjectKey==="french"?"FR":"EN")+'</span>'+
         '<span class="welcomeHomeworkText"><small>'+pack.subject+' · '+pack.date+'</small><strong>'+pack.title+'</strong><span>'+pct+'% complete</span></span>'+
         '<span class="homeworkArrow">→</span>'+
       '</button>';
     }).join("");
   }
+  function issuesFor(name){
+    return window.InClassData?.learnerSummary(name)||{total:0,accuracy:null,issues:[]};
+  }
+
   function parentBoard(){
-    const s=window.InClassData?.learnerSummary("Sai")||{total:0,accuracy:null,issues:[]};
-    const packs=WEEKS.map(p=>({p,progress:progressFor(p,"Sai")})); 
-    return '<div class="dashboardHeader"><div><p class="eyebrow">PARENT VIEW</p><h2>Your children</h2><p>One place to see required homework first, then understanding and extension.</p></div></div>'+
-      '<div class="childCard"><div class="childAvatar">S</div><div><strong>Sai</strong><span>Year 5</span></div><div class="childMetric"><b>'+(s.accuracy===null?"—":s.accuracy+"%")+'</b><small>practice accuracy</small></div></div>'+
-      '<div class="dashboardGrid">'+packs.map(x=>'<div class="dashCard"><span>'+x.p.subject+'</span><strong>'+progressPercent(x.p,x.progress)+'%</strong><small>'+x.p.title+'</small></div>').join("")+'</div>'+
-      '<div class="issuesCard"><strong>Things to revisit</strong><div>'+(s.issues.length?s.issues.map(x=>'<span>'+x.item+' · '+x.wrong+' miss'+(x.wrong===1?"":"es")+'</span>').join(""):'<span>No item-level issues recorded yet. New practice attempts will populate this automatically.</span>')+'</div></div>';
+    const kids=children();
+    return '<div class="dashboardHeader"><div><p class="eyebrow">PARENT VIEW</p><h2>Your children</h2><p>Required homework stays first. Understanding and extension sit behind it, not in front of it.</p></div><span class="dashboardMode">Local preview</span></div>'+
+      kids.map(child=>{
+        const s=issuesFor(child.name),completion=averageCompletion(child.name);
+        return '<section class="parentChildSection">'+
+          '<div class="childCard"><div class="childAvatar">'+child.name.charAt(0).toUpperCase()+'</div><div class="childIdentity"><strong>'+child.name+'</strong><span>'+child.yearGroup+'</span></div>'+
+          '<div class="childMetric"><b>'+completion+'%</b><small>homework progress</small></div><div class="childMetric"><b>'+(s.accuracy===null?"—":s.accuracy+"%")+'</b><small>practice accuracy</small></div></div>'+
+          '<div class="welcomeHomeworkGrid">'+homeworkCards(child.name)+'</div>'+
+          '<div class="issuesCard"><strong>Things to revisit</strong><div>'+(s.issues.length?s.issues.map(x=>'<span>'+x.item+' · '+x.wrong+' miss'+(x.wrong===1?"":"es")+'</span>').join(""):'<span>No item-level issues recorded yet. Missed answers will appear here automatically.</span>')+'</div></div>'+
+        '</section>';
+      }).join("");
   }
+
   function teacherBoard(){
-    const summary=window.InClassData?.classSummary(["Sai"])||{learners:[],commonIssues:[]};
-    return '<div class="dashboardHeader"><div><p class="eyebrow">TEACHER VIEW · LOCAL PREVIEW</p><h2>Class overview</h2><p>When Firebase is connected, this view will load every learner linked to the teacher’s classes.</p></div></div>'+
-      '<div class="teacherStats"><div><strong>'+summary.learners.length+'</strong><span>linked learner</span></div><div><strong>'+summary.commonIssues.length+'</strong><span>issues surfaced</span></div><div><strong>—</strong><span>class completion until roster connected</span></div></div>'+
-      '<div class="teacherTable"><div class="teacherRow teacherHead"><span>Learner</span><span>Attempts</span><span>Accuracy</span><span>Needs attention</span></div>'+
-      summary.learners.map(l=>'<div class="teacherRow"><span><strong>'+l.learnerId+'</strong></span><span>'+l.total+'</span><span>'+(l.accuracy===null?"—":l.accuracy+"%")+'</span><span>'+(l.issues[0]?.item||"—")+'</span></div>').join("")+'</div>'+
-      '<div class="issuesCard"><strong>Common issues</strong><div>'+(summary.commonIssues.length?summary.commonIssues.map(x=>'<span>'+x.item+' · '+x.wrong+' misses</span>').join(""):'<span>Common issues will appear as learners complete work.</span>')+'</div></div>';
+    const kids=children();
+    const names=kids.map(x=>x.name);
+    const summary=window.InClassData?.classSummary(names)||{learners:[],commonIssues:[]};
+    const rows=kids.map(child=>{
+      const l=summary.learners.find(x=>x.learnerId===child.name)||{total:0,accuracy:null,issues:[]};
+      return '<div class="teacherRow"><span><strong>'+child.name+'</strong><small>'+child.yearGroup+'</small></span><span>'+averageCompletion(child.name)+'%</span><span>'+l.total+'</span><span>'+(l.accuracy===null?"—":l.accuracy+"%")+'</span><span>'+(l.issues[0]?.item||"—")+'</span></div>';
+    }).join("");
+    return '<div class="dashboardHeader"><div><p class="eyebrow">TEACHER VIEW · LOCAL PREVIEW</p><h2>Class overview</h2><p>Designed to show every linked learner at a glance, then surface patterns shared across the class.</p></div><span class="dashboardMode">Roster connects with Firebase</span></div>'+
+      '<div class="teacherStats"><div><strong>'+kids.length+'</strong><span>linked learner'+(kids.length===1?"":"s")+'</span></div><div><strong>'+summary.commonIssues.length+'</strong><span>common issues</span></div><div><strong>'+Math.round(kids.reduce((a,k)=>a+averageCompletion(k.name),0)/Math.max(kids.length,1))+'%</strong><span>average completion</span></div></div>'+
+      '<div class="teacherTable"><div class="teacherRow teacherHead"><span>Learner</span><span>Completion</span><span>Attempts</span><span>Accuracy</span><span>Needs attention</span></div>'+rows+'</div>'+
+      '<div class="issuesCard"><strong>Common issues across the class</strong><div>'+(summary.commonIssues.length?summary.commonIssues.map(x=>'<span>'+x.item+' · '+x.wrong+' misses</span>').join(""):'<span>Common issues will appear as learners answer questions.</span>')+'</div></div>';
   }
+
   function learnerBoard(){
-    return '<div class="dashboardHeader"><div><p class="eyebrow">LEARNER VIEW</p><h2>What are we doing today?</h2><p>Finish what school asked for first. Open the extra thinking only when you are ready.</p></div></div><div class="welcomeHomeworkGrid">'+homeworkCards()+'</div>';
+    const s=session(),name=s.role==="learner"?s.displayName:(children()[0]?.name||"Sai");
+    return '<div class="dashboardHeader"><div><p class="eyebrow">LEARNER VIEW</p><h2>What are we doing today?</h2><p>Finish what school asked for first. Open the explanation or extension only when you need it.</p></div></div><div class="welcomeHomeworkGrid">'+homeworkCards(name)+'</div>';
   }
+
   function renderRole(role){
     $$(".roleTab").forEach(b=>b.classList.toggle("active",b.dataset.role===role));
-    const host=$("#welcomeDashboard");
-    host.innerHTML=role==="parent"?parentBoard():role==="teacher"?teacherBoard():learnerBoard();
+    $("#welcomeDashboard").innerHTML=role==="parent"?parentBoard():role==="teacher"?teacherBoard():learnerBoard();
     bindHomework();
   }
   function bindHomework(){
-    $$(".welcomeHomeworkCard").forEach(card=>card.onclick=()=>launchPack(card.dataset.pack));
+    $$(".welcomeHomeworkCard").forEach(card=>card.onclick=()=>launchPack(card.dataset.pack,card.dataset.learner));
   }
-  function launchPack(id){
+  function selectLearner(name){
+    if(!name)return;
+    const option=Array.from($("#learnerSelect").options).find(o=>o.value===name);
+    if(option){
+      $("#learnerSelect").value=name;
+      state.learner=name;
+      localStorage.setItem("inclass:learner",name);
+    }
+  }
+  function launchPack(id,learnerName){
     const pack=WEEKS.find(w=>w.id===id);
+    selectLearner(learnerName);
     if(pack){
       $("#subjectSelect").value=pack.subject;
       populateWeeks(pack.id);
@@ -70,19 +107,30 @@
   function showHome(){
     $("#appShell").classList.add("hidden");
     $("#welcomeScreen").classList.remove("hidden");
-    renderRole(window.InClassAuth?.getSession().role||"parent");
+    const s=session();
+    $("#welcomeName").textContent=s.role==="learner"?s.displayName:s.displayName;
+    renderRole(s.role||"parent");
     window.scrollTo({top:0,behavior:"smooth"});
   }
+
   document.addEventListener("DOMContentLoaded",()=>{
-    const s=window.InClassAuth?.getSession()||{role:"parent",displayName:"Parent",provider:"local"};
-    $("#welcomeName").textContent=s.role==="learner"?"Sai":s.displayName;
-    $("#authStatus").textContent=s.provider==="local"?"Local mode":"Signed in";
-    $$(".roleTab").forEach(b=>b.onclick=()=>{window.InClassAuth?.setPreviewRole(b.dataset.role);renderRole(b.dataset.role);});
+    const s=session();
+    $("#welcomeName").textContent=s.role==="learner"?s.displayName:s.displayName;
+    $("#authStatus").textContent=s.provider==="local"?"Local mode · Firebase not connected":"Signed in";
+    $$(".roleTab").forEach(b=>b.onclick=()=>{
+      const next=window.InClassAuth?.setPreviewRole(b.dataset.role)||Object.assign({},s,{role:b.dataset.role});
+      $("#welcomeName").textContent=next.role==="learner"?next.displayName:next.displayName;
+      renderRole(b.dataset.role);
+    });
     $("#signInButton").onclick=async()=>{
       try{await window.InClassAuth.signIn();}
       catch(e){$("#authMessage").textContent=e.message;$("#authMessage").classList.remove("hidden");}
     };
-    $("#enterAppButton").onclick=()=>{const last=localStorage.getItem("inclass:lastWeek")||WEEKS[0]?.id;launchPack(last);};
+    $("#enterAppButton").onclick=()=>{
+      const last=localStorage.getItem("inclass:lastWeek")||WEEKS[0]?.id;
+      const name=s.role==="learner"?s.displayName:(children()[0]?.name||"Sai");
+      launchPack(last,name);
+    };
     $("#homeButton").onclick=showHome;
     renderRole(s.role);
   });
