@@ -2,7 +2,7 @@
 
 A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
 
-Current release: **v2026.09.29.4**
+Current release: **v2026.09.29.5**
 
 ## Current packs
 
@@ -118,3 +118,44 @@ Grammar terminology is treated as learnable content rather than assumed knowledg
 The plural explanation also shows one dog beside several dogs before introducing the written change **dog → dogs**.
 
 The French grammar section explains why French has grammatical gender, why grammatical gender is not the same as biological sex, why **un/une** should be learnt with the noun, and how adjective agreement differs from noun gender.
+
+
+## Homework-first hierarchy
+
+InClass now treats each homework pack as three distinct layers:
+
+1. **Required homework** — the source material Sai is likely to be tested on. This is always open and appears first.
+2. **Understanding** — definitions, visual explanations, clickable grammar terms and short concept checks.
+3. **Extension** — broader vocabulary, transfer activities, conversations and deeper exploration.
+
+Optional material is collapsed by default so it cannot crowd out the school task.
+
+For the current French pack:
+- the original school animals, colours, descriptions and sentence frame remain visible,
+- school words are the default hear/spell and handwriting sets,
+- the original combined sentence frame remains the main sentence builder,
+- grammatical-gender explanations, adjective patterns, garden birds and extension vocabulary are collapsed.
+
+## Welcome screen and role dashboards
+
+The app now opens on a dedicated InClass welcome screen rather than directly inside a lesson.
+
+The local preview contains three role views:
+
+- **Learner** — current homework, school work first.
+- **Parent** — one or more linked children, completion, practice accuracy and weak items.
+- **Teacher** — linked class roster, completion, attempts, accuracy, learner-level attention items and common class issues.
+
+Only real local data is shown; no fictional classmates are generated to make the teacher dashboard look populated.
+
+## Authentication and cloud-ready architecture
+
+The app still runs locally, but authentication and persistence are now separated from lesson code:
+
+- `config/app-config.js` — app mode and future Firebase configuration.
+- `services/auth-service.js` — role/session boundary.
+- `services/data-service.js` — user-scoped local cache, analytics and Firebase write-through hooks.
+- `services/firebase-provider.template.js` — contract for the future Firebase implementation.
+- `docs/FIREBASE_ARCHITECTURE.md` — proposed Firestore model, parent-child links, classes, enrolments and security-rule intent.
+
+This means Firebase Authentication and Firestore can be connected later without rewriting each subject lesson.
