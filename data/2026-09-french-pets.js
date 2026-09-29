@@ -76,6 +76,10 @@ window.INCLASS_WEEKS.push({
 
   grammarNotes:[
     {
+      title:"Why does French have masculine and feminine nouns?",
+      text:"French inherited a grammatical gender system from Latin. In modern French every ordinary noun belongs to one of two grammatical groups: masculine or feminine. The group is part of the word's grammar; it does not mean the object itself is male or female. English lost most of this noun-gender system over many centuries, which is why this feels unfamiliar to an English speaker."
+    },
+    {
       title:"Learn the article with the noun",
       text:"For animal nouns, do not assume you can make a feminine noun by adding -e. Learn the whole chunk: un oiseau, une souris, une araignée, un mouton."
     },
