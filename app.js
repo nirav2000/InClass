@@ -319,7 +319,7 @@ function setupEnglish(){
   $("#ruleForm").onsubmit=function(e){
     e.preventDefault();
     var ok=norm($("#ruleInput").value)===norm(state.current.rule.a);
-    recordLearningAttempt("rule",state.current.rule.q+" → "+state.current.rule.a,ok);
+    recordLearningAttempt("rule",state.current.rule.q+" → "+state.current.rule.a,ok,{scope:"required"});
     if(ok){
       $("#ruleFeedback").textContent="Correct ✓"; $("#ruleFeedback").className="feedback good";
       $("#nextRule").classList.remove("hidden"); $("#ruleInput").disabled=true; bump("ruleCorrect");
@@ -348,7 +348,7 @@ function setupEnglish(){
     e.preventDefault();
     var p=getProgress(); p.spellAttempts=(p.spellAttempts||0)+1;
     var ok=norm($("#enSpellInput").value)===norm(state.current.enSpell.word);
-    recordLearningAttempt("spelling",state.current.enSpell.word,ok);
+    recordLearningAttempt("spelling",state.current.enSpell.word,ok,{scope:"required"});
     if(ok){
       p.spellCorrect=(p.spellCorrect||0)+1; $("#enSpellFeedback").textContent="Correct ✓"; $("#enSpellFeedback").className="feedback good";
       $("#enSpellInput").disabled=true; $("#nextEnSpell").classList.remove("hidden");
@@ -372,7 +372,7 @@ function setupEnglish(){
     e.preventDefault();
     var p=getProgress(); p.meaningAttempts=(p.meaningAttempts||0)+1;
     var ok=norm($("#meaningInput").value)===norm(state.current.meaning.word);
-    recordLearningAttempt("meaning",state.current.meaning.word,ok);
+    recordLearningAttempt("meaning",state.current.meaning.word,ok,{scope:"required"});
     if(ok){
       p.meaningCorrect=(p.meaningCorrect||0)+1; $("#meaningFeedback").textContent="Correct ✓"; $("#meaningFeedback").className="feedback good";
       $("#meaningInput").disabled=true; $("#nextMeaning").classList.remove("hidden");
@@ -398,7 +398,7 @@ function setupEnglish(){
     var uses=hasWholeWord(text,target);
     var enough=text.split(/\s+/).filter(Boolean).length>=5;
     var sentenceOk=uses&&enough;
-    recordLearningAttempt("sentence",target,sentenceOk);
+    recordLearningAttempt("sentence",target,sentenceOk,{scope:"required"});
     if(sentenceOk){
       $("#sentenceFeedback").textContent="Good: you used the target word in a complete-looking sentence. Read it once for sense and punctuation.";
       $("#sentenceFeedback").className="feedback good"; $("#nextSentence").classList.remove("hidden"); bump("sentencesGood");
@@ -458,6 +458,7 @@ function markTestQuestion(q){
     note=ok?"Accepted ✓ Check for sense, capital letter and full stop.":'Use "'+q.word.word+'" in a fuller sentence that shows its meaning.';
   }
   if(ok)state.test.score++;
+  recordLearningAttempt("practice-test-"+q.type,q.word.word,ok,{scope:"required"});
   state.test.answers.push({type:q.type,word:q.word.word,answer:answer,ok:ok});
   $("#testFeedback").textContent=note; $("#testFeedback").className="feedback "+(ok?"good":"try");
   $("#testSubmit").textContent=state.test.index===state.test.questions.length-1?"Finish test":"Next question";
