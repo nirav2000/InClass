@@ -12,25 +12,32 @@
 </head>
 <body>
   <header class="topbar">
-    <div>
+    <div class="brand">
       <p class="eyebrow">INCLASS</p>
       <h1>Weekly homework</h1>
     </div>
-    <label class="profile">
-      <span>Learner</span>
-      <select id="learnerSelect" aria-label="Learner">
-        <option>Sai</option>
-        <option>Parent</option>
-      </select>
-    </label>
+    <div class="topControls">
+      <label>Subject
+        <select id="subjectSelect" aria-label="Subject"></select>
+      </label>
+      <label>Week
+        <select id="weekSelect" aria-label="Week"></select>
+      </label>
+      <label>Learner
+        <select id="learnerSelect" aria-label="Learner">
+          <option>Sai</option>
+          <option>Parent</option>
+        </select>
+      </label>
+    </div>
   </header>
 
   <main class="shell">
-    <section class="weekHero">
+    <section class="weekHero" id="weekHero">
       <div>
-        <p class="eyebrow">FRENCH · WEEK 1</p>
-        <h2>Pets, colours & descriptions</h2>
-        <p class="lead">Hear it. Say it. Spell it. Build it into a sentence.</p>
+        <p class="eyebrow" id="heroMeta"></p>
+        <h2 id="heroTitle"></h2>
+        <p class="lead" id="heroLead"></p>
       </div>
       <div class="weekProgress" aria-label="Weekly progress">
         <strong id="progressPercent">0%</strong>
@@ -38,118 +45,9 @@
       </div>
     </section>
 
-    <nav class="stepNav" aria-label="Homework steps">
-      <button data-scroll="learn">1 · Learn</button>
-      <button data-scroll="spell">2 · Spell</button>
-      <button data-scroll="build">3 · Build</button>
-      <button data-scroll="speak">4 · Speak</button>
-      <button data-scroll="chat">5 · Chat</button>
-    </nav>
-
-    <section id="learn" class="panel">
-      <div class="sectionHead">
-        <div>
-          <p class="eyebrow">STEP 1</p>
-          <h3>Learn the words</h3>
-        </div>
-        <button class="secondary" id="playAll">▶ Play core list</button>
-      </div>
-      <p class="tip">Tap any French word to hear it. The feminine forms from the sheet are shown where they change.</p>
-      <div id="vocabGroups" class="vocabGroups"></div>
-    </section>
-
-    <section id="spell" class="panel">
-      <div class="sectionHead">
-        <div>
-          <p class="eyebrow">STEP 2</p>
-          <h3>Hear → spell</h3>
-        </div>
-        <div class="scoreChip"><span id="spellScore">0</span> correct</div>
-      </div>
-      <div class="practiceCard">
-        <p class="promptLabel">Listen, then type the French</p>
-        <button class="soundButton" id="spellPlay" aria-label="Play word">🔊</button>
-        <p id="spellMeaning" class="meaning"></p>
-        <form id="spellForm" autocomplete="off">
-          <input id="spellInput" inputmode="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="Type the French…" />
-          <button type="submit" class="primary">Check</button>
-        </form>
-        <p id="spellFeedback" class="feedback" aria-live="polite"></p>
-        <button id="nextSpell" class="secondary hidden">Next word →</button>
-      </div>
-    </section>
-
-    <section id="build" class="panel">
-      <div class="sectionHead">
-        <div>
-          <p class="eyebrow">STEP 3</p>
-          <h3>Build a sentence</h3>
-        </div>
-      </div>
-      <p class="tip">Choose a pet, colour and description. The app changes adjective endings for <em>une souris</em>.</p>
-      <div class="builder">
-        <label>Pet<select id="animalSelect"></select></label>
-        <label>Colour<select id="colourSelect"></select></label>
-        <label>Description<select id="qualitySelect"></select></label>
-      </div>
-      <div class="sentenceCard">
-        <p id="builtSentence" class="bigFrench"></p>
-        <p id="builtEnglish" class="meaning"></p>
-        <div class="row">
-          <button class="primary" id="playSentence">🔊 Hear sentence</button>
-          <button class="secondary" id="shuffleSentence">Shuffle</button>
-        </div>
-      </div>
-      <div class="miniRule">
-        <strong>Notice the agreement</strong>
-        <span id="agreementNote"></span>
-      </div>
-    </section>
-
-    <section id="speak" class="panel">
-      <div class="sectionHead">
-        <div>
-          <p class="eyebrow">STEP 4</p>
-          <h3>Listen → speak</h3>
-        </div>
-      </div>
-      <div class="practiceCard">
-        <p class="promptLabel">Say this sentence</p>
-        <p id="speakTarget" class="bigFrench"></p>
-        <div class="row">
-          <button class="primary" id="hearSpeakTarget">🔊 Hear it</button>
-          <button class="secondary" id="startSpeaking">🎙 Speak</button>
-        </div>
-        <p id="speechStatus" class="feedback">Tap “Speak” and allow microphone access. Speech recognition is used as a practice check, not as a pronunciation exam.</p>
-        <p id="speechTranscript" class="transcript hidden"></p>
-        <button id="newSpeakTarget" class="secondary">New sentence</button>
-      </div>
-    </section>
-
-    <section id="chat" class="panel">
-      <div class="sectionHead">
-        <div>
-          <p class="eyebrow">STEP 5</p>
-          <h3>Mini conversation</h3>
-        </div>
-      </div>
-      <div class="conversation">
-        <div class="bubble tutor">
-          <span>InClass</span>
-          <p id="chatPrompt">Quel animal as-tu ?</p>
-          <button class="tiny" id="playChatPrompt">🔊 Hear</button>
-        </div>
-        <div class="bubble learner">
-          <span>Your turn</span>
-          <p>Answer with: <strong>J’ai + pet + colour + et + description</strong></p>
-          <div class="row">
-            <button class="primary" id="chatSpeak">🎙 Answer aloud</button>
-            <button class="secondary" id="chatExample">Show an example</button>
-          </div>
-          <p id="chatResult" class="feedback"></p>
-        </div>
-      </div>
-    </section>
+    <nav class="stepNav" id="stepNav" aria-label="Homework steps"></nav>
+    <div id="reviewBanner"></div>
+    <div id="lessonRoot"></div>
 
     <section class="panel parentPanel">
       <div class="sectionHead">
@@ -160,14 +58,16 @@
         <button class="secondary" id="resetProgress">Reset learner progress</button>
       </div>
       <div id="parentStats" class="statsGrid"></div>
-      <p class="tip">Core vocabulary is taken from the supplied homework image. Conversation prompts add a small amount of linking French so the vocabulary can be used rather than only memorised.</p>
+      <div id="sourceNote" class="sourceNote"></div>
     </section>
   </main>
 
   <footer>
-    <strong>InClass</strong> · one weekly page, short daily practice
+    <strong>InClass</strong> · dated homework packs · short daily retrieval
+    <span class="version">v2026.09.29.1</span>
   </footer>
 
+  <script src="data/weeks.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
