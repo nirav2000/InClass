@@ -178,7 +178,7 @@ function renderEnglish(){
     return '<button class="wordRow" data-word="'+x.word+'">'+
       '<span class="wordIndex">'+(i+1)+'</span>'+
       '<span><strong>'+x.word+'</strong><small>'+x.singular+' → '+x.word+'</small></span>'+
-      '<span class="ruleTag '+(x.rule==="exception"?"exception":"")+'">'+x.rule+'</span>'+
+      '<span class="ruleTag '+(x.rule.indexOf("exception")>=0?"exception":"")+'">'+x.rule+'</span>'+
       '<span class="speaker">🔊</span></button>';
   }).join("");
 
@@ -192,7 +192,7 @@ function renderEnglish(){
       '<h4 class="subhead">Irregular plurals from the lesson</h4><div class="flipGrid">'+irregular+'</div>'
     )+
     panel("words",2,"This week's 12 Year 5 words",
-      '<p class="tip">Tap a word to hear it. Notice which words simply add <strong>-s</strong>, which add <strong>-es</strong>, and the highlighted exception.</p>'+
+      '<p class="tip">Tap a word to hear it. Notice which words simply add <strong>-s</strong>, which add <strong>-es</strong>, and the highlighted likely exception.</p>'+
       '<div class="wordRows">'+wordRows+'</div>'
     )+
     panel("spell",3,"Hear → spell",
