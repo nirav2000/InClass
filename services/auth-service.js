@@ -4,6 +4,9 @@
   let session=JSON.parse(localStorage.getItem("inclass:session")||"null")||{
     userId:demo.userId,dataOwnerId:demo.userId,displayName:demo.displayName,role:demo.role,children:demo.children||[],classes:demo.classes||[],provider:"local"
   };
+  if(!session.dataOwnerId&&session.provider==="local")session.dataOwnerId=demo.userId;
+  if(!session.children)session.children=demo.children||[];
+  if(!session.classes)session.classes=demo.classes||[];
 
   function persist(){ localStorage.setItem("inclass:session",JSON.stringify(session)); }
   function getSession(){ return Object.assign({},session); }
