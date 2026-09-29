@@ -1,4 +1,4 @@
-const CACHE="inclass-v14";
+const CACHE="inclass-v15";
 const CORE=[
   "./","./index.html","./styles.css","./manifest.webmanifest",
   "./config/app-config.js",
