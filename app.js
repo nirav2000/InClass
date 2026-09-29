@@ -17,6 +17,66 @@ function getProgress(){
 function saveProgress(p){ localStorage.setItem(progressKey(),JSON.stringify(p)); renderProgress(); }
 function bump(k,n){ var p=getProgress(); p[k]=(p[k]||0)+(n||1); saveProgress(p); }
 
+function reviewKey(){ return "inclass:review:"+state.learner+":"+state.week.subjectKey; }
+function getReviewStore(){
+  try { return JSON.parse(localStorage.getItem(reviewKey())) || {}; }
+  catch(e){ return {}; }
+}
+function recordReview(label,ok,sourcePackId){
+  var store=getReviewStore();
+  var old=store[label]||{stage:0};
+  var stage=ok?Math.min((old.stage||0)+1,4):0;
+  var intervals=[1,3,7,14,30];
+  var days=intervals[stage];
+  store[label]={label:label,packId:sourcePackId||state.week.id,stage:stage,due:Date.now()+days*86400000,lastCorrect:!!ok};
+  localStorage.setItem(reviewKey(),JSON.stringify(store));
+}
+function dueReviewItems(){
+  var store=getReviewStore(),now=Date.now();
+  return Object.keys(store).map(function(k){return store[k];}).filter(function(x){
+    return x.packId!==state.week.id && x.due<=now;
+  });
+}
+function findEnglishWord(label){
+  for(var i=0;i<WEEKS.length;i++){
+    var pack=WEEKS[i];
+    if(pack.subjectKey!=="english"||!pack.words)continue;
+    var word=pack.words.find(function(x){return x.word===label;});
+    if(word)return {pack:pack,word:word};
+  }
+  return null;
+}
+function renderReviewBanner(){
+  var due=state.week.subjectKey==="english"?dueReviewItems():[];
+  if(!due.length){ $("#reviewBanner").innerHTML=""; return; }
+  $("#reviewBanner").innerHTML='<div class="reviewBanner"><div><strong>Previous-week review due</strong><span>'+due.length+' item'+(due.length===1?"":"s")+' ready for spaced retrieval.</span></div><button class="primary" id="startReview">Review now</button></div>';
+  $("#startReview").onclick=function(){ startSpacedReview(due); };
+}
+function startSpacedReview(items){
+  state.queues.spaced=shuffle(items);
+  $("#reviewBanner").innerHTML='<section class="panel reviewPanel"><div class="sectionHead"><div><p class="eyebrow">SPACED REVIEW</p><h3>Previous homework</h3></div></div><div id="reviewCard" class="practiceCard"></div></section>';
+  nextSpacedReview();
+}
+function nextSpacedReview(){
+  if(!state.queues.spaced||!state.queues.spaced.length){ $("#reviewCard").innerHTML='<p class="feedback good">Review complete ✓</p>'; return; }
+  var item=state.queues.spaced.pop(),found=findEnglishWord(item.label);
+  if(!found){ nextSpacedReview(); return; }
+  state.current.spaced={item:item,found:found};
+  var useMeaning=Math.random()>.5;
+  $("#reviewCard").innerHTML=useMeaning
+    ? '<p class="promptLabel">DEFINITION → WORD</p><p class="questionText">'+found.word.definition+'</p><input id="reviewInput" autocomplete="off" spellcheck="false" placeholder="Type the word"><button class="primary testSubmit" id="reviewCheck">Check</button><p id="reviewFeedback" class="feedback"></p>'
+    : '<p class="promptLabel">HEAR → SPELL</p><button class="soundButton" id="reviewAudio">🔊</button><input id="reviewInput" autocomplete="off" spellcheck="false" placeholder="Type the word"><button class="primary testSubmit" id="reviewCheck">Check</button><p id="reviewFeedback" class="feedback"></p>';
+  if(!useMeaning)$("#reviewAudio").onclick=function(){speak(found.word.word,"en-GB");};
+  $("#reviewCheck").onclick=function(){
+    var ok=norm($("#reviewInput").value)===norm(found.word.word);
+    recordReview(found.word.word,ok,item.packId);
+    $("#reviewFeedback").textContent=ok?"Correct ✓":"Answer: "+found.word.word;
+    $("#reviewFeedback").className="feedback "+(ok?"good":"try");
+    $("#reviewCheck").textContent="Next";
+    $("#reviewCheck").onclick=nextSpacedReview;
+  };
+}
+
 var voices=[];
 function loadVoices(){ if("speechSynthesis" in window) voices=speechSynthesis.getVoices(); }
 if("speechSynthesis" in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
@@ -154,6 +214,7 @@ function renderWeek(){
   else renderFrench();
   renderSourceNote();
   renderProgress();
+  renderReviewBanner();
   $("#resetProgress").onclick=function(){
     if(confirm("Reset "+state.learner+"'s progress for this pack?")){
       localStorage.removeItem(progressKey());
@@ -270,6 +331,7 @@ function setupEnglish(){
       $("#enSpellFeedback").textContent="Try again. Listen carefully to the ending."; $("#enSpellFeedback").className="feedback try";
       speak(state.current.enSpell.word,"en-GB");
     }
+    recordReview(state.current.enSpell.word,ok,state.week.id);
     saveProgress(p);
   };
   $("#nextEnSpell").onclick=nextSpell;
@@ -291,6 +353,7 @@ function setupEnglish(){
     }else{
       $("#meaningFeedback").textContent="Not that one. Think through the 12-word list and try again."; $("#meaningFeedback").className="feedback try";
     }
+    recordReview(state.current.meaning.word,ok,state.week.id);
     saveProgress(p);
   };
   $("#nextMeaning").onclick=nextMeaning;
@@ -412,7 +475,7 @@ function renderFrench(){
     panel("frSpell",2,"Hear → spell",'<div class="practiceCard"><button class="soundButton" id="frSpellPlay">🔊</button><p id="frSpellMeaning" class="meaning"></p><form id="frSpellForm" class="inlineForm centred"><input id="frSpellInput" autocomplete="off" spellcheck="false" placeholder="Type the French"><button class="primary">Check</button></form><p id="frSpellFeedback" class="feedback"></p><button id="nextFrSpell" class="secondary hidden">Next →</button></div>')+
     panel("frBuild",3,"Build a sentence",'<div class="builder"><label>Pet<select id="animalSelect"></select></label><label>Colour<select id="colourSelect"></select></label><label>Description<select id="qualitySelect"></select></label></div><div class="sentenceCard"><p id="builtFrench" class="bigWord"></p><p id="builtEnglish" class="meaning"></p><div class="row"><button class="primary" id="hearFrenchSentence">🔊 Hear sentence</button><button class="secondary" id="shuffleFrench">Shuffle</button></div></div><div class="miniRule"><strong>Agreement</strong><span id="frAgreement"></span></div>')+
     panel("frSpeak",4,"Listen → speak",'<div class="practiceCard"><p id="frSpeakTarget" class="bigWord"></p><div class="row"><button class="primary" id="hearFrTarget">🔊 Hear it</button><button class="secondary" id="newFrTarget">New sentence</button></div><p class="tip">Repeat the sentence aloud. Browser speech recognition varies by device, so this version records speaking practice without pretending to give a precise accent score.</p><button class="primary" id="markSpoken">I said it aloud ✓</button></div>')+
-    panel("frChat",5,"Mini conversation",'<div class="conversation"><div class="bubble tutor"><span>InClass</span><p>Quel animal as-tu ?</p><button class="tiny" id="hearChat">🔊 Hear</button></div><div class="bubble learner"><span>Your turn</span><p>Answer aloud with <strong>J’ai + pet + colour + et + description</strong>.</p><button class="primary" id="markChat">I answered aloud ✓</button></div></div>');
+    panel("frChat",5,"Mini conversation",'<div class="conversation"><div class="bubble tutor"><span>InClass</span><p id="chatQuestion">Quel animal as-tu ?</p><button class="tiny" id="hearChat">🔊 Hear</button></div><div class="bubble learner"><span>Your turn</span><p>Use the vocabulary you have learnt: <strong>J’ai + pet + colour + et + description</strong>.</p><div class="chatInputRow"><input id="chatInput" autocomplete="off" spellcheck="false" placeholder="Type your French answer, or use the microphone"><button class="secondary" id="chatMic">🎙 Speak</button><button class="primary" id="chatCheck">Check</button></div><p id="chatFeedback" class="feedback"></p><button class="secondary hidden" id="chatNext">Another turn →</button></div></div>');
   setupFrench();
 }
 
@@ -484,8 +547,29 @@ function setupFrench(){
   $("#hearFrTarget").onclick=function(){speak(state.current.frTarget,"fr-FR");bump("heard");};
   $("#newFrTarget").onclick=newTarget;
   $("#markSpoken").onclick=function(){bump("spoken");};
+  function checkChatAnswer(){
+    var text=norm($("#chatInput").value);
+    var hasPet=w.animals.some(function(a){return text.indexOf(norm(a.fr.replace(/^(un|une) /,"")))>=0;});
+    var hasColour=w.colours.some(function(x){return text.indexOf(norm(x.m))>=0||text.indexOf(norm(x.f))>=0;});
+    var hasQuality=w.qualities.some(function(x){return text.indexOf(norm(x.m))>=0||text.indexOf(norm(x.f))>=0;});
+    var hasFrame=text.indexOf("j'ai")>=0||text.indexOf("jai")>=0;
+    var ok=hasPet&&hasColour&&hasQuality&&hasFrame;
+    $("#chatFeedback").textContent=ok?"Très bien ✓ You used the taught sentence frame and all three vocabulary parts.":"Try again: include J’ai, a pet, a colour and a description from this week's list.";
+    $("#chatFeedback").className="feedback "+(ok?"good":"try");
+    if(ok){bump("chatted");$("#chatNext").classList.remove("hidden");}
+  }
   $("#hearChat").onclick=function(){speak("Quel animal as-tu ?","fr-FR");bump("heard");};
-  $("#markChat").onclick=function(){bump("chatted");};
+  $("#chatCheck").onclick=checkChatAnswer;
+  $("#chatMic").onclick=function(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){$("#chatFeedback").textContent="Speech recognition is not available in this browser. Type the answer instead.";$("#chatFeedback").className="feedback try";return;}
+    var r=new SR();r.lang="fr-FR";r.interimResults=false;r.maxAlternatives=3;
+    $("#chatFeedback").textContent="Listening…";
+    r.onresult=function(e){$("#chatInput").value=e.results[0][0].transcript;checkChatAnswer();};
+    r.onerror=function(){$("#chatFeedback").textContent="I couldn't hear that clearly. Try again or type the answer.";$("#chatFeedback").className="feedback try";};
+    r.start();
+  };
+  $("#chatNext").onclick=function(){$("#chatInput").value="";$("#chatFeedback").textContent="";$("#chatNext").classList.add("hidden");speak("Quel animal as-tu ?","fr-FR");};
   newTarget();
 }
 
