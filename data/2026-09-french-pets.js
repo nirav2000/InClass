@@ -7,6 +7,11 @@ window.INCLASS_WEEKS.push({
   title:"Pets, colours & descriptions",
   lead:"Hear it. Say it. Spell it. Build it into a sentence.",
   source:"French vocabulary sheet supplied by parent",
+  contentTiers:{
+    required:["animals","colours","qualities","sentence frame: J’ai + animal + colour + et + description"],
+    understanding:["grammatical gender","un/une","adjective agreement","why the sentence frame works"],
+    extension:["rainbow + pink","extra animals","UK garden birds","Aujourd’hui, j’ai vu … dans le jardin","mini conversation"]
+  },
   animals:[
     {fr:"un chien",en:"a dog",gender:"m"},
     {fr:"un chat",en:"a cat",gender:"m"},
