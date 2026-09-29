@@ -118,7 +118,7 @@
       e.preventDefault();
       const p=getProgress();p.spellAttempts=(p.spellAttempts||0)+1;
       const ok=norm($("#frSpellInput").value)===norm(state.current.frSpell.text);
-      recordLearningAttempt("spelling",state.current.frSpell.text,ok,{scope:$("#frSpellMode").value});
+      recordLearningAttempt("spelling",state.current.frSpell.text,ok,{scope:$("#frSpellMode").value==="core"?"required":"extension"});
       if(ok){
         p.spellCorrect=(p.spellCorrect||0)+1;$("#frSpellFeedback").textContent="Correct ✓";$("#frSpellFeedback").className="feedback good";
         $("#frSpellInput").disabled=true;$("#nextFrSpell").classList.remove("hidden");
@@ -141,7 +141,7 @@
         const row=b.closest(".dictationRow"),id=decodeURIComponent(row.dataset.id),marks=getMarks(),correct=b.dataset.mark==="correct";
         marks[id]=b.dataset.mark;saveMarks(marks);
         const text=id.split(":").slice(2).join(":");
-        recordLearningAttempt("handwriting",text,correct,{scope:set});
+        recordLearningAttempt("handwriting",text,correct,{scope:set==="core"?"required":"extension"});
         renderDictation();
       });
       $("#toggleDictationAnswers").textContent=hidden?"Show French answers":"Hide French answers";
@@ -218,7 +218,7 @@
         $("#chatFeedback").textContent=ok?"Très bien ✓ You said what animal you have and gave its colour.":"Try again: include J’ai, an animal and a colour.";
       }
       $("#chatFeedback").className="feedback "+(ok?"good":"try");
-      recordLearningAttempt("conversation",state.current.chatType,ok,{response:t});
+      recordLearningAttempt("conversation",state.current.chatType,ok,{scope:"extension",response:t});
       if(ok){bump("chatted");$("#chatNext").classList.remove("hidden");}
     }
     $("#hearChat").onclick=()=>{speak(state.current.chatQuestion,"fr-FR");bump("heard");};
