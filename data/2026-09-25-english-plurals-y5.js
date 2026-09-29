@@ -7,6 +7,11 @@ window.INCLASS_WEEKS.push({
   title:"Plurals: -s or -es",
   lead:"Learn the rule, spell this week's words, know what they mean, and use them in your own sentences.",
   source:"School homework slides supplied by parent",
+  contentTiers:{
+    required:["plural rule -s/-es","Year 5 spelling list","word meanings","use each word in a sentence","12-question test format"],
+    understanding:["what plural means","what a noun is","why the spelling rule works"],
+    extension:["spaced retrieval","personalised examples","transfer practice"]
+  },
   sourceNotes:[
     "Learning objective: spell plurals correctly using ‘s’ or ‘es’.",
     "Test format shown on the homework: 4 heard-spelling questions, 4 definition-to-word questions and 4 sentence questions.",
