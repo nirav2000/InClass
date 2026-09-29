@@ -196,19 +196,23 @@ function renderProgress(){
       ["Best test",p.bestTest===undefined?"—":p.bestTest+"/12"]
     ];
   } else {
+    var requiredHeard=p.requiredHeard||p.heard||0;
+    var dictationKey="inclass:dictation:"+state.week.id+":"+state.learner;
+    var dictation=window.InClassData?window.InClassData.getJson(dictationKey,{}):{};
+    var coreMarks=Object.keys(dictation).filter(function(k){return k.indexOf("core:")===0;});
+    var dictationCorrect=coreMarks.filter(function(k){return dictation[k]==="correct";}).length;
     var measuresFr=[
-      Math.min((p.heard||0)/8,1),
+      Math.min(requiredHeard/8,1),
       Math.min((p.spellCorrect||0)/8,1),
-      Math.min((p.sentencesBuilt||0)/4,1),
-      Math.min((p.spoken||0)/3,1),
-      Math.min((p.chatted||0)/2,1)
+      Math.min(dictationCorrect/8,1),
+      Math.min((p.sentencesBuilt||0)/4,1)
     ];
     pct=Math.round(measuresFr.reduce(function(a,b){return a+b;},0)/measuresFr.length*100);
     stats=[
-      ["Heard",p.heard||0],
-      ["Spelling",(p.spellCorrect||0)+"/"+(p.spellAttempts||0)],
-      ["Sentences",p.sentencesBuilt||0],
-      ["Speaking",(p.spoken||0)+(p.chatted||0)]
+      ["School listening",requiredHeard],
+      ["School spelling",(p.spellCorrect||0)+"/"+(p.spellAttempts||0)],
+      ["Paper dictation",dictationCorrect+"/"+coreMarks.length],
+      ["School sentences",p.sentencesBuilt||0]
     ];
   }
   $("#progressPercent").textContent=pct+"%";
