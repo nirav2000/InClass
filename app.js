@@ -11,14 +11,31 @@ function hasWholeWord(text,word){
 }
 function progressKey(){ return "inclass:"+state.week.id+":"+state.learner; }
 function getProgress(){
+  if(window.InClassData) return window.InClassData.getJson(progressKey(),{});
   try { return JSON.parse(localStorage.getItem(progressKey())) || {}; }
   catch(e) { return {}; }
 }
-function saveProgress(p){ localStorage.setItem(progressKey(),JSON.stringify(p)); renderProgress(); }
+function saveProgress(p){
+  if(window.InClassData) window.InClassData.setJson(progressKey(),p);
+  else localStorage.setItem(progressKey(),JSON.stringify(p));
+  renderProgress();
+}
 function bump(k,n){ var p=getProgress(); p[k]=(p[k]||0)+(n||1); saveProgress(p); }
+function recordLearningAttempt(activity,item,correct,extra){
+  if(!window.InClassData)return;
+  window.InClassData.recordAttempt(Object.assign({
+    learnerId:state.learner,
+    subject:state.week?state.week.subject:null,
+    packId:state.week?state.week.id:null,
+    activity:activity,
+    item:item,
+    correct:correct
+  },extra||{}));
+}
 
 function reviewKey(){ return "inclass:review:"+state.learner+":"+state.week.subjectKey; }
 function getReviewStore(){
+  if(window.InClassData)return window.InClassData.getJson(reviewKey(),{});
   try { return JSON.parse(localStorage.getItem(reviewKey())) || {}; }
   catch(e){ return {}; }
 }
@@ -29,7 +46,8 @@ function recordReview(label,ok,sourcePackId){
   var intervals=[1,3,7,14,30];
   var days=intervals[stage];
   store[label]={label:label,packId:sourcePackId||state.week.id,stage:stage,due:Date.now()+days*86400000,lastCorrect:!!ok};
-  localStorage.setItem(reviewKey(),JSON.stringify(store));
+  if(window.InClassData)window.InClassData.setJson(reviewKey(),store);
+  else localStorage.setItem(reviewKey(),JSON.stringify(store));
 }
 function dueReviewItems(){
   var store=getReviewStore(),now=Date.now();
@@ -95,7 +113,11 @@ function speak(text,lang){
 function initSelectors(){
   var subjects=Array.from(new Set(WEEKS.map(function(w){return w.subject;})));
   $("#subjectSelect").innerHTML=subjects.map(function(s){return "<option>"+s+"</option>";}).join("");
-  state.learner=localStorage.getItem("inclass:learner")||"Sai";
+  var session=window.InClassAuth?window.InClassAuth.getSession():{role:"parent",children:[{name:"Sai"}]};
+  var learners=(session.children&&session.children.length?session.children:[{name:"Sai"}]);
+  $("#learnerSelect").innerHTML=learners.map(function(x){return '<option value="'+x.name+'">'+x.name+'</option>';}).join("");
+  state.learner=localStorage.getItem("inclass:learner")||learners[0].name||"Sai";
+  if(!learners.some(function(x){return x.name===state.learner;}))state.learner=learners[0].name;
   $("#learnerSelect").value=state.learner;
 
   $("#learnerSelect").addEventListener("change",function(e){
@@ -217,7 +239,8 @@ function renderWeek(){
   renderReviewBanner();
   $("#resetProgress").onclick=function(){
     if(confirm("Reset "+state.learner+"'s progress for this pack?")){
-      localStorage.removeItem(progressKey());
+      if(window.InClassData)window.InClassData.remove(progressKey());
+      else localStorage.removeItem(progressKey());
       renderWeek();
     }
   };
@@ -296,6 +319,7 @@ function setupEnglish(){
   $("#ruleForm").onsubmit=function(e){
     e.preventDefault();
     var ok=norm($("#ruleInput").value)===norm(state.current.rule.a);
+    recordLearningAttempt("rule",state.current.rule.q+" → "+state.current.rule.a,ok);
     if(ok){
       $("#ruleFeedback").textContent="Correct ✓"; $("#ruleFeedback").className="feedback good";
       $("#nextRule").classList.remove("hidden"); $("#ruleInput").disabled=true; bump("ruleCorrect");
@@ -324,6 +348,7 @@ function setupEnglish(){
     e.preventDefault();
     var p=getProgress(); p.spellAttempts=(p.spellAttempts||0)+1;
     var ok=norm($("#enSpellInput").value)===norm(state.current.enSpell.word);
+    recordLearningAttempt("spelling",state.current.enSpell.word,ok);
     if(ok){
       p.spellCorrect=(p.spellCorrect||0)+1; $("#enSpellFeedback").textContent="Correct ✓"; $("#enSpellFeedback").className="feedback good";
       $("#enSpellInput").disabled=true; $("#nextEnSpell").classList.remove("hidden");
@@ -347,6 +372,7 @@ function setupEnglish(){
     e.preventDefault();
     var p=getProgress(); p.meaningAttempts=(p.meaningAttempts||0)+1;
     var ok=norm($("#meaningInput").value)===norm(state.current.meaning.word);
+    recordLearningAttempt("meaning",state.current.meaning.word,ok);
     if(ok){
       p.meaningCorrect=(p.meaningCorrect||0)+1; $("#meaningFeedback").textContent="Correct ✓"; $("#meaningFeedback").className="feedback good";
       $("#meaningInput").disabled=true; $("#nextMeaning").classList.remove("hidden");
@@ -371,7 +397,9 @@ function setupEnglish(){
     var text=$("#sentenceInput").value.trim(), target=state.current.sentence.word;
     var uses=hasWholeWord(text,target);
     var enough=text.split(/\s+/).filter(Boolean).length>=5;
-    if(uses&&enough){
+    var sentenceOk=uses&&enough;
+    recordLearningAttempt("sentence",target,sentenceOk);
+    if(sentenceOk){
       $("#sentenceFeedback").textContent="Good: you used the target word in a complete-looking sentence. Read it once for sense and punctuation.";
       $("#sentenceFeedback").className="feedback good"; $("#nextSentence").classList.remove("hidden"); bump("sentencesGood");
     }else if(!uses){
