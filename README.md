@@ -2,7 +2,7 @@
 
 A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
 
-Current release: **v2026.09.29.5**
+Current release: **v2026.09.29.6**
 
 ## Current packs
 
