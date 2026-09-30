@@ -35,7 +35,8 @@ jobs:
               };
               Object.defineProperty(window,'speechSynthesis',{configurable:true,value:synth});
             });
-            await page.goto('https://nirav2000.github.io/InClass/',{waitUntil:'networkidle'});
+            await page.goto('https://nirav2000.github.io/InClass/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForSelector('#subjectSelect',{timeout:15000});
             await page.selectOption('#subjectSelect',{label:'French'});
             await page.waitForSelector('.wordButton');
             const before=await page.evaluate(()=>window.__spoken.length);
