@@ -1,0 +1,54 @@
+name: Verify French vocabulary audio fix v2
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/verify-french-audio-fix-v2.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser test dependency
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright
+          npx playwright install chromium
+      - name: Verify French vocabulary click invokes speech playback
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            await page.addInitScript(()=>{
+              window.__spoken=[];
+              Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{
+                getVoices:()=>[{lang:'fr-FR',name:'Test French'},{lang:'en-GB',name:'Test English'}],
+                cancel:()=>{},
+                speak:u=>window.__spoken.push({text:u.text,lang:u.lang}),
+                onvoiceschanged:null
+              }});
+            });
+            await page.goto('https://nirav2000.github.io/InClass/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForSelector('#subjectSelect',{timeout:15000});
+            await page.selectOption('#subjectSelect',{label:'French'});
+            await page.waitForSelector('.wordButton',{timeout:15000});
+            const count=await page.locator('.wordButton').count();
+            if(count<2)throw new Error('Expected multiple French vocabulary buttons, found '+count);
+            const before=await page.evaluate(()=>window.__spoken.length);
+            await page.locator('.wordButton').first().click();
+            await page.waitForTimeout(100);
+            const spoken=await page.evaluate(()=>window.__spoken.slice());
+            if(spoken.length<=before)throw new Error('French vocabulary click did not invoke speech synthesis');
+            const last=spoken.at(-1);
+            if(!String(last.lang||'').toLowerCase().startsWith('fr'))throw new Error('Wrong speech language: '+JSON.stringify(last));
+            console.log('PASS: clicked one of',count,'French vocabulary buttons; speech call=',last);
+            await browser.close();
+          })().catch(err=>{console.error(err);process.exit(1)});
+          NODE
