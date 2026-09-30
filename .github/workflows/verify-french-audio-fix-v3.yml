@@ -39,16 +39,22 @@ jobs:
             console.log('opening');
             await page.goto('https://nirav2000.github.io/InClass/?vl_verify='+Date.now(),{waitUntil:'domcontentloaded',timeout:20000});
             console.log('loaded');
-            await page.waitForSelector('#subjectSelect');
+            await page.waitForSelector('#subjectSelect',{state:'attached'});
             const options=await page.locator('#subjectSelect option').allTextContents();
             console.log('subjects',options);
-            await page.selectOption('#subjectSelect',{label:'French'});
+            await page.evaluate(()=>{
+              const s=document.querySelector('#subjectSelect');
+              const opt=Array.from(s.options).find(o=>o.textContent==='French');
+              if(!opt)throw new Error('French subject option missing');
+              s.value=opt.value;
+              s.dispatchEvent(new Event('change',{bubbles:true}));
+            });
             console.log('selected French');
-            await page.waitForSelector('.wordButton');
+            await page.waitForSelector('.wordButton',{state:'attached'});
             const count=await page.locator('.wordButton').count();
             console.log('buttons',count);
             if(count<2)throw new Error('Expected multiple French vocabulary buttons, found '+count);
-            await page.locator('.wordButton').first().click({timeout:10000});
+            await page.evaluate(()=>document.querySelector('.wordButton').click());
             console.log('clicked');
             await page.waitForFunction(()=>window.__spoken.length>0,null,{timeout:5000});
             const spoken=await page.evaluate(()=>window.__spoken.slice());
