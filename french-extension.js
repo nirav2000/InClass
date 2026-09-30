@@ -90,7 +90,7 @@
 
   function setupFrenchHomeworkFirst(){
     const w=state.week;
-    $(".wordButton").forEach(b=>b.onclick=()=>{
+    Array.from(document.querySelectorAll(".wordButton")).forEach(b=>b.onclick=()=>{
       speak(decodeURIComponent(b.dataset.audio),"fr-FR");
       if(b.closest(".extensionVocab"))bump("extensionHeard");else bump("requiredHeard");
     });
