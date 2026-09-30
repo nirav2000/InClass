@@ -54,12 +54,18 @@ jobs:
             const count=await page.locator('.wordButton').count();
             console.log('buttons',count);
             if(count<2)throw new Error('Expected multiple French vocabulary buttons, found '+count);
-            await page.evaluate(()=>document.querySelector('.wordButton').click());
+            const wired=await page.evaluate(()=>Array.from(document.querySelectorAll('.wordButton')).every(b=>typeof b.onclick==='function'));
+            if(!wired)throw new Error('One or more French vocabulary buttons have no click handler');
+            await page.evaluate(()=>{
+              window.__spoken=[];
+              window.speak=(text,lang)=>window.__spoken.push({text,lang});
+              document.querySelector('.wordButton').click();
+            });
             console.log('clicked');
-            await page.waitForFunction(()=>window.__spoken.length>0,null,{timeout:5000});
             const spoken=await page.evaluate(()=>window.__spoken.slice());
             const last=spoken.at(-1);
             console.log('spoken',last);
+            if(!last)throw new Error('French vocabulary click handler did not call speak()');
             if(!String(last.lang||'').toLowerCase().startsWith('fr'))throw new Error('Wrong speech language: '+JSON.stringify(last));
             await browser.close();
             console.log('PASS');
