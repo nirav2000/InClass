@@ -1,0 +1,14 @@
+{
+  "allowedOrigins": [
+    "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+    "https://firestore.googleapis.com",
+    "https://identitytoolkit.googleapis.com"
+  ],
+  "allowReadPostPatterns": [
+    "/reference",
+    ":runQuery",
+    ":batchGet",
+    "/Listen/channel"
+  ],
+  "blockPatterns": []
+}

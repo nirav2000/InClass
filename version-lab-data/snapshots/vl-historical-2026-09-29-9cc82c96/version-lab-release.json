@@ -1,0 +1,53 @@
+{
+  "checkpointId": "vl-historical-2026-09-29-9cc82c96",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
+  "sourceRef": "9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
+  "createdAt": "2026-09-30T12:21:14.206Z",
+  "title": "Add InClass product roadmap stable release and monetisation plan",
+  "summary": "Reconstructed historical checkpoint from Git history.",
+  "areas": [],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
+  "snapshotUrl": "./snapshots/vl-historical-2026-09-29-9cc82c96/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": true
+  }
+}

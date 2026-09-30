@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; connect-src 'self' https://apps-pronunciation-api.nirav2000-github.workers.dev https://firestore.googleapis.com https://identitytoolkit.googleapis.com; form-action 'none'; frame-ancestors *; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; media-src 'self' data: blob: https:;"><script>window.__VERSION_LAB_READONLY_CONFIG__={"allowedOrigins":["https://apps-pronunciation-api.nirav2000-github.workers.dev","https://firestore.googleapis.com","https://identitytoolkit.googleapis.com"],"allowReadPostPatterns":["/reference",":runQuery",":batchGet","/Listen/channel"],"blockPatterns":[]};</script><script src="./__version_lab__/read-only-runtime.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#102a43" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>InClass · Homework with understanding</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section id="welcomeScreen" class="welcomeScreen">
+    <div class="welcomeGlow welcomeGlowOne"></div>
+    <div class="welcomeGlow welcomeGlowTwo"></div>
+
+    <header class="welcomeNav">
+      <button class="welcomeBrand" type="button" aria-label="InClass home">
+        <span class="brandMark">IC</span>
+        <span><strong>InClass</strong><small>Homework, understood.</small></span>
+      </button>
+      <div class="welcomeAuth">
+        <span id="authStatus" class="authStatus">Local mode</span>
+        <button id="signInButton" class="secondary">Sign in</button>
+      </div>
+    </header>
+
+    <main class="welcomeMain">
+      <section class="welcomeHero">
+        <div class="welcomeCopy">
+          <p class="eyebrow">LEARN WHAT SCHOOL SET. UNDERSTAND WHY IT WORKS.</p>
+          <h1>Hello, <span id="welcomeName">Parent</span>.</h1>
+          <p class="welcomeLead">InClass keeps the factual homework exactly in view, then adds explanation, retrieval and optional extension only when it helps.</p>
+          <div class="welcomePrinciples">
+            <span><b>1</b> School homework first</span>
+            <span><b>2</b> Explain the idea</span>
+            <span><b>3</b> Extend the thinking</span>
+          </div>
+          <button id="enterAppButton" class="primary welcomePrimary">Continue latest homework →</button>
+          <p id="authMessage" class="authMessage hidden"></p>
+        </div>
+
+        <div class="welcomeIllustration" aria-hidden="true">
+          <div class="bookStack">
+            <div class="bookCard bookFrench"><span>bonjour</span><small>French</small></div>
+            <div class="bookCard bookEnglish"><span>plural</span><small>English</small></div>
+            <div class="bookCard bookThink"><span>why?</span><small>Understand</small></div>
+          </div>
+          <div class="spark sparkOne">✦</div>
+          <div class="spark sparkTwo">✦</div>
+        </div>
+      </section>
+
+      <section class="roleSwitcher" aria-label="Preview dashboard role">
+        <button class="roleTab" data-role="learner">Learner</button>
+        <button class="roleTab active" data-role="parent">Parent</button>
+        <button class="roleTab" data-role="teacher">Teacher</button>
+      </section>
+
+      <section id="welcomeDashboard" class="welcomeDashboard"></section>
+
+      <section class="futureLoginCard">
+        <div>
+          <p class="eyebrow">FIREBASE-READY</p>
+          <h2>One account, the right view for everyone.</h2>
+          <p>Parents can have multiple children. Teachers can see linked classes. Learners see only their own work. The app is running locally today, but the authentication and user-scoped data interfaces are already separated so Firebase can replace local storage without changing the lesson UI.</p>
+        </div>
+        <div class="futureRoles">
+          <span>👦 Learner</span>
+          <span>👨‍👩‍👧 Parent</span>
+          <span>🧑‍🏫 Teacher</span>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <div id="appShell" class="hidden">
+    <header class="topbar">
+      <button id="homeButton" class="brand brandButton" type="button" aria-label="Back to InClass home">
+        <p class="eyebrow">INCLASS</p>
+        <h1>Weekly homework</h1>
+      </button>
+      <div class="topControls">
+        <label>Subject
+          <select id="subjectSelect" aria-label="Subject"></select>
+        </label>
+        <label>Week
+          <select id="weekSelect" aria-label="Week"></select>
+        </label>
+        <label>Learner
+          <select id="learnerSelect" aria-label="Learner"></select>
+        </label>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="weekHero" id="weekHero">
+        <div>
+          <p class="eyebrow" id="heroMeta"></p>
+          <h2 id="heroTitle"></h2>
+          <p class="lead" id="heroLead"></p>
+        </div>
+        <div class="weekProgress" aria-label="Weekly progress">
+          <strong id="progressPercent">0%</strong>
+          <span>complete</span>
+        </div>
+      </section>
+
+      <nav class="stepNav" id="stepNav" aria-label="Homework steps"></nav>
+      <div id="reviewBanner"></div>
+      <div id="lessonRoot"></div>
+
+      <section class="panel parentPanel">
+        <div class="sectionHead">
+          <div>
+            <p class="eyebrow">PROGRESS</p>
+            <h3>This homework at a glance</h3>
+          </div>
+          <button class="secondary" id="resetProgress">Reset learner progress</button>
+        </div>
+        <div id="parentStats" class="statsGrid"></div>
+        <div id="sourceNote" class="sourceNote"></div>
+      </section>
+    </main>
+
+    <footer>
+      <strong>InClass</strong> · school homework first · understanding next · extension when useful
+      <span class="version">v2026.09.29.8</span>
+    </footer>
+  </div>
+
+  <script src="config/app-config.js"></script>
+  <script src="services/auth-service.js"></script>
+  <script src="services/data-service.js"></script>
+  <script src="data/manifest.js"></script>
+  <script src="data/2026-09-25-english-plurals-y5.js"></script>
+  <script src="data/2026-09-french-pets.js"></script>
+  <script src="app.js"></script>
+  <script src="french-extension.js"></script>
+  <script src="learning-tools.js"></script>
+  <script src="https://nirav2000.github.io/Apps/apps-pronunciation.js?v=2"></script>
+  <script src="pronunciation-extension.js"></script>
+  <script src="welcome.js"></script>
+</body>
+</html>

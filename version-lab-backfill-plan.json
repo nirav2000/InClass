@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-09-30T12:21:13.516Z",
+  "totalCommits": 98,
+  "max": 12,
+  "checkpoints": [
+    {
+      "sha": "5a30902fa8c50483b24e338d9b316d522bf3cafb",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Update documented release version",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 1
+    },
+    {
+      "sha": "ec6c41c87ef54012f6b10a6a4f191f1c935e3bfd",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Bump InClass pronunciation prototype release",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 2
+    },
+    {
+      "sha": "65b3575a6cc2f8decbe36b1ab7c62f97dffe6ba8",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Refresh InClass cache for pronunciation v2",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 3
+    },
+    {
+      "sha": "4141647175d75f3777dd06c06c0c69b229b28454",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Update pronunciation prototype release notes",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 4
+    },
+    {
+      "sha": "9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Add InClass product roadmap stable release and monetisation plan",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 5
+    },
+    {
+      "sha": "6cb01d68b23b090bd33186d16774ccd0fa8b1511",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Use generated pronunciation model release",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 6
+    },
+    {
+      "sha": "9546e49f3805ec98205339bdb6867bc7d3c6e295",
+      "date": "2026-09-30",
+      "tag": null,
+      "suggestedTitle": "Install shared Version Lab configuration",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 7
+    },
+    {
+      "sha": "8db45a66467d742730e6867a0763750b387fd023",
+      "date": "2026-09-30",
+      "tag": null,
+      "suggestedTitle": "Add Version Lab checkpoint workflow",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 8
+    },
+    {
+      "sha": "2dc66aa64ee09b18cc7fad1e5d4dd351c8a0ca4c",
+      "date": "2026-09-30",
+      "tag": null,
+      "suggestedTitle": "Add Version Lab install workflow",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 9
+    },
+    {
+      "sha": "2281f7b1cff65923e7e4c8eb4bd379176084b63e",
+      "date": "2026-09-30",
+      "tag": null,
+      "suggestedTitle": "Add authenticated Version Lab developer gateway",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 10
+    },
+    {
+      "sha": "6d680ef556ec750420b9fbaa9865e112f4a18f99",
+      "date": "2026-09-30",
+      "tag": null,
+      "suggestedTitle": "Add shared Version Lab agent contract",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 11
+    },
+    {
+      "sha": "0345df37c8b5c5101201eb3393b684ea50ed47c4",
+      "date": "2026-09-30",
+      "tag": null,
+      "suggestedTitle": "Bootstrap shared Version Lab historical backfill",
+      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
+      "areas": [],
+      "order": 12
+    }
+  ]
+}
