@@ -1,0 +1,50 @@
+name: Verify French vocabulary audio fix
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/verify-french-audio-fix.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser test dependency
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright
+          npx playwright install chromium
+      - name: Verify French vocabulary click invokes speech playback
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            await page.addInitScript(()=>{
+              window.__spoken=[];
+              const synth={
+                getVoices:()=>[{lang:'fr-FR',name:'Test French'},{lang:'en-GB',name:'Test English'}],
+                cancel:()=>{},
+                speak:u=>window.__spoken.push({text:u.text,lang:u.lang}),
+                onvoiceschanged:null
+              };
+              Object.defineProperty(window,'speechSynthesis',{configurable:true,value:synth});
+            });
+            await page.goto('https://nirav2000.github.io/InClass/',{waitUntil:'networkidle'});
+            await page.selectOption('#subjectSelect',{label:'French'});
+            await page.waitForSelector('.wordButton');
+            const before=await page.evaluate(()=>window.__spoken.length);
+            await page.locator('.wordButton').first().click();
+            await page.waitForTimeout(150);
+            const spoken=await page.evaluate(()=>window.__spoken.slice());
+            if(spoken.length<=before)throw new Error('French vocabulary click did not invoke speech synthesis');
+            if(!String(spoken.at(-1).lang||'').toLowerCase().startsWith('fr'))throw new Error('French vocabulary click used wrong language: '+JSON.stringify(spoken.at(-1)));
+            console.log('PASS',spoken.at(-1));
+            await browser.close();
+          })().catch(err=>{console.error(err);process.exit(1)});
+          NODE
