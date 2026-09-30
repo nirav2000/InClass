@@ -1,0 +1,18 @@
+name: Capture French audio restoration checkpoint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/version-lab-french-audio-checkpoint.yml"
+
+jobs:
+  checkpoint:
+    uses: nirav2000/Apps/.github/workflows/version-lab-release.yml@main
+    with:
+      title: "French vocabulary audio restored"
+      summary: "Verified restoration of French vocabulary click-to-speak behaviour after a selector regression stopped French interaction handlers from being registered."
+      areas: "French vocabulary audio::bug-fix::Restored click-to-speak handlers for French vocabulary|Regression recovery::quality::Verified the repaired interaction in the deployed app before checkpointing"
+      product_version: ""
+    permissions:
+      contents: write
