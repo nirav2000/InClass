@@ -1,114 +1,144 @@
 {
-  "generatedAt": "2026-09-30T12:21:13.516Z",
+  "generatedAt": "2026-09-30T12:23:15.773Z",
   "totalCommits": 98,
   "max": 12,
+  "reviewed": true,
   "checkpoints": [
     {
-      "sha": "5a30902fa8c50483b24e338d9b316d522bf3cafb",
+      "sha": "4c0ec8cca6272108a613a6af314373b56595cb35",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Update documented release version",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Initial InClass foundation",
+      "suggestedSummary": "Initial repository foundation for the InClass homework application.",
+      "areas": [
+        "Foundation::platform::Initial InClass repository"
+      ],
       "order": 1
     },
     {
-      "sha": "ec6c41c87ef54012f6b10a6a4f191f1c935e3bfd",
+      "sha": "64de829f79a67307f4d348b44f132f0ae61da2a3",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Bump InClass pronunciation prototype release",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Offline PWA shell",
+      "suggestedSummary": "Added the InClass offline application shell and service-worker support.",
+      "areas": [
+        "Offline app::platform::PWA shell and offline support"
+      ],
       "order": 2
     },
     {
-      "sha": "65b3575a6cc2f8decbe36b1ab7c62f97dffe6ba8",
+      "sha": "90854b87641a527bc0ece91df099d12f351aa7b6",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Refresh InClass cache for pronunciation v2",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Dated homework packs",
+      "suggestedSummary": "Refreshed the app around retained dated homework packs and their offline cache.",
+      "areas": [
+        "Homework packs::data::Dated retained homework structure"
+      ],
       "order": 3
     },
     {
-      "sha": "4141647175d75f3777dd06c06c0c69b229b28454",
+      "sha": "d1f950636098a400d59449f567cb84085de45ecf",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Update pronunciation prototype release notes",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Spaced review and French conversation",
+      "suggestedSummary": "Added spaced retrieval of earlier work and constrained French conversation practice.",
+      "areas": [
+        "Spaced review::learning::Previous-work retrieval",
+        "French conversation::learning::Constrained speaking practice"
+      ],
       "order": 4
     },
     {
-      "sha": "9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
+      "sha": "dcdf3b5adb984a1e3a43f03108e8ceb8ff25e0e0",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Add InClass product roadmap stable release and monetisation plan",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "French extension and dictation",
+      "suggestedSummary": "Added French extension vocabulary, grammar presentation and paper dictation support.",
+      "areas": [
+        "French extension::learning::Vocabulary and grammar",
+        "Dictation::learning::Paper writing checklist"
+      ],
       "order": 5
     },
     {
-      "sha": "6cb01d68b23b090bd33186d16774ccd0fa8b1511",
+      "sha": "2745e68ef04f772575c780be561ca0588752206d",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Use generated pronunciation model release",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Word help and grammar explanations",
+      "suggestedSummary": "Added word help, noun practice and deeper French gender explanations.",
+      "areas": [
+        "Word help::learning::Definitions and examples",
+        "Grammar support::learning::Noun and gender explanations"
+      ],
       "order": 6
     },
     {
-      "sha": "9546e49f3805ec98205339bdb6867bc7d3c6e295",
-      "date": "2026-09-30",
+      "sha": "d612065f50435f9ecf643215384eca422a086040",
+      "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Install shared Version Lab configuration",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Welcome and role dashboards",
+      "suggestedSummary": "Added the welcome experience and learner, parent and teacher dashboard views.",
+      "areas": [
+        "Welcome::ui::Application entry experience",
+        "Role dashboards::ui::Learner parent teacher views"
+      ],
       "order": 7
     },
     {
-      "sha": "8db45a66467d742730e6867a0763750b387fd023",
-      "date": "2026-09-30",
+      "sha": "5973f4903ad4119da78d71affc9eae4fbd7065b2",
+      "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Add Version Lab checkpoint workflow",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Firebase-ready provider boundary",
+      "suggestedSummary": "Introduced the Firebase provider interface so cloud persistence can be added without rewriting lessons.",
+      "areas": [
+        "Persistence architecture::platform::Firebase provider boundary"
+      ],
       "order": 8
     },
     {
-      "sha": "2dc66aa64ee09b18cc7fad1e5d4dd351c8a0ca4c",
-      "date": "2026-09-30",
+      "sha": "34b087c78f1e3bf6671e33b74864883769560333",
+      "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Add Version Lab install workflow",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Homework-first learning hierarchy",
+      "suggestedSummary": "Separated required homework, understanding and extension so school work stays primary.",
+      "areas": [
+        "Learning hierarchy::learning::Required understanding extension tiers"
+      ],
       "order": 9
     },
     {
-      "sha": "2281f7b1cff65923e7e4c8eb4bd379176084b63e",
-      "date": "2026-09-30",
+      "sha": "141c6f16d0db9e8698265335455693bbfbaa5373",
+      "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Add authenticated Version Lab developer gateway",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Required-homework completion model",
+      "suggestedSummary": "Changed French completion so required school homework, rather than optional extension, determines progress.",
+      "areas": [
+        "Progress model::learning::Required homework drives completion"
+      ],
       "order": 10
     },
     {
-      "sha": "6d680ef556ec750420b9fbaa9865e112f4a18f99",
-      "date": "2026-09-30",
+      "sha": "381362818f7cdd6167d504120cd1e31dca563b4c",
+      "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Add shared Version Lab agent contract",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Shared pronunciation lab",
+      "suggestedSummary": "Added the reusable shared pronunciation lab to French lessons.",
+      "areas": [
+        "Pronunciation::learning::Shared voice analysis component"
+      ],
       "order": 11
     },
     {
-      "sha": "0345df37c8b5c5101201eb3393b684ea50ed47c4",
-      "date": "2026-09-30",
+      "sha": "30add77eff2e88fcd9aad88b7375eee9eb9967cb",
+      "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Bootstrap shared Version Lab historical backfill",
-      "suggestedSummary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
+      "suggestedTitle": "Generated pronunciation reference",
+      "suggestedSummary": "Completed the generated pronunciation-reference integration and provider labelling in InClass.",
+      "areas": [
+        "Pronunciation model::learning::Generated default reference",
+        "Shared platform::platform::External pronunciation provider"
+      ],
       "order": 12
     }
   ]
