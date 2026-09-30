@@ -1,0 +1,66 @@
+{
+  "checkpointId": "vl-20260930T210228Z-ad0e7df6",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "ad0e7df681100a8c183c0153eb78c28c8664abf6",
+  "sourceRef": null,
+  "createdAt": "2026-09-30T21:02:28.616Z",
+  "title": "French vocabulary audio restored",
+  "summary": "Verified restoration of French vocabulary click-to-speak behaviour after a selector regression stopped French interaction handlers from being registered.",
+  "areas": [
+    {
+      "id": "french-vocabulary-audio",
+      "title": "French vocabulary audio",
+      "kind": "bug-fix",
+      "summary": "Restored click-to-speak handlers for French vocabulary"
+    },
+    {
+      "id": "regression-recovery",
+      "title": "Regression recovery",
+      "kind": "quality",
+      "summary": "Verified the repaired interaction in the deployed app before checkpointing"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/ad0e7df681100a8c183c0153eb78c28c8664abf6",
+  "snapshotUrl": "./snapshots/vl-20260930T210228Z-ad0e7df6/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": false
+  }
+}
