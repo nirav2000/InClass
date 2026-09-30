@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-09-30T12:23:15.773Z",
+  "generatedAt": "2026-09-30T12:24:18.068Z",
   "totalCommits": 98,
   "max": 12,
   "reviewed": true,
   "checkpoints": [
     {
-      "sha": "4c0ec8cca6272108a613a6af314373b56595cb35",
+      "sha": "6e131249b49a3f276e69611d42fb15c6b8301e16",
       "date": "2026-09-29",
       "tag": null,
-      "suggestedTitle": "Initial InClass foundation",
-      "suggestedSummary": "Initial repository foundation for the InClass homework application.",
+      "suggestedTitle": "First runnable InClass homework app",
+      "suggestedSummary": "First runnable InClass French weekly-homework application milestone.",
       "areas": [
-        "Foundation::platform::Initial InClass repository"
+        "Core app::product::First runnable weekly homework experience"
       ],
       "order": 1
     },
