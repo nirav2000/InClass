@@ -1,3 +1,4 @@
+# retry after reviewed-plan validation fix
 name: Rebuild curated Version Lab history
 
 on:
