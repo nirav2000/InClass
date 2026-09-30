@@ -1,0 +1,80 @@
+# InClass
+
+A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
+
+Current release: **v2026.09.29.1**
+
+## Current packs
+
+### English · Year 5 · Friday 25 September 2026
+Source: the supplied school homework slides.
+
+Focus: **Plurals — add -s or -es**
+
+The app preserves the supplied Year 5 list:
+1. benches
+2. planets
+3. volcanoes
+4. statues
+5. canyons
+6. torches
+7. mountains
+8. serpents
+9. protagonists
+10. antagonists
+11. suffixes
+12. prefixes
+
+It also includes the irregular-plural warm-up from the slides: mouse → mice, foot → feet, goose → geese, man → men, woman → women.
+
+Practice follows the test structure shown by the school:
+- 4 questions: hear a word and spell it
+- 4 questions: read a definition and identify the spelling word
+- 4 questions: use a spelling word in a sentence
+
+The school slide leaves the test date blank and states that next week's rule is **Double consonants**.
+
+Because the homework says pupils will be tested on meaning and sentence use but does not provide definitions for the 12 Year 5 words, InClass adds short learner-friendly definitions and example sentences. These are app-generated study support, not copied from the school slides.
+
+### French · Year 5
+Source: supplied pets/colours/descriptions vocabulary sheet.
+
+Practice includes:
+- tap-to-hear French pronunciation
+- hear → spell
+- pet + colour + description sentence building
+- adjective agreement for *une souris*
+- listen-and-repeat speaking practice
+- a constrained mini-conversation using the taught vocabulary
+
+## Data model
+
+Homework content lives in `data/weeks.js`. Each pack has a permanent ID, subject, year group, source date and structured lesson data. Progress is stored separately for each learner and pack.
+
+The interface is deliberately data-driven so later homework weeks can be added without rebuilding the page layout.
+
+## Learning design
+
+The app distinguishes different retrieval tasks rather than treating all correct answers as equivalent:
+- recognition / learning
+- spelling from audio
+- meaning retrieval
+- applying a rule
+- using vocabulary in a sentence
+- speaking practice
+
+English includes a generated 12-question practice test matching the format stated in the homework. Sentence answers receive a structural check only; semantic quality should still be judged by a parent or teacher.
+
+## Technical approach
+
+The app is static and suitable for GitHub Pages / PWA use on iPhone and iPad. It uses browser speech synthesis for audio and local storage for learner progress.
+
+The service worker caches the app shell and current homework data for offline use.
+
+## Planned ingestion workflow
+
+The intended weekly workflow is:
+
+**parent supplies homework image → homework is reviewed/extracted → a dated pack is added to the data store → the learner gets a structured lesson and test practice**
+
+A future secure ingestion service can automate the image-to-pack step, but API credentials should not be exposed in client-side JavaScript.

@@ -1,0 +1,66 @@
+{
+  "checkpointId": "vl-historical-2026-09-29-d612065f",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "d612065f50435f9ecf643215384eca422a086040",
+  "sourceRef": "d612065f50435f9ecf643215384eca422a086040",
+  "createdAt": "2026-09-30T12:24:39.599Z",
+  "title": "Welcome and role dashboards",
+  "summary": "Added the welcome experience and learner, parent and teacher dashboard views.",
+  "areas": [
+    {
+      "id": "welcome",
+      "title": "Welcome",
+      "kind": "ui",
+      "summary": "Application entry experience"
+    },
+    {
+      "id": "role-dashboards",
+      "title": "Role dashboards",
+      "kind": "ui",
+      "summary": "Learner parent teacher views"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/d612065f50435f9ecf643215384eca422a086040",
+  "snapshotUrl": "./snapshots/vl-historical-2026-09-29-d612065f/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": true
+  }
+}

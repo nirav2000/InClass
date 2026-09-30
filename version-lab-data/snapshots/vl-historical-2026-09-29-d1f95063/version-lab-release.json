@@ -1,0 +1,66 @@
+{
+  "checkpointId": "vl-historical-2026-09-29-d1f95063",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "d1f950636098a400d59449f567cb84085de45ecf",
+  "sourceRef": "d1f950636098a400d59449f567cb84085de45ecf",
+  "createdAt": "2026-09-30T12:24:39.256Z",
+  "title": "Spaced review and French conversation",
+  "summary": "Added spaced retrieval of earlier work and constrained French conversation practice.",
+  "areas": [
+    {
+      "id": "spaced-review",
+      "title": "Spaced review",
+      "kind": "learning",
+      "summary": "Previous-work retrieval"
+    },
+    {
+      "id": "french-conversation",
+      "title": "French conversation",
+      "kind": "learning",
+      "summary": "Constrained speaking practice"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/d1f950636098a400d59449f567cb84085de45ecf",
+  "snapshotUrl": "./snapshots/vl-historical-2026-09-29-d1f95063/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": true
+  }
+}

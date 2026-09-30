@@ -1,0 +1,66 @@
+{
+  "checkpointId": "vl-historical-2026-09-29-2745e68e",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "2745e68ef04f772575c780be561ca0588752206d",
+  "sourceRef": "2745e68ef04f772575c780be561ca0588752206d",
+  "createdAt": "2026-09-30T12:24:39.472Z",
+  "title": "Word help and grammar explanations",
+  "summary": "Added word help, noun practice and deeper French gender explanations.",
+  "areas": [
+    {
+      "id": "word-help",
+      "title": "Word help",
+      "kind": "learning",
+      "summary": "Definitions and examples"
+    },
+    {
+      "id": "grammar-support",
+      "title": "Grammar support",
+      "kind": "learning",
+      "summary": "Noun and gender explanations"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/2745e68ef04f772575c780be561ca0588752206d",
+  "snapshotUrl": "./snapshots/vl-historical-2026-09-29-2745e68e/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": true
+  }
+}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; connect-src 'self' https://apps-pronunciation-api.nirav2000-github.workers.dev https://firestore.googleapis.com https://identitytoolkit.googleapis.com; form-action 'none'; frame-ancestors *; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; media-src 'self' data: blob: https:;"><script>window.__VERSION_LAB_READONLY_CONFIG__={"allowedOrigins":["https://apps-pronunciation-api.nirav2000-github.workers.dev","https://firestore.googleapis.com","https://identitytoolkit.googleapis.com"],"allowReadPostPatterns":["/reference",":runQuery",":batchGet","/Listen/channel"],"blockPatterns":[]};</script><script src="./__version_lab__/read-only-runtime.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#102a43" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>InClass · Weekly homework</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <p class="eyebrow">INCLASS</p>
+      <h1>Weekly homework</h1>
+    </div>
+    <div class="topControls">
+      <label>Subject
+        <select id="subjectSelect" aria-label="Subject"></select>
+      </label>
+      <label>Week
+        <select id="weekSelect" aria-label="Week"></select>
+      </label>
+      <label>Learner
+        <select id="learnerSelect" aria-label="Learner">
+          <option>Sai</option>
+          <option>Parent</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="weekHero" id="weekHero">
+      <div>
+        <p class="eyebrow" id="heroMeta"></p>
+        <h2 id="heroTitle"></h2>
+        <p class="lead" id="heroLead"></p>
+      </div>
+      <div class="weekProgress" aria-label="Weekly progress">
+        <strong id="progressPercent">0%</strong>
+        <span>complete</span>
+      </div>
+    </section>
+
+    <nav class="stepNav" id="stepNav" aria-label="Homework steps"></nav>
+    <div id="reviewBanner"></div>
+    <div id="lessonRoot"></div>
+
+    <section class="panel parentPanel">
+      <div class="sectionHead">
+        <div>
+          <p class="eyebrow">PARENT VIEW</p>
+          <h3>This week at a glance</h3>
+        </div>
+        <button class="secondary" id="resetProgress">Reset learner progress</button>
+      </div>
+      <div id="parentStats" class="statsGrid"></div>
+      <div id="sourceNote" class="sourceNote"></div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>InClass</strong> · dated homework packs · short daily retrieval
+    <span class="version">v2026.09.29.1</span>
+  </footer>
+
+  <script src="data/weeks.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

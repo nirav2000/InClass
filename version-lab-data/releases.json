@@ -5,12 +5,12 @@
   "liveUrl": "https://nirav2000.github.io/InClass/",
   "releases": [
     {
-      "checkpointId": "vl-adoption-2026-09-30-0345df37",
+      "checkpointId": "vl-adoption-2026-09-30-e9af1427",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "0345df37c8b5c5101201eb3393b684ea50ed47c4",
+      "commit": "e9af1427dd916acc4354eb99161248917114e331",
       "sourceRef": null,
-      "createdAt": "2026-09-30T12:21:14.915Z",
+      "createdAt": "2026-09-30T12:24:40.065Z",
       "title": "Version Lab adoption baseline",
       "summary": "Baseline checkpoint created when the shared Version Lab was installed and future checkpoint management became shared.",
       "areas": [
@@ -21,8 +21,8 @@
           "summary": "Shared Version Lab management enabled"
         }
       ],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/0345df37c8b5c5101201eb3393b684ea50ed47c4",
-      "snapshotUrl": "./snapshots/vl-adoption-2026-09-30-0345df37/index.html",
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/e9af1427dd916acc4354eb99161248917114e331",
+      "snapshotUrl": "./snapshots/vl-adoption-2026-09-30-e9af1427/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -65,17 +65,30 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-30-0345df37",
+      "checkpointId": "vl-historical-2026-09-29-30add77e",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "0345df37c8b5c5101201eb3393b684ea50ed47c4",
-      "sourceRef": "0345df37c8b5c5101201eb3393b684ea50ed47c4",
-      "createdAt": "2026-09-30T12:21:14.818Z",
-      "title": "Bootstrap shared Version Lab historical backfill",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/0345df37c8b5c5101201eb3393b684ea50ed47c4",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-30-0345df37/index.html",
+      "commit": "30add77eff2e88fcd9aad88b7375eee9eb9967cb",
+      "sourceRef": "30add77eff2e88fcd9aad88b7375eee9eb9967cb",
+      "createdAt": "2026-09-30T12:24:39.978Z",
+      "title": "Generated pronunciation reference",
+      "summary": "Completed the generated pronunciation-reference integration and provider labelling in InClass.",
+      "areas": [
+        {
+          "id": "pronunciation-model",
+          "title": "Pronunciation model",
+          "kind": "learning",
+          "summary": "Generated default reference"
+        },
+        {
+          "id": "shared-platform",
+          "title": "Shared platform",
+          "kind": "platform",
+          "summary": "External pronunciation provider"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/30add77eff2e88fcd9aad88b7375eee9eb9967cb",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-30add77e/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -118,17 +131,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-30-6d680ef5",
+      "checkpointId": "vl-historical-2026-09-29-38136281",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "6d680ef556ec750420b9fbaa9865e112f4a18f99",
-      "sourceRef": "6d680ef556ec750420b9fbaa9865e112f4a18f99",
-      "createdAt": "2026-09-30T12:21:14.725Z",
-      "title": "Add shared Version Lab agent contract",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/6d680ef556ec750420b9fbaa9865e112f4a18f99",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-30-6d680ef5/index.html",
+      "commit": "381362818f7cdd6167d504120cd1e31dca563b4c",
+      "sourceRef": "381362818f7cdd6167d504120cd1e31dca563b4c",
+      "createdAt": "2026-09-30T12:24:39.899Z",
+      "title": "Shared pronunciation lab",
+      "summary": "Added the reusable shared pronunciation lab to French lessons.",
+      "areas": [
+        {
+          "id": "pronunciation",
+          "title": "Pronunciation",
+          "kind": "learning",
+          "summary": "Shared voice analysis component"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/381362818f7cdd6167d504120cd1e31dca563b4c",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-38136281/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -171,17 +191,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-30-2281f7b1",
+      "checkpointId": "vl-historical-2026-09-29-141c6f16",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "2281f7b1cff65923e7e4c8eb4bd379176084b63e",
-      "sourceRef": "2281f7b1cff65923e7e4c8eb4bd379176084b63e",
-      "createdAt": "2026-09-30T12:21:14.635Z",
-      "title": "Add authenticated Version Lab developer gateway",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/2281f7b1cff65923e7e4c8eb4bd379176084b63e",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-30-2281f7b1/index.html",
+      "commit": "141c6f16d0db9e8698265335455693bbfbaa5373",
+      "sourceRef": "141c6f16d0db9e8698265335455693bbfbaa5373",
+      "createdAt": "2026-09-30T12:24:39.822Z",
+      "title": "Required-homework completion model",
+      "summary": "Changed French completion so required school homework, rather than optional extension, determines progress.",
+      "areas": [
+        {
+          "id": "progress-model",
+          "title": "Progress model",
+          "kind": "learning",
+          "summary": "Required homework drives completion"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/141c6f16d0db9e8698265335455693bbfbaa5373",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-141c6f16/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -224,17 +251,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-30-2dc66aa6",
+      "checkpointId": "vl-historical-2026-09-29-34b087c7",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "2dc66aa64ee09b18cc7fad1e5d4dd351c8a0ca4c",
-      "sourceRef": "2dc66aa64ee09b18cc7fad1e5d4dd351c8a0ca4c",
-      "createdAt": "2026-09-30T12:21:14.548Z",
-      "title": "Add Version Lab install workflow",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/2dc66aa64ee09b18cc7fad1e5d4dd351c8a0ca4c",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-30-2dc66aa6/index.html",
+      "commit": "34b087c78f1e3bf6671e33b74864883769560333",
+      "sourceRef": "34b087c78f1e3bf6671e33b74864883769560333",
+      "createdAt": "2026-09-30T12:24:39.747Z",
+      "title": "Homework-first learning hierarchy",
+      "summary": "Separated required homework, understanding and extension so school work stays primary.",
+      "areas": [
+        {
+          "id": "learning-hierarchy",
+          "title": "Learning hierarchy",
+          "kind": "learning",
+          "summary": "Required understanding extension tiers"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/34b087c78f1e3bf6671e33b74864883769560333",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-34b087c7/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -277,17 +311,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-30-8db45a66",
+      "checkpointId": "vl-historical-2026-09-29-5973f490",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "8db45a66467d742730e6867a0763750b387fd023",
-      "sourceRef": "8db45a66467d742730e6867a0763750b387fd023",
-      "createdAt": "2026-09-30T12:21:14.461Z",
-      "title": "Add Version Lab checkpoint workflow",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/8db45a66467d742730e6867a0763750b387fd023",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-30-8db45a66/index.html",
+      "commit": "5973f4903ad4119da78d71affc9eae4fbd7065b2",
+      "sourceRef": "5973f4903ad4119da78d71affc9eae4fbd7065b2",
+      "createdAt": "2026-09-30T12:24:39.673Z",
+      "title": "Firebase-ready provider boundary",
+      "summary": "Introduced the Firebase provider interface so cloud persistence can be added without rewriting lessons.",
+      "areas": [
+        {
+          "id": "persistence-architecture",
+          "title": "Persistence architecture",
+          "kind": "platform",
+          "summary": "Firebase provider boundary"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/5973f4903ad4119da78d71affc9eae4fbd7065b2",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-5973f490/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -330,17 +371,30 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-30-9546e49f",
+      "checkpointId": "vl-historical-2026-09-29-d612065f",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "9546e49f3805ec98205339bdb6867bc7d3c6e295",
-      "sourceRef": "9546e49f3805ec98205339bdb6867bc7d3c6e295",
-      "createdAt": "2026-09-30T12:21:14.369Z",
-      "title": "Install shared Version Lab configuration",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/9546e49f3805ec98205339bdb6867bc7d3c6e295",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-30-9546e49f/index.html",
+      "commit": "d612065f50435f9ecf643215384eca422a086040",
+      "sourceRef": "d612065f50435f9ecf643215384eca422a086040",
+      "createdAt": "2026-09-30T12:24:39.599Z",
+      "title": "Welcome and role dashboards",
+      "summary": "Added the welcome experience and learner, parent and teacher dashboard views.",
+      "areas": [
+        {
+          "id": "welcome",
+          "title": "Welcome",
+          "kind": "ui",
+          "summary": "Application entry experience"
+        },
+        {
+          "id": "role-dashboards",
+          "title": "Role dashboards",
+          "kind": "ui",
+          "summary": "Learner parent teacher views"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/d612065f50435f9ecf643215384eca422a086040",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-d612065f/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -383,17 +437,30 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-29-6cb01d68",
+      "checkpointId": "vl-historical-2026-09-29-2745e68e",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "6cb01d68b23b090bd33186d16774ccd0fa8b1511",
-      "sourceRef": "6cb01d68b23b090bd33186d16774ccd0fa8b1511",
-      "createdAt": "2026-09-30T12:21:14.287Z",
-      "title": "Use generated pronunciation model release",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/6cb01d68b23b090bd33186d16774ccd0fa8b1511",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-6cb01d68/index.html",
+      "commit": "2745e68ef04f772575c780be561ca0588752206d",
+      "sourceRef": "2745e68ef04f772575c780be561ca0588752206d",
+      "createdAt": "2026-09-30T12:24:39.472Z",
+      "title": "Word help and grammar explanations",
+      "summary": "Added word help, noun practice and deeper French gender explanations.",
+      "areas": [
+        {
+          "id": "word-help",
+          "title": "Word help",
+          "kind": "learning",
+          "summary": "Definitions and examples"
+        },
+        {
+          "id": "grammar-support",
+          "title": "Grammar support",
+          "kind": "learning",
+          "summary": "Noun and gender explanations"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/2745e68ef04f772575c780be561ca0588752206d",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-2745e68e/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -436,17 +503,30 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-29-9cc82c96",
+      "checkpointId": "vl-historical-2026-09-29-dcdf3b5a",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
-      "sourceRef": "9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
-      "createdAt": "2026-09-30T12:21:14.206Z",
-      "title": "Add InClass product roadmap stable release and monetisation plan",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/9cc82c96c59e2e6b413f8973dc475b6acc0270c8",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-9cc82c96/index.html",
+      "commit": "dcdf3b5adb984a1e3a43f03108e8ceb8ff25e0e0",
+      "sourceRef": "dcdf3b5adb984a1e3a43f03108e8ceb8ff25e0e0",
+      "createdAt": "2026-09-30T12:24:39.410Z",
+      "title": "French extension and dictation",
+      "summary": "Added French extension vocabulary, grammar presentation and paper dictation support.",
+      "areas": [
+        {
+          "id": "french-extension",
+          "title": "French extension",
+          "kind": "learning",
+          "summary": "Vocabulary and grammar"
+        },
+        {
+          "id": "dictation",
+          "title": "Dictation",
+          "kind": "learning",
+          "summary": "Paper writing checklist"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/dcdf3b5adb984a1e3a43f03108e8ceb8ff25e0e0",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-dcdf3b5a/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -489,17 +569,30 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-29-41416471",
+      "checkpointId": "vl-historical-2026-09-29-d1f95063",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "4141647175d75f3777dd06c06c0c69b229b28454",
-      "sourceRef": "4141647175d75f3777dd06c06c0c69b229b28454",
-      "createdAt": "2026-09-30T12:21:14.123Z",
-      "title": "Update pronunciation prototype release notes",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/4141647175d75f3777dd06c06c0c69b229b28454",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-41416471/index.html",
+      "commit": "d1f950636098a400d59449f567cb84085de45ecf",
+      "sourceRef": "d1f950636098a400d59449f567cb84085de45ecf",
+      "createdAt": "2026-09-30T12:24:39.256Z",
+      "title": "Spaced review and French conversation",
+      "summary": "Added spaced retrieval of earlier work and constrained French conversation practice.",
+      "areas": [
+        {
+          "id": "spaced-review",
+          "title": "Spaced review",
+          "kind": "learning",
+          "summary": "Previous-work retrieval"
+        },
+        {
+          "id": "french-conversation",
+          "title": "French conversation",
+          "kind": "learning",
+          "summary": "Constrained speaking practice"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/d1f950636098a400d59449f567cb84085de45ecf",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-d1f95063/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -542,17 +635,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-29-65b3575a",
+      "checkpointId": "vl-historical-2026-09-29-90854b87",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "65b3575a6cc2f8decbe36b1ab7c62f97dffe6ba8",
-      "sourceRef": "65b3575a6cc2f8decbe36b1ab7c62f97dffe6ba8",
-      "createdAt": "2026-09-30T12:21:14.038Z",
-      "title": "Refresh InClass cache for pronunciation v2",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/65b3575a6cc2f8decbe36b1ab7c62f97dffe6ba8",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-65b3575a/index.html",
+      "commit": "90854b87641a527bc0ece91df099d12f351aa7b6",
+      "sourceRef": "90854b87641a527bc0ece91df099d12f351aa7b6",
+      "createdAt": "2026-09-30T12:24:39.201Z",
+      "title": "Dated homework packs",
+      "summary": "Refreshed the app around retained dated homework packs and their offline cache.",
+      "areas": [
+        {
+          "id": "homework-packs",
+          "title": "Homework packs",
+          "kind": "data",
+          "summary": "Dated retained homework structure"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/90854b87641a527bc0ece91df099d12f351aa7b6",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-90854b87/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -595,17 +695,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-29-ec6c41c8",
+      "checkpointId": "vl-historical-2026-09-29-64de829f",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "ec6c41c87ef54012f6b10a6a4f191f1c935e3bfd",
-      "sourceRef": "ec6c41c87ef54012f6b10a6a4f191f1c935e3bfd",
-      "createdAt": "2026-09-30T12:21:13.953Z",
-      "title": "Bump InClass pronunciation prototype release",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/ec6c41c87ef54012f6b10a6a4f191f1c935e3bfd",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-ec6c41c8/index.html",
+      "commit": "64de829f79a67307f4d348b44f132f0ae61da2a3",
+      "sourceRef": "64de829f79a67307f4d348b44f132f0ae61da2a3",
+      "createdAt": "2026-09-30T12:24:39.145Z",
+      "title": "Offline PWA shell",
+      "summary": "Added the InClass offline application shell and service-worker support.",
+      "areas": [
+        {
+          "id": "offline-app",
+          "title": "Offline app",
+          "kind": "platform",
+          "summary": "PWA shell and offline support"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/64de829f79a67307f4d348b44f132f0ae61da2a3",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-64de829f/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -648,17 +755,24 @@
       }
     },
     {
-      "checkpointId": "vl-historical-2026-09-29-5a30902f",
+      "checkpointId": "vl-historical-2026-09-29-6e131249",
       "appId": "inclass",
       "productVersion": null,
-      "commit": "5a30902fa8c50483b24e338d9b316d522bf3cafb",
-      "sourceRef": "5a30902fa8c50483b24e338d9b316d522bf3cafb",
-      "createdAt": "2026-09-30T12:21:13.602Z",
-      "title": "Update documented release version",
-      "summary": "Reconstructed historical checkpoint from Git history.",
-      "areas": [],
-      "sourceUrl": "https://github.com/nirav2000/InClass/tree/5a30902fa8c50483b24e338d9b316d522bf3cafb",
-      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-5a30902f/index.html",
+      "commit": "6e131249b49a3f276e69611d42fb15c6b8301e16",
+      "sourceRef": "6e131249b49a3f276e69611d42fb15c6b8301e16",
+      "createdAt": "2026-09-30T12:24:39.050Z",
+      "title": "First runnable InClass homework app",
+      "summary": "First runnable InClass French weekly-homework application milestone.",
+      "areas": [
+        {
+          "id": "core-app",
+          "title": "Core app",
+          "kind": "product",
+          "summary": "First runnable weekly homework experience"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/6e131249b49a3f276e69611d42fb15c6b8301e16",
+      "snapshotUrl": "./snapshots/vl-historical-2026-09-29-6e131249/index.html",
       "snapshotSafety": "read-only-adapter",
       "compatibility": {
         "frontend": "archived",
@@ -701,5 +815,5 @@
       }
     }
   ],
-  "generatedAt": "2026-09-30T12:21:14.915Z"
+  "generatedAt": "2026-09-30T12:24:40.065Z"
 }

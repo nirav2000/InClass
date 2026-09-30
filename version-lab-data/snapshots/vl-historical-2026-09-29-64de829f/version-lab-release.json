@@ -1,0 +1,60 @@
+{
+  "checkpointId": "vl-historical-2026-09-29-64de829f",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "64de829f79a67307f4d348b44f132f0ae61da2a3",
+  "sourceRef": "64de829f79a67307f4d348b44f132f0ae61da2a3",
+  "createdAt": "2026-09-30T12:24:39.145Z",
+  "title": "Offline PWA shell",
+  "summary": "Added the InClass offline application shell and service-worker support.",
+  "areas": [
+    {
+      "id": "offline-app",
+      "title": "Offline app",
+      "kind": "platform",
+      "summary": "PWA shell and offline support"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/64de829f79a67307f4d348b44f132f0ae61da2a3",
+  "snapshotUrl": "./snapshots/vl-historical-2026-09-29-64de829f/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": true
+  }
+}

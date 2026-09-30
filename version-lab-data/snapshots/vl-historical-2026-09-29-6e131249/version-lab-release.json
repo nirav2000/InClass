@@ -1,0 +1,60 @@
+{
+  "checkpointId": "vl-historical-2026-09-29-6e131249",
+  "appId": "inclass",
+  "productVersion": null,
+  "commit": "6e131249b49a3f276e69611d42fb15c6b8301e16",
+  "sourceRef": "6e131249b49a3f276e69611d42fb15c6b8301e16",
+  "createdAt": "2026-09-30T12:24:39.050Z",
+  "title": "First runnable InClass homework app",
+  "summary": "First runnable InClass French weekly-homework application milestone.",
+  "areas": [
+    {
+      "id": "core-app",
+      "title": "Core app",
+      "kind": "product",
+      "summary": "First runnable weekly homework experience"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/6e131249b49a3f276e69611d42fb15c6b8301e16",
+  "snapshotUrl": "./snapshots/vl-historical-2026-09-29-6e131249/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": true
+  }
+}
