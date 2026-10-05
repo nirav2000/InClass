@@ -10,6 +10,18 @@ function englishConnector(fr){return fr==='et'?'and':'but';}
 function audioButton(text,label){
   return '<button type="button" class="inlineSpeak" data-say="'+encodeURIComponent(text)+'" aria-label="'+(label||'Hear French pronunciation')+'">🔊</button>';
 }
+function personalSentenceHtml(x){
+  let html=escapeHtml(x.fr), cursor=0, raw=x.fr, out='';
+  (x.verbs||[]).forEach(function(v){
+    const idx=raw.indexOf(v.surface,cursor);
+    if(idx<0)return;
+    out+=escapeHtml(raw.slice(cursor,idx));
+    out+='<button type="button" class="verbExplain" data-verb="'+escapeHtml(v.key)+'" data-surface="'+encodeURIComponent(v.surface)+'">'+escapeHtml(v.surface)+'</button>';
+    cursor=idx+v.surface.length;
+  });
+  out+=escapeHtml(raw.slice(cursor));
+  return out;
+}
 
 function opinionSentence(w,p){
   const firstOpinion=getById(w.opinions,p.first.opinion),firstAnimal=getById(w.opinionAnimals,p.first.animal);
@@ -97,6 +109,7 @@ function renderOpinions(){
   $("#lessonRoot").innerHTML=
     sourceButtons(w)+
     '<dialog id="sourceSheetDialog" class="sourceSheetDialog"><div class="sourceSheetDialogHead"><h3 id="sourceSheetTitle">Source sheet</h3><button class="secondary" id="closeSourceSheet">Close</button></div><p id="sourceSheetStatus" class="tip"></p><img id="sourceSheetImage" alt="Original school worksheet"></dialog>'+
+    '<dialog id="verbDialog" class="verbDialog"><div class="sourceSheetDialogHead"><div><p class="eyebrow">VERB EXPLORER</p><h3 id="verbDialogTitle"></h3></div><button class="secondary" id="closeVerbDialog">Close</button></div><div id="verbDialogBody"></div></dialog>'+
     panel("frBridge",1,"Connect this to what you already know",
       '<div class="requiredFlag">BUILD ON LAST WEEK</div>'+
       '<div class="lessonThesis"><strong>The new idea:</strong> last week you described <em>one</em> animal. This week you give an opinion about animals <em>in general</em>.</div>'+
@@ -157,13 +170,26 @@ function renderOpinions(){
         '<div class="grammarCard"><strong>Add a reason</strong><p>GCSE runway: <strong>parce que</strong> = because. Example: <em>J’aime les chiens parce qu’ils sont intelligents.</em> '+audioButton("J’aime les chiens parce qu’ils sont intelligents.")+'</p></div>'+
         '<div class="grammarCard"><strong>Listen → speak → write</strong><p>Use the pronunciation activity below to make a correct sentence sound familiar before writing it from memory.</p></div>'+
       '</div>'+
-      '<div class="personalFrench"><p class="eyebrow">MAKE FRENCH ABOUT SAI</p><h4>Things you might genuinely have an opinion about</h4><div class="personalInterestGrid">'+w.personalInterests.map(function(x){return '<button class="personalInterestCard" type="button" data-audio="'+encodeURIComponent(x.fr)+'" data-meaning="'+escapeHtml(x.en)+'"><span>'+x.emoji+'</span><strong>'+x.fr+'</strong><small>Tap for English</small><b>🔊</b></button>';}).join('')+'</div></div>'+
+      '<div class="personalFrench"><p class="eyebrow">MAKE FRENCH ABOUT SAI</p><h4>Things you might genuinely have an opinion about</h4><p class="tip">Tap the English reveal if needed. Tap any <strong>underlined verb</strong> to see what it means, its infinitive and the present-tense forms.</p><div class="personalInterestGrid">'+w.personalInterests.map(function(x){return '<div class="personalInterestCard" data-audio="'+encodeURIComponent(x.fr)+'" data-meaning="'+escapeHtml(x.en)+'"><span>'+x.emoji+'</span><strong class="personalSentence">'+personalSentenceHtml(x)+'</strong><button class="personalMeaning" type="button">Tap for English</button><button class="personalSpeak" type="button" aria-label="Hear sentence">🔊</button></div>';}).join('')+'</div></div>'+
       '<details class="optionalBlock"><summary><span>Source note</span><small>Why Chantal looks inconsistent</small></summary><div class="optionalBody"><p>'+escapeHtml(w.sourceNote)+'</p></div></details>'
     );
 
   setupOpinions();
 }
 
+function openVerbDialog(w,key,surface){
+  const v=w.verbReference&&w.verbReference[key];
+  if(!v)return;
+  const d=$("#verbDialog"),title=$("#verbDialogTitle"),body=$("#verbDialogBody");
+  title.textContent=(surface||v.infinitive)+" → "+v.infinitive;
+  body.innerHTML=
+    '<div class="verbMeaning"><strong>'+escapeHtml(v.infinitive)+'</strong><span>'+escapeHtml(v.en)+'</span><small>'+escapeHtml(v.type)+'</small></div>'+
+    '<div class="miniRule"><strong>Infinitive</strong><span>The <strong>infinitive</strong> is the dictionary form of a verb — the unconjugated “to …” form, such as <em>'+escapeHtml(v.en)+'</em>.</span></div>'+
+    '<div class="verbForms">'+v.forms.map(function(row){return '<button type="button" class="verbFormSpeak" data-say="'+encodeURIComponent(row[0])+'"><strong>'+escapeHtml(row[0])+'</strong><span>'+escapeHtml(row[1])+'</span><b>🔊</b></button>';}).join('')+'</div>'+
+    '<p class="tip">'+escapeHtml(v.note||'')+'</p>';
+  Array.from(body.querySelectorAll(".verbFormSpeak")).forEach(function(b){b.onclick=function(){speak(decodeURIComponent(b.dataset.say),"fr-FR");};});
+  if(d.showModal)d.showModal();else d.setAttribute("open","");
+}
 function bindInlineAudio(){
   Array.from(document.querySelectorAll(".inlineSpeak")).forEach(function(b){
     if(b.dataset.bound)return;
@@ -180,11 +206,18 @@ function setupOpinions(){
     if(m.dataset.revealed==="1"){speak(decodeURIComponent(b.dataset.audio),"fr-FR");return;}
     m.textContent=b.dataset.meaning;m.dataset.revealed="1";
   };});
-  Array.from(document.querySelectorAll(".personalInterestCard")).forEach(function(b){b.onclick=function(){
-    const small=b.querySelector("small");
-    if(small.dataset.revealed==="1"){speak(decodeURIComponent(b.dataset.audio),"fr-FR");return;}
-    small.textContent=b.dataset.meaning;small.dataset.revealed="1";
-  };});
+  Array.from(document.querySelectorAll(".personalInterestCard")).forEach(function(card){
+    const meaning=card.querySelector(".personalMeaning"),play=card.querySelector(".personalSpeak");
+    meaning.onclick=function(e){
+      e.stopPropagation();
+      if(meaning.dataset.revealed==="1"){meaning.textContent="Hide English";meaning.dataset.revealed="2";return;}
+      if(meaning.dataset.revealed==="2"){meaning.textContent=card.dataset.meaning;meaning.dataset.revealed="1";return;}
+      meaning.textContent=card.dataset.meaning;meaning.dataset.revealed="1";
+    };
+    play.onclick=function(e){e.stopPropagation();speak(decodeURIComponent(card.dataset.audio),"fr-FR");};
+  });
+  Array.from(document.querySelectorAll(".verbExplain")).forEach(function(b){b.onclick=function(e){e.preventDefault();e.stopPropagation();openVerbDialog(w,b.dataset.verb,decodeURIComponent(b.dataset.surface));};});
+  $("#closeVerbDialog").onclick=function(){const d=$("#verbDialog");if(d.close)d.close();else d.removeAttribute("open");};
   $$(".sourceSheetButton").forEach(function(b){b.onclick=function(){openSourceSheet(w,b.dataset.sourceSheet);};});
   $("#closeSourceSheet").onclick=function(){const d=$("#sourceSheetDialog");if(d.close)d.close();else d.removeAttribute('open');};
 
