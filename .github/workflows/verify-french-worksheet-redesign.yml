@@ -1,0 +1,71 @@
+name: Verify French worksheet visual redesign
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/verify-french-worksheet-redesign.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright
+          npx playwright install chromium
+      - name: Verify deployed worksheet recreation
+        run: |
+          timeout 90s node <<'NODE'
+          const { chromium } = require('playwright');
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          (async()=>{
+            for(let attempt=1;attempt<=8;attempt++){
+              const browser=await chromium.launch({headless:true});
+              const page=await browser.newPage({serviceWorkers:'block'});
+              page.setDefaultTimeout(12000);
+              await page.goto('https://nirav2000.github.io/InClass/?visual_verify='+Date.now(),{waitUntil:'domcontentloaded',timeout:25000});
+              const hasNew=await page.evaluate(()=>Array.from(document.styleSheets).some(s=>String(s.href||'').includes('styles.css')));
+              if(!hasNew){await browser.close();await sleep(4000);continue;}
+              await page.waitForSelector('#subjectSelect',{state:'attached'});
+              await page.evaluate(()=>{
+                const s=document.querySelector('#subjectSelect');s.value='French';s.dispatchEvent(new Event('change',{bubbles:true}));
+                const w=document.querySelector('#weekSelect');w.value='2026-10-05-french-opinions';w.dispatchEvent(new Event('change',{bubbles:true}));
+              });
+              await page.waitForSelector('.opinionWorksheetCard',{state:'attached'});
+              const result=await page.evaluate(()=>{
+                const card=document.querySelector('.opinionWorksheetCard');
+                const portrait=card.querySelector('.personPortraitSvg');
+                const school=card.querySelector('.homeworkBadge');
+                const animals=[...card.querySelectorAll('.animalEmoji')].map(e=>({text:e.textContent,size:parseFloat(getComputedStyle(e).fontSize)}));
+                const cardRect=card.getBoundingClientRect();
+                const portraitRect=portrait.getBoundingClientRect();
+                const clues=card.querySelector('.worksheetClues').getBoundingClientRect();
+                return {
+                  hasPortrait:!!portrait,
+                  portraitWidth:portraitRect.width,
+                  animals,
+                  cardWidth:cardRect.width,
+                  cluesWidth:clues.width,
+                  hasSchoolBadgeInside:!!school,
+                  noteIsSmall:!!card.querySelector('.worksheetNote')
+                };
+              });
+              console.log(result);
+              if(!result.hasPortrait)throw new Error('Person portrait missing');
+              if(result.portraitWidth<120)throw new Error('Person portrait too small: '+result.portraitWidth);
+              if(result.animals.length!==2||result.animals.some(a=>a.size<60))throw new Error('Animal visuals too small: '+JSON.stringify(result.animals));
+              if(result.hasSchoolBadgeInside)throw new Error('School badge still appears inside worksheet clue card');
+              if(result.cluesWidth<result.cardWidth*0.45)throw new Error('Clues do not use enough card width');
+              await browser.close();
+              console.log('PASS');
+              return;
+            }
+            throw new Error('Updated worksheet design not deployed in time');
+          })().catch(err=>{console.error(err);process.exit(1)});
+          NODE
