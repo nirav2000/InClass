@@ -1,0 +1,98 @@
+name: Verify French fluency lesson
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/verify-french-fluency-lesson.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright
+          npx playwright install chromium
+      - name: Exercise deployed French lesson and stored source sheets
+        run: |
+          timeout 150s node <<'NODE'
+          const { chromium } = require('playwright');
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          (async()=>{
+            for(let attempt=1;attempt<=10;attempt++){
+              const browser=await chromium.launch({headless:true});
+              const page=await browser.newPage({serviceWorkers:'block',viewport:{width:1280,height:1000}});
+              page.setDefaultTimeout(12000);
+              try{
+                await page.goto('https://nirav2000.github.io/InClass/?fluency_verify='+Date.now(),{waitUntil:'domcontentloaded',timeout:25000});
+                const version=await page.locator('footer .version').textContent().catch(()=> '');
+                if(!version.includes('2026.10.05.3')){await browser.close();await sleep(6000);continue;}
+                await page.evaluate(()=>document.querySelector('#appShell').classList.remove('hidden'));
+                await page.evaluate(()=>{
+                  const s=document.querySelector('#subjectSelect');s.value='French';s.dispatchEvent(new Event('change',{bubbles:true}));
+                });
+                const ready=await page.waitForFunction(()=>Array.from(document.querySelector('#weekSelect').options).some(o=>o.value==='2026-10-05-french-opinions'),null,{timeout:10000}).then(()=>true).catch(()=>false);
+                if(!ready){await browser.close();await sleep(5000);continue;}
+                await page.evaluate(()=>{
+                  const w=document.querySelector('#weekSelect');w.value='2026-10-05-french-opinions';w.dispatchEvent(new Event('change',{bubbles:true}));
+                });
+                await page.waitForSelector('#frBridge',{state:'attached'});
+
+                const nav=await page.locator('#stepNav button').allTextContents();
+                if(!nav.some(x=>x.includes('Bridge'))||!nav.some(x=>x.includes('Fluency'))||!nav.some(x=>x.includes('Homework ready')))throw new Error('New lesson sequence missing: '+nav.join('|'));
+
+                const bridge=await page.locator('#frBridge').textContent();
+                if(!bridge.includes('J’aime les chiens')||!bridge.includes('animals in general')||!bridge.includes('les oiseaux')||!bridge.includes('les chevaux'))throw new Error('Prior-knowledge/les teaching is incomplete');
+
+                const opinions=await page.locator('#frOpinions').textContent();
+                for(const expected of ['J’adore','J’aime (beaucoup)','Je préfère','Je n’aime pas (beaucoup)','Je déteste']){
+                  if(!opinions.includes(expected))throw new Error('Missing school opinion: '+expected);
+                }
+
+                const animals=await page.locator('#frFluency').textContent();
+                for(const expected of ['les chiens','les chats','les lapins','les hamsters','les souris','les poissons rouges','les oiseaux','les chevaux']){
+                  if(!animals.includes(expected))throw new Error('Missing animal vocabulary: '+expected);
+                }
+
+                await page.evaluate(()=>{
+                  const s=document.querySelector('#opinionPerson');s.value='ahmed';s.dispatchEvent(new Event('change',{bubbles:true}));
+                  document.querySelector('#showMachineAnswer').click();
+                });
+                const ahmed=await page.locator('#machineModel').textContent();
+                if(ahmed!=="Je m’appelle Ahmed. J’aime les chiens mais je préfère les poissons rouges.")throw new Error('Ahmed model is wrong: '+ahmed);
+
+                const sourceButtons=await page.locator('.sourceSheetBar .sourceSheetButton').count();
+                if(sourceButtons!==2)throw new Error('Expected two source sheets, found '+sourceButtons);
+
+                async function openAndCheck(id){
+                  await page.evaluate(id=>document.querySelector('[data-source-sheet="'+id+'"]').click(),id);
+                  await page.waitForFunction(()=>{const i=document.querySelector('#sourceSheetImage');return i&&i.src.startsWith('data:image/webp;base64,')&&i.naturalWidth>0;},null,{timeout:12000});
+                  const meta=await page.evaluate(()=>{const i=document.querySelector('#sourceSheetImage');return {srcLength:i.src.length,w:i.naturalWidth,h:i.naturalHeight};});
+                  if(meta.srcLength<10000||meta.w<300||meta.h<250)throw new Error('Stored source sheet failed visual load: '+JSON.stringify(meta));
+                  await page.evaluate(()=>{const d=document.querySelector('#sourceSheetDialog');if(d.close)d.close();});
+                  return meta;
+                }
+                const hw=await openAndCheck('homework');
+                const op=await openAndCheck('opinions');
+
+                const extend=await page.locator('#frExplore').textContent();
+                if(!extend.includes('parce que')||!extend.includes('Je préfère'))throw new Error('Extension/GCSЕ runway missing');
+
+                console.log('PASS',{version,nav,ahmed,homework:hw,opinions:op});
+                await browser.close();
+                return;
+              }catch(err){
+                console.error('attempt',attempt,err.message);
+                await browser.close();
+                if(attempt===10)throw err;
+                await sleep(6000);
+              }
+            }
+          })().catch(err=>{console.error(err);process.exit(1)});
+          NODE
