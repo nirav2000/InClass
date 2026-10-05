@@ -61,6 +61,13 @@ window.INCLASS_WEEKS.push({
       {before:"un cheval",after:"les chevaux"}
     ]
   },
+  personalInterests:[
+    {id:"sailing",fr:"J’adore faire de la voile.",en:"I love sailing.",emoji:"⛵"},
+    {id:"hockey",fr:"J’aime jouer au hockey.",en:"I like playing hockey.",emoji:"🏑"},
+    {id:"netball",fr:"J’aime jouer au netball.",en:"I like playing netball.",emoji:"🏐"},
+    {id:"orchestra",fr:"J’adore jouer dans un orchestre.",en:"I love playing in an orchestra.",emoji:"🎼"},
+    {id:"swimming",fr:"J’aime nager.",en:"I like swimming.",emoji:"🏊"}
+  ],
   people:[
     {
       id:"chantal",name:"Chantal",
