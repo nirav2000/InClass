@@ -61,12 +61,19 @@ window.INCLASS_WEEKS.push({
       {before:"un cheval",after:"les chevaux"}
     ]
   },
+  verbReference:{
+    aimer:{infinitive:"aimer",en:"to like",type:"regular -er verb",forms:[["j’aime","I like"],["tu aimes","you like"],["il / elle aime","he / she likes"],["nous aimons","we like"],["vous aimez","you like"],["ils / elles aiment","they like"]],note:"Before a vowel, je becomes j’: je + aime → j’aime."},
+    adorer:{infinitive:"adorer",en:"to love",type:"regular -er verb",forms:[["j’adore","I love"],["tu adores","you love"],["il / elle adore","he / she loves"],["nous adorons","we love"],["vous adorez","you love"],["ils / elles adorent","they love"]],note:"Before a vowel, je becomes j’: je + adore → j’adore."},
+    faire:{infinitive:"faire",en:"to do / to make",type:"irregular verb",forms:[["je fais","I do / make"],["tu fais","you do / make"],["il / elle fait","he / she does / makes"],["nous faisons","we do / make"],["vous faites","you do / make"],["ils / elles font","they do / make"]],note:"In faire de la voile, French uses faire + de la voile for ‘to go sailing / to do sailing’."},
+    jouer:{infinitive:"jouer",en:"to play",type:"regular -er verb",forms:[["je joue","I play"],["tu joues","you play"],["il / elle joue","he / she plays"],["nous jouons","we play"],["vous jouez","you play"],["ils / elles jouent","they play"]],note:"With games and sports, jouer commonly uses à: jouer au hockey. With an ensemble/place, it can use dans: jouer dans un orchestre."},
+    nager:{infinitive:"nager",en:"to swim",type:"regular -er verb",forms:[["je nage","I swim"],["tu nages","you swim"],["il / elle nage","he / she swims"],["nous nageons","we swim"],["vous nagez","you swim"],["ils / elles nagent","they swim"]],note:"After aimer, the second verb stays in the infinitive: J’aime nager = I like to swim / I like swimming."}
+  },
   personalInterests:[
-    {id:"sailing",fr:"J’adore faire de la voile.",en:"I love sailing.",emoji:"⛵"},
-    {id:"hockey",fr:"J’aime jouer au hockey.",en:"I like playing hockey.",emoji:"🏑"},
-    {id:"netball",fr:"J’aime jouer au netball.",en:"I like playing netball.",emoji:"🏐"},
-    {id:"orchestra",fr:"J’adore jouer dans un orchestre.",en:"I love playing in an orchestra.",emoji:"🎼"},
-    {id:"swimming",fr:"J’aime nager.",en:"I like swimming.",emoji:"🏊"}
+    {id:"sailing",fr:"J’adore faire de la voile.",en:"I love sailing.",emoji:"⛵",verbs:[{surface:"J’adore",key:"adorer"},{surface:"faire",key:"faire"}]},
+    {id:"hockey",fr:"J’aime jouer au hockey.",en:"I like playing hockey.",emoji:"🏑",verbs:[{surface:"J’aime",key:"aimer"},{surface:"jouer",key:"jouer"}]},
+    {id:"netball",fr:"J’aime jouer au netball.",en:"I like playing netball.",emoji:"🏐",verbs:[{surface:"J’aime",key:"aimer"},{surface:"jouer",key:"jouer"}]},
+    {id:"orchestra",fr:"J’adore jouer dans un orchestre.",en:"I love playing in an orchestra.",emoji:"🎼",verbs:[{surface:"J’adore",key:"adorer"},{surface:"jouer",key:"jouer"}]},
+    {id:"swimming",fr:"J’aime nager.",en:"I like swimming.",emoji:"🏊",verbs:[{surface:"J’aime",key:"aimer"},{surface:"nager",key:"nager"}]}
   ],
   people:[
     {
