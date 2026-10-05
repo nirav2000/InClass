@@ -146,3 +146,20 @@ body{min-height:100vh}
   .animalEmoji{font-size:78px}
   .worksheetOpinionSymbol{font-size:46px}
 }
+
+.sourceSheetBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 18px;padding:12px 14px;border:1px solid #dbe4ea;border-radius:16px;background:#f8fbfc}.sourceSheetBar strong{margin-right:4px}.sourceSheetBar small{width:100%;color:#667b8f}
+.sourceSheetDialog{width:min(980px,94vw);max-height:92vh;border:0;border-radius:20px;padding:18px;box-shadow:0 24px 80px rgba(15,35,50,.28)}.sourceSheetDialog::backdrop{background:rgba(10,28,40,.64)}.sourceSheetDialogHead{display:flex;justify-content:space-between;gap:12px;align-items:center;position:sticky;top:0;background:#fff;padding-bottom:10px;z-index:2}.sourceSheetDialog img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #dce4e9}
+.lessonThesis{font-size:18px;line-height:1.55;padding:16px 18px;border-radius:16px;background:#eef8fa;border-left:5px solid #23879a;margin:12px 0 18px}
+.bridgeGrid{display:grid;gap:9px;margin:14px 0 20px}.bridgeRow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border:1px solid #e1e7eb;border-radius:14px;background:#fff}.bridgeOld{color:#697d8e}.bridgeArrow{font-weight:900;color:#26859a}.bridgeNew{font-weight:800;color:#18334a}
+.grammarSpotlight{display:grid;grid-template-columns:100px 1fr;gap:18px;align-items:center;padding:20px;border-radius:20px;background:#fff9df;border:1px solid #efd980;margin:18px 0}.grammarSpotlightWord{font-size:58px;font-weight:900;text-align:center;color:#886b00}.grammarSpotlight h4{margin:0 0 7px;font-size:20px}.grammarSpotlight p{margin:6px 0;line-height:1.5}.challengeStrip{padding:13px 15px;border-radius:14px;background:#f5f7fb;display:flex;gap:12px;flex-wrap:wrap;align-items:baseline}
+.opinionLadder{display:grid;gap:9px;margin:14px 0}.opinionLadderRow{width:100%;display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;text-align:left;padding:13px 16px;border:1px solid #dce4e9;border-radius:15px;background:#fff;color:#173047}.opinionLadderRow strong,.opinionLadderRow small{display:block}.opinionLadderRow small{color:#6a7e8f;margin-top:2px}.opinionLadderSymbol{font-size:32px;letter-spacing:-3px}.speakerHint{font-size:20px}
+.quickCheckCard,.fluencyCard,.sentenceMachine{margin-top:18px;padding:18px;border:1px solid #dce4e9;border-radius:18px;background:#fbfcfd}.quickCheckCard{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center}.quickCheckCard h4{font-size:42px;margin:2px 0}.quickCheckCard>strong{grid-column:1/-1;font-size:22px;color:#196678}
+.sentenceMachineRow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0}.sentenceMachineRow select{flex:1 1 160px}.sentenceChunk{display:inline-flex;padding:10px 13px;border-radius:12px;background:#eaf5f7;font-size:18px}.sentenceMachine .bigWord{min-height:1.4em}
+.fluencyCard{text-align:center}.fluencyCue{display:flex;justify-content:center;align-items:center;gap:30px;min-height:150px;padding:15px}.fluencySymbol{font-size:58px;letter-spacing:-4px}.fluencyAnimal{font-size:92px}.fluencyAnswer{display:block;min-height:34px;font-size:25px;margin:8px 0 14px}.animalRecallButton{display:grid!important;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;text-align:left!important}.animalRecallButton small{grid-column:2}.animalEmojiSmall{font-size:30px;grid-row:1/3}
+@media(max-width:700px){
+ .grammarSpotlight{grid-template-columns:1fr}.grammarSpotlightWord{text-align:left}
+ .quickCheckCard{grid-template-columns:1fr 1fr}.quickCheckCard>div,.quickCheckCard>strong{grid-column:1/-1}
+ .opinionLadderRow{grid-template-columns:85px 1fr auto}.opinionLadderSymbol{font-size:26px}
+ .bridgeRow{grid-template-columns:1fr;gap:4px}.bridgeArrow{transform:rotate(90deg);justify-self:start}
+ .fluencyAnimal{font-size:72px}.fluencySymbol{font-size:46px}
+}
