@@ -258,7 +258,8 @@ function renderWeek(){
   if(!state.week)return;
   setHero();
   $("#reviewBanner").innerHTML="";
-  if(state.week.subjectKey==="english") renderEnglish();
+  if(state.week.subjectKey==="english" && state.week.vocabularyChoiceHomework) renderEnglishVocabulary();
+  else if(state.week.subjectKey==="english") renderEnglish();
   else renderFrench();
   renderSourceNote();
   renderProgress();
@@ -270,6 +271,36 @@ function renderWeek(){
       renderWeek();
     }
   };
+}
+
+function renderEnglishVocabulary(){
+  var w=state.week;
+  setNav([["vocabIdea","Precise words"],["vocabWork","Worksheet"],["vocabWords","Word bank"],["vocabSentences","Your turn"]]);
+  var ideas=w.precisionIdeas.map(function(r,i){return '<div class="ruleCard"><span class="ruleNo">'+(i+1)+'</span><div><strong>'+r.title+'</strong><p>'+r.text+'</p></div></div>';}).join("");
+  var words=w.questions.map(function(q,i){return '<div class="wordRow"><span class="wordIndex">'+(i+1)+'</span><span><strong>'+q.answer+'</strong><small>'+q.definition+'</small></span><span class="ruleTag">'+q.wordClass+'</span></div>';}).join("");
+  $("#lessonRoot").innerHTML=
+    panel("vocabIdea",1,"What does “most precise word” mean?",'<p class="tip">Think about <strong>meaning, mood and effect</strong>. The strongest answer is the word that fits the exact context, not simply the most unusual word.</p><div class="ruleGrid">'+ideas+'</div>')+
+    panel("vocabWork",2,"School worksheet: choose the best word",'<div class="practiceCard"><p class="promptLabel">QUESTION <span id="vocabNumber"></span> OF 20</p><p id="vocabPrompt" class="questionText"></p><div id="vocabChoices" class="row"></div><p id="vocabFeedback" class="feedback"></p><div id="vocabWhy" class="example hidden"></div><button id="nextVocabQuestion" class="primary hidden">Next question →</button></div>')+
+    panel("vocabWords",3,"Learn the 20 strongest words",'<p class="tip">Notice the exact shade of meaning each word carries.</p><div class="wordRows">'+words+'</div>')+
+    panel("vocabSentences",4,"Your turn: write 3 sentences",'<p class="tip">Choose three of the strongest words. Write a new sentence for each and make its meaning clear through context.</p><div id="vocabSentenceSlots"></div>');
+  var n=0;
+  function show(){
+    var q=w.questions[n];
+    $("#vocabNumber").textContent=n+1; $("#vocabPrompt").textContent=q.sentence; $("#vocabFeedback").textContent=""; $("#vocabWhy").classList.add("hidden"); $("#nextVocabQuestion").classList.add("hidden");
+    $("#vocabChoices").innerHTML=q.options.map(function(x){return '<button class="secondary vocabChoice" type="button">'+x+'</button>';}).join("");
+    $(".vocabChoice").forEach(function(b){b.onclick=function(){
+      var ok=norm(b.textContent)===norm(q.answer); recordLearningAttempt("best-word",q.answer,ok,{scope:"required"});
+      $(".vocabChoice").forEach(function(x){x.disabled=true;});
+      $("#vocabFeedback").textContent=ok?"Correct ✓":"Best fit: "+q.answer; $("#vocabFeedback").className="feedback "+(ok?"good":"try");
+      $("#vocabWhy").innerHTML="<strong>Why?</strong> "+q.explanation+"<br><strong>Meaning:</strong> "+q.definition+"<br><strong>Effect:</strong> "+q.effect; $("#vocabWhy").classList.remove("hidden"); $("#nextVocabQuestion").classList.remove("hidden");
+      if(ok)bump("vocabCorrect");
+    };});
+  }
+  $("#nextVocabQuestion").onclick=function(){if(n<w.questions.length-1){n++;show();}else{$("#vocabFeedback").textContent="All 20 school questions complete ✓";$("#nextVocabQuestion").classList.add("hidden");}};
+  show();
+  function slot(k){return '<div class="practiceCard"><p class="promptLabel">SENTENCE '+k+' OF 3</p><select class="vocabSentenceWord">'+w.questions.map(function(q){return "<option>"+q.answer+"</option>";}).join("")+'</select><textarea class="vocabSentenceText" rows="3" placeholder="Make the meaning clear through context…"></textarea><button class="primary vocabSentenceCheck">Check sentence</button><p class="feedback vocabSentenceFeedback"></p></div>';}
+  $("#vocabSentenceSlots").innerHTML=slot(1)+slot(2)+slot(3);
+  $(".vocabSentenceCheck").forEach(function(b){b.onclick=function(){var c=b.closest(".practiceCard"),word=c.querySelector(".vocabSentenceWord").value,t=c.querySelector(".vocabSentenceText").value.trim(),ok=hasWholeWord(t,word)&&t.split(/\s+/).length>=7,f=c.querySelector(".vocabSentenceFeedback");f.textContent=ok?"Good structure ✓ Now check that the context lets a reader infer what “"+word+"” means.":"Use the exact word and add enough context to reveal its meaning.";f.className="feedback vocabSentenceFeedback "+(ok?"good":"try");recordLearningAttempt("own-sentence",word,ok,{scope:"required"});};});
 }
 
 function renderEnglish(){
