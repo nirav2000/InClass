@@ -115,3 +115,12 @@ body{min-height:100vh}
 @media(max-width:900px){.childCard{grid-template-columns:auto 1fr auto}.childMetric:nth-of-type(n+2){grid-column:auto}.childMetric{min-width:110px}}
 
 @media(max-width:560px){.childCard{grid-template-columns:auto 1fr}.childMetric{min-width:0}}
+
+.opinionClues{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;margin:12px 0}
+.opinionClue{display:grid;grid-template-columns:auto auto;gap:6px 10px;align-items:center;padding:14px;border:1px solid var(--line,#d9e2ec);border-radius:16px;background:var(--soft,#f7fafc)}
+.opinionClue small{grid-column:1/-1;color:var(--muted,#627d98)}
+.opinionSymbol{font-size:28px;letter-spacing:-5px}.opinionAnimal{font-size:38px}.opinionConnector{font-size:12px;font-weight:800;letter-spacing:.09em;text-align:center;color:var(--muted,#627d98)}
+.opinionBuilder{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opinionPersonCard h4{margin:0;font-size:20px}
+#writeAnswer{width:100%;margin:12px 0;resize:vertical}
+@media(max-width:640px){.opinionClues{grid-template-columns:1fr}.opinionConnector{padding:2px 0}.opinionBuilder{grid-template-columns:1fr}.opinionClue{grid-template-columns:auto 1fr}}
