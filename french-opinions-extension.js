@@ -16,16 +16,48 @@ function opinionSentence(w,p){
     firstOpinion:firstOpinion,firstAnimal:firstAnimal,secondOpinion:secondOpinion,secondAnimal:secondAnimal
   };
 }
+function personPortrait(p){
+  const tones={chantal:'#e5b56e',ahmed:'#b9825b',ethan:'#5e3b2b',sophie:'#f0c7a8'};
+  const hair={chantal:'#7a4b24',ahmed:'#151515',ethan:'#21140f',sophie:'#c79652'};
+  const shirt={chantal:'#e84d7a',ahmed:'#384d8d',ethan:'#5d8f6e',sophie:'#f2688d'};
+  const tone=tones[p.id]||'#d7aa80',h=hair[p.id]||'#55331e',sh=shirt[p.id]||'#527aa6';
+  return '<svg class="personPortraitSvg" viewBox="0 0 160 190" role="img" aria-label="Illustrated portrait of '+p.name+'">'+
+    '<rect width="160" height="190" rx="24" fill="#fff"/>'+
+    '<circle cx="80" cy="74" r="42" fill="'+tone+'"/>'+
+    '<path d="M37 70c2-36 24-53 44-53 29 0 48 22 44 55-13-11-24-16-43-16-18 0-30 5-45 14Z" fill="'+h+'"/>'+
+    '<circle cx="64" cy="76" r="3.5" fill="#172b3a"/><circle cx="96" cy="76" r="3.5" fill="#172b3a"/>'+
+    '<path d="M67 95c8 6 18 6 26 0" fill="none" stroke="#9c5f54" stroke-width="3" stroke-linecap="round"/>'+
+    '<path d="M28 190c3-39 22-61 52-61s49 22 52 61Z" fill="'+sh+'"/>'+
+    '<text x="80" y="178" text-anchor="middle" font-size="18" font-weight="700" fill="#fff">'+p.name+'</text>'+
+  '</svg>';
+}
+function animalPicture(a){
+  const map={
+    oiseaux:'<span class="animalEmoji">🐦</span>',
+    poissons:'<span class="animalEmoji">🐟</span>',
+    chiens:'<span class="animalEmoji">🐕</span>',
+    souris:'<span class="animalEmoji">🐭</span>',
+    chats:'<span class="animalEmoji">🐈</span>',
+    chevaux:'<span class="animalEmoji">🐎</span>'
+  };
+  return map[a.id]||'<span class="animalEmoji">'+(a.emoji||'🐾')+'</span>';
+}
 function clueCard(w,p,compact){
   const s=opinionSentence(w,p);
-  return '<div class="practiceCard opinionPersonCard" data-person="'+p.id+'">'+
-    '<div class="sectionHead"><div><p class="eyebrow">'+(compact?'PICTURE CLUES':'DECODE THE CLUES')+'</p><h4>'+p.name+'</h4></div><span class="homeworkBadge">school</span></div>'+
-    '<div class="opinionClues">'+
-      '<div class="opinionClue"><span class="opinionSymbol">'+s.firstOpinion.symbol+'</span><span class="opinionAnimal">'+s.firstAnimal.emoji+'</span><small>'+s.firstAnimal.en+'</small></div>'+
-      '<div class="opinionConnector">'+(p.connector==='et'?'ET':'MAIS')+'</div>'+
-      '<div class="opinionClue"><span class="opinionSymbol">'+s.secondOpinion.symbol+'</span><span class="opinionAnimal">'+s.secondAnimal.emoji+'</span><small>'+s.secondAnimal.en+'</small></div>'+
+  return '<div class="opinionWorksheetCard '+(compact?'isCompact':'')+'" data-person="'+p.id+'">'+
+    '<div class="worksheetPerson">'+personPortrait(p)+'</div>'+
+    '<div class="worksheetClues">'+
+      '<div class="worksheetOpinionBlock">'+
+        '<div class="worksheetOpinionSymbol">'+s.firstOpinion.symbol+'</div>'+
+        '<div class="worksheetAnimalPicture">'+animalPicture(s.firstAnimal)+'</div>'+
+      '</div>'+
+      '<div class="worksheetConnector">'+(p.connector==='et'?'ET':'MAIS')+'</div>'+
+      '<div class="worksheetOpinionBlock">'+
+        '<div class="worksheetOpinionSymbol">'+s.secondOpinion.symbol+'</div>'+
+        '<div class="worksheetAnimalPicture">'+animalPicture(s.secondAnimal)+'</div>'+
+      '</div>'+
     '</div>'+
-    (p.ambiguity?'<p class="feedback try"><strong>Worksheet ambiguity:</strong> the printed Chantal example says “je déteste les oiseaux”, but the crossed-heart picture is beside a fish. This practice follows the pictured fish clue.</p>':'')+
+    (p.ambiguity?'<div class="worksheetNote"><strong>Source note</strong><span>The printed Chantal example says “je déteste les oiseaux”, while the crossed-heart picture is beside a fish. This practice follows the pictured fish clue.</span></div>':'')+
   '</div>';
 }
 
@@ -54,8 +86,8 @@ function renderOpinions(){
   $("#lessonRoot").innerHTML=
     panel("frDecode",1,"Decode the picture clues",
       '<div class="requiredFlag">SCHOOL HOMEWORK</div>'+
-      '<p class="tip">Start with what the picture means. Identify the person, the opinion and the animal before trying to write the French.</p>'+
-      '<div id="decodeCard"></div>'+
+      '<p class="tip">Start with the recreated worksheet card. Identify the person, the opinion and the animal before trying to write the French.</p>'+
+      '<div id="decodeCard" class="worksheetStage"></div>'+
       '<div class="builder opinionBuilder"><label>First opinion<select id="decodeOpinion1"></select></label><label>First animal<select id="decodeAnimal1"></select></label><label>Second opinion<select id="decodeOpinion2"></select></label><label>Second animal<select id="decodeAnimal2"></select></label></div>'+
       '<div class="row"><button class="primary" id="checkDecode">Check clues</button><button class="secondary" id="nextDecode">Another person</button></div>'+
       '<p id="decodeFeedback" class="feedback"></p>'
