@@ -1,0 +1,76 @@
+name: Verify French verb explorer
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/verify-french-verb-explorer.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright
+          npx playwright install chromium
+      - name: Verify deployed verb explorer
+        run: |
+          timeout 120s node <<'NODE'
+          const { chromium } = require('playwright');
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          (async()=>{
+            for(let attempt=1;attempt<=10;attempt++){
+              const browser=await chromium.launch({headless:true});
+              const page=await browser.newPage({serviceWorkers:'block',viewport:{width:1280,height:1000}});
+              try{
+                await page.goto('https://nirav2000.github.io/InClass/?verb_verify='+Date.now(),{waitUntil:'domcontentloaded',timeout:25000});
+                const version=await page.locator('footer .version').textContent().catch(()=> '');
+                if(!version.includes('2026.10.05.5')){await browser.close();await sleep(5000);continue;}
+                await page.evaluate(()=>document.querySelector('#appShell').classList.remove('hidden'));
+                await page.evaluate(()=>{const s=document.querySelector('#subjectSelect');s.value='French';s.dispatchEvent(new Event('change',{bubbles:true}));});
+                const ready=await page.waitForFunction(()=>Array.from(document.querySelector('#weekSelect').options).some(o=>o.value==='2026-10-05-french-opinions'),null,{timeout:10000}).then(()=>true).catch(()=>false);
+                if(!ready){await browser.close();await sleep(5000);continue;}
+                await page.evaluate(()=>{const w=document.querySelector('#weekSelect');w.value='2026-10-05-french-opinions';w.dispatchEvent(new Event('change',{bubbles:true}));});
+                await page.waitForSelector('.personalInterestCard',{state:'attached'});
+                const cards=await page.locator('.personalInterestCard').count();
+                if(cards<5)throw new Error('Expected Sai-specific extension cards');
+                const verbs=await page.locator('.personalInterestCard .verbExplain').count();
+                if(verbs<9)throw new Error('Expected clickable verbs in personal sentences, found '+verbs);
+                const sailing=page.locator('.personalInterestCard').first();
+                const before=await sailing.locator('.personalMeaning').textContent();
+                await sailing.locator('.personalMeaning').click();
+                const after=await sailing.locator('.personalMeaning').textContent();
+                if(before===after||!after.includes('I love sailing'))throw new Error('English reveal failed');
+
+                await sailing.locator('.verbExplain').nth(1).click();
+                await page.waitForSelector('#verbDialog[open]');
+                const title=await page.locator('#verbDialogTitle').textContent();
+                const body=await page.locator('#verbDialogBody').textContent();
+                if(!title.includes('faire')||!body.includes('to do / to make')||!body.includes('je fais')||!body.includes('nous faisons')||!body.includes('vous faites')||!body.includes('ils / elles font'))throw new Error('faire verb explorer incomplete: '+title+' '+body);
+                const forms=await page.locator('#verbDialog .verbFormSpeak').count();
+                if(forms!==6)throw new Error('Expected six present forms, got '+forms);
+                await page.click('#closeVerbDialog');
+
+                const swimming=page.locator('.personalInterestCard').filter({hasText:'J’aime nager.'});
+                await swimming.locator('.verbExplain').nth(1).click();
+                const swimBody=await page.locator('#verbDialogBody').textContent();
+                if(!swimBody.includes('infinitive')||!swimBody.includes('to swim')||!swimBody.includes('je nage')||!swimBody.includes('nous nageons'))throw new Error('nager verb explorer incomplete');
+
+                console.log('PASS',{version,cards,verbs,title,forms});
+                await browser.close();
+                return;
+              }catch(err){
+                console.error('attempt',attempt,err.message);
+                await browser.close();
+                if(attempt===10)throw err;
+                await sleep(5000);
+              }
+            }
+          })().catch(err=>{console.error(err);process.exit(1)});
+          NODE
