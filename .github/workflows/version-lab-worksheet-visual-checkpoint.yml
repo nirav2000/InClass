@@ -1,0 +1,18 @@
+name: Capture worksheet visual redesign checkpoint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/version-lab-worksheet-visual-checkpoint.yml"
+
+jobs:
+  checkpoint:
+    uses: nirav2000/Apps/.github/workflows/version-lab-release.yml@main
+    with:
+      title: "French worksheet visual redesign"
+      summary: "Redesigned the French opinions worksheet recreation to use the web canvas properly: a large illustrated pupil portrait, large animal and opinion visuals, clearer worksheet-like spacing, and no school badge inside the source-clue area."
+      areas: "Worksheet recreation::ui::Made the digital clue card resemble the supplied worksheet more closely|Visual hierarchy::ui::Added large pupil portraits and enlarged animal/opinion imagery|Source fidelity::quality::Removed the in-card school badge so it cannot be mistaken for worksheet content|Responsive layout::ui::Used the available width on desktop while preserving a stacked mobile layout"
+      product_version: "2026.10.05.2"
+    permissions:
+      contents: write
