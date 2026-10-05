@@ -165,7 +165,7 @@ function renderOpinions(){
 }
 
 function bindInlineAudio(){
-  $(".inlineSpeak").forEach(function(b){
+  Array.from(document.querySelectorAll(".inlineSpeak")).forEach(function(b){
     if(b.dataset.bound)return;
     b.dataset.bound="1";
     b.onclick=function(e){e.preventDefault();e.stopPropagation();speak(decodeURIComponent(b.dataset.say),"fr-FR");};
@@ -174,13 +174,13 @@ function bindInlineAudio(){
 function setupOpinions(){
   const w=state.week;
   bindInlineAudio();
-  $(".wordButton").forEach(function(b){b.onclick=function(){speak(decodeURIComponent(b.dataset.audio),"fr-FR");bump("requiredHeard");};});
-  $(".revealWord").forEach(function(b){b.onclick=function(){
+  Array.from(document.querySelectorAll(".wordButton")).forEach(function(b){b.onclick=function(){speak(decodeURIComponent(b.dataset.audio),"fr-FR");bump("requiredHeard");};});
+  Array.from(document.querySelectorAll(".revealWord")).forEach(function(b){b.onclick=function(){
     const m=b.querySelector(".revealMeaning");
     if(m.dataset.revealed==="1"){speak(decodeURIComponent(b.dataset.audio),"fr-FR");return;}
     m.textContent=b.dataset.meaning;m.dataset.revealed="1";
   };});
-  $(".personalInterestCard").forEach(function(b){b.onclick=function(){
+  Array.from(document.querySelectorAll(".personalInterestCard")).forEach(function(b){b.onclick=function(){
     const small=b.querySelector("small");
     if(small.dataset.revealed==="1"){speak(decodeURIComponent(b.dataset.audio),"fr-FR");return;}
     small.textContent=b.dataset.meaning;small.dataset.revealed="1";
