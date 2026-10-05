@@ -124,3 +124,25 @@ body{min-height:100vh}
 .opinionPersonCard h4{margin:0;font-size:20px}
 #writeAnswer{width:100%;margin:12px 0;resize:vertical}
 @media(max-width:640px){.opinionClues{grid-template-columns:1fr}.opinionConnector{padding:2px 0}.opinionBuilder{grid-template-columns:1fr}.opinionClue{grid-template-columns:auto 1fr}}
+
+.worksheetStage{margin-top:12px}
+.opinionWorksheetCard{display:grid;grid-template-columns:minmax(170px,220px) 1fr;gap:28px;align-items:center;padding:22px;border:2px solid #d7e0e6;border-radius:26px;background:#fff;box-shadow:0 10px 30px rgba(31,52,73,.06)}
+.worksheetPerson{display:flex;justify-content:center}.personPortraitSvg{width:100%;max-width:190px;height:auto;display:block}
+.worksheetClues{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:22px;align-items:center}
+.worksheetOpinionBlock{display:flex;align-items:center;justify-content:center;gap:20px;min-height:170px;padding:18px 22px;border-radius:22px;background:#f7fafc;border:1px solid #e2e8ee}
+.worksheetOpinionSymbol{font-size:54px;line-height:1;letter-spacing:-5px;white-space:nowrap}
+.worksheetAnimalPicture{display:flex;align-items:center;justify-content:center;min-width:120px;min-height:120px}
+.animalEmoji{font-size:94px;line-height:1}
+.worksheetConnector{font-weight:900;letter-spacing:.08em;color:#5b6f82;font-size:16px;text-align:center}
+.worksheetNote{grid-column:1/-1;margin-top:4px;padding:10px 12px;border-radius:12px;background:#fff8e6;border:1px solid #f0d997;color:#7a5a00;display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.opinionWorksheetCard.isCompact{grid-template-columns:minmax(120px,160px) 1fr;padding:16px;gap:20px}
+.opinionWorksheetCard.isCompact .worksheetOpinionBlock{min-height:120px}.opinionWorksheetCard.isCompact .animalEmoji{font-size:70px}.opinionWorksheetCard.isCompact .worksheetOpinionSymbol{font-size:42px}
+@media(max-width:760px){
+  .opinionWorksheetCard,.opinionWorksheetCard.isCompact{grid-template-columns:1fr}
+  .personPortraitSvg{max-width:150px}
+  .worksheetClues{grid-template-columns:1fr;gap:12px}
+  .worksheetConnector{padding:2px 0}
+  .worksheetOpinionBlock{min-height:130px}
+  .animalEmoji{font-size:78px}
+  .worksheetOpinionSymbol{font-size:46px}
+}
