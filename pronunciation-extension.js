@@ -5,6 +5,7 @@ const previousFrench=window.renderFrench;
 let pronunciationCoach=null;
 
 function currentTarget(){
+  if(state.week&&state.week.opinionsHomework&&state.current&&state.current.opinionSentence)return state.current.opinionSentence;
   const el=document.getElementById('builtFrench');
   return (el&&el.textContent||'J’ai un chien noir et intelligent.').trim();
 }
@@ -14,12 +15,13 @@ function addPronunciationLab(){
 
   if(state.week&&state.week.opinionsHomework){
     setNav([
-      ['frDecode','Decode'],
-      ['frLearn','School words'],
+      ['frBridge','Bridge'],
+      ['frOpinions','Opinions'],
       ['frBuild','Build'],
+      ['frFluency','Fluency'],
       ['frSpeak','Speak'],
-      ['frWrite','Write'],
-      ['frExplore','Understand']
+      ['frWrite','Homework ready'],
+      ['frExplore','Extend']
     ]);
   }else{
     setNav([
@@ -35,12 +37,12 @@ function addPronunciationLab(){
   const explore=document.getElementById('frExplore');
   if(!explore)return;
   const oldEyebrow=explore.querySelector('.sectionHead .eyebrow');
-  if(oldEyebrow)oldEyebrow.textContent='STEP '+(state.week&&state.week.opinionsHomework?'6':'6');
+  if(oldEyebrow)oldEyebrow.textContent='STEP '+(state.week&&state.week.opinionsHomework?'7':'6');
   if(state.week&&state.week.opinionsHomework){
     const write=document.getElementById('frWrite');
     if(write){
       const writeEyebrow=write.querySelector('.sectionHead .eyebrow');
-      if(writeEyebrow)writeEyebrow.textContent='STEP 5';
+      if(writeEyebrow)writeEyebrow.textContent='STEP 6';
     }
   }
 
@@ -48,11 +50,16 @@ function addPronunciationLab(){
   section.id='frSpeak';
   section.className='panel';
   section.innerHTML=
-    '<div class="sectionHead"><div><p class="eyebrow">STEP '+(state.week&&state.week.opinionsHomework?'4':'5')+'</p><h3>Match the pronunciation</h3></div><span class="homeworkBadge">test feature</span></div>'+
-    '<p class="tip">Use the sentence you just built. InClass prepares an AI-generated standard pronunciation automatically. A parent or teacher can replace it with their own model if needed, then the child records an attempt.</p>'+
+    '<div class="sectionHead"><div><p class="eyebrow">STEP '+(state.week&&state.week.opinionsHomework?'5':'5')+'</p><h3>Make the sentence sound familiar</h3></div><span class="homeworkBadge">speaking</span></div>'+
+    '<p class="tip">'+(state.week&&state.week.opinionsHomework?'You already know what the sentence means and how to build it. Now hear a good model and say the complete sentence so the French starts to become automatic.':'Use the sentence you just built. InClass prepares an AI-generated standard pronunciation automatically. A parent or teacher can replace it with their own model if needed, then the child records an attempt.')+'</p>'+
     '<div id="pronunciationLab"></div>'+
     '<div id="pronunciationHistory" class="miniRule"><strong>Practice history</strong><span>No attempts yet.</span></div>';
-  explore.parentNode.insertBefore(section,explore);
+  if(state.week&&state.week.opinionsHomework){
+    const write=document.getElementById('frWrite');
+    write.parentNode.insertBefore(section,write);
+  }else{
+    explore.parentNode.insertBefore(section,explore);
+  }
 
   const host=document.getElementById('pronunciationLab');
   if(!window.AppsPronunciation){
