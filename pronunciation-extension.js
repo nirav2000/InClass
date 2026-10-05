@@ -12,25 +12,43 @@ function currentTarget(){
 function addPronunciationLab(){
   if(!state.week||state.week.subjectKey!=='french')return;
 
-  setNav([
-    ['frLearn','School words'],
-    ['frSpell','Spell'],
-    ['frDictation','Write'],
-    ['frBuild','Sentence'],
-    ['frSpeak','Speak'],
-    ['frExplore','Explore']
-  ]);
+  if(state.week&&state.week.opinionsHomework){
+    setNav([
+      ['frDecode','Decode'],
+      ['frLearn','School words'],
+      ['frBuild','Build'],
+      ['frSpeak','Speak'],
+      ['frWrite','Write'],
+      ['frExplore','Understand']
+    ]);
+  }else{
+    setNav([
+      ['frLearn','School words'],
+      ['frSpell','Spell'],
+      ['frDictation','Write'],
+      ['frBuild','Sentence'],
+      ['frSpeak','Speak'],
+      ['frExplore','Explore']
+    ]);
+  }
 
   const explore=document.getElementById('frExplore');
   if(!explore)return;
   const oldEyebrow=explore.querySelector('.sectionHead .eyebrow');
-  if(oldEyebrow)oldEyebrow.textContent='STEP 6';
+  if(oldEyebrow)oldEyebrow.textContent='STEP '+(state.week&&state.week.opinionsHomework?'6':'6');
+  if(state.week&&state.week.opinionsHomework){
+    const write=document.getElementById('frWrite');
+    if(write){
+      const writeEyebrow=write.querySelector('.sectionHead .eyebrow');
+      if(writeEyebrow)writeEyebrow.textContent='STEP 5';
+    }
+  }
 
   const section=document.createElement('section');
   section.id='frSpeak';
   section.className='panel';
   section.innerHTML=
-    '<div class="sectionHead"><div><p class="eyebrow">STEP 5</p><h3>Match the pronunciation</h3></div><span class="homeworkBadge">test feature</span></div>'+
+    '<div class="sectionHead"><div><p class="eyebrow">STEP '+(state.week&&state.week.opinionsHomework?'4':'5')+'</p><h3>Match the pronunciation</h3></div><span class="homeworkBadge">test feature</span></div>'+
     '<p class="tip">Use the sentence you just built. InClass prepares an AI-generated standard pronunciation automatically. A parent or teacher can replace it with their own model if needed, then the child records an attempt.</p>'+
     '<div id="pronunciationLab"></div>'+
     '<div id="pronunciationHistory" class="miniRule"><strong>Practice history</strong><span>No attempts yet.</span></div>';
@@ -81,12 +99,15 @@ function addPronunciationLab(){
     if(pronunciationCoach)pronunciationCoach.setTarget(currentTarget(),'fr-FR');
   };
 
-  ['animalSelect','colourSelect','qualitySelect'].forEach(function(id){
+  ['animalSelect','colourSelect','qualitySelect','opinionPerson'].forEach(function(id){
     const el=document.getElementById(id);
     if(el)el.addEventListener('change',function(){setTimeout(syncTarget,0);});
   });
   const shuffle=document.getElementById('shuffleFrench');
   if(shuffle)shuffle.addEventListener('click',function(){setTimeout(syncTarget,0);});
+  document.addEventListener('inclass:pronunciation-target',function(e){
+    if(pronunciationCoach&&e.detail&&e.detail.text)pronunciationCoach.setTarget(e.detail.text,e.detail.lang||'fr-FR');
+  });
 
   host.addEventListener('apps-pronunciation:result',function(e){
     const result=e.detail||{},p=getProgress();
