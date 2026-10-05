@@ -1,0 +1,42 @@
+{
+  "appId": "inclass",
+  "repository": "nirav2000/InClass",
+  "liveUrl": "https://nirav2000.github.io/InClass/",
+  "productVersionFile": null,
+  "snapshotSafety": "read-only-adapter",
+  "snapshot": {
+    "entry": "index.html",
+    "exclude": [
+      ".github",
+      "versionlabs",
+      "version-lab-data"
+    ]
+  },
+  "readOnlyAdapter": {
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ],
+    "blockPatterns": []
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  }
+}

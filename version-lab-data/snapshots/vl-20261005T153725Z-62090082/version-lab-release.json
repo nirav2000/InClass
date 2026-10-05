@@ -1,0 +1,78 @@
+{
+  "checkpointId": "vl-20261005T153725Z-62090082",
+  "appId": "inclass",
+  "productVersion": "2026.10.05.2",
+  "commit": "62090082e3e11974380b606cb3e061ca1b7b3ff0",
+  "sourceRef": null,
+  "createdAt": "2026-10-05T15:37:25.721Z",
+  "title": "French worksheet visual redesign",
+  "summary": "Redesigned the French opinions worksheet recreation to use the web canvas properly: a large illustrated pupil portrait, large animal and opinion visuals, clearer worksheet-like spacing, and no school badge inside the source-clue area.",
+  "areas": [
+    {
+      "id": "worksheet-recreation",
+      "title": "Worksheet recreation",
+      "kind": "ui",
+      "summary": "Made the digital clue card resemble the supplied worksheet more closely"
+    },
+    {
+      "id": "visual-hierarchy",
+      "title": "Visual hierarchy",
+      "kind": "ui",
+      "summary": "Added large pupil portraits and enlarged animal/opinion imagery"
+    },
+    {
+      "id": "source-fidelity",
+      "title": "Source fidelity",
+      "kind": "quality",
+      "summary": "Removed the in-card school badge so it cannot be mistaken for worksheet content"
+    },
+    {
+      "id": "responsive-layout",
+      "title": "Responsive layout",
+      "kind": "ui",
+      "summary": "Used the available width on desktop while preserving a stacked mobile layout"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/62090082e3e11974380b606cb3e061ca1b7b3ff0",
+  "snapshotUrl": "./snapshots/vl-20261005T153725Z-62090082/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": false
+  }
+}

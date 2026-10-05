@@ -1,0 +1,145 @@
+{
+  "generatedAt": "2026-09-30T12:24:18.068Z",
+  "totalCommits": 98,
+  "max": 12,
+  "reviewed": true,
+  "checkpoints": [
+    {
+      "sha": "6e131249b49a3f276e69611d42fb15c6b8301e16",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "First runnable InClass homework app",
+      "suggestedSummary": "First runnable InClass French weekly-homework application milestone.",
+      "areas": [
+        "Core app::product::First runnable weekly homework experience"
+      ],
+      "order": 1
+    },
+    {
+      "sha": "64de829f79a67307f4d348b44f132f0ae61da2a3",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Offline PWA shell",
+      "suggestedSummary": "Added the InClass offline application shell and service-worker support.",
+      "areas": [
+        "Offline app::platform::PWA shell and offline support"
+      ],
+      "order": 2
+    },
+    {
+      "sha": "90854b87641a527bc0ece91df099d12f351aa7b6",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Dated homework packs",
+      "suggestedSummary": "Refreshed the app around retained dated homework packs and their offline cache.",
+      "areas": [
+        "Homework packs::data::Dated retained homework structure"
+      ],
+      "order": 3
+    },
+    {
+      "sha": "d1f950636098a400d59449f567cb84085de45ecf",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Spaced review and French conversation",
+      "suggestedSummary": "Added spaced retrieval of earlier work and constrained French conversation practice.",
+      "areas": [
+        "Spaced review::learning::Previous-work retrieval",
+        "French conversation::learning::Constrained speaking practice"
+      ],
+      "order": 4
+    },
+    {
+      "sha": "dcdf3b5adb984a1e3a43f03108e8ceb8ff25e0e0",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "French extension and dictation",
+      "suggestedSummary": "Added French extension vocabulary, grammar presentation and paper dictation support.",
+      "areas": [
+        "French extension::learning::Vocabulary and grammar",
+        "Dictation::learning::Paper writing checklist"
+      ],
+      "order": 5
+    },
+    {
+      "sha": "2745e68ef04f772575c780be561ca0588752206d",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Word help and grammar explanations",
+      "suggestedSummary": "Added word help, noun practice and deeper French gender explanations.",
+      "areas": [
+        "Word help::learning::Definitions and examples",
+        "Grammar support::learning::Noun and gender explanations"
+      ],
+      "order": 6
+    },
+    {
+      "sha": "d612065f50435f9ecf643215384eca422a086040",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Welcome and role dashboards",
+      "suggestedSummary": "Added the welcome experience and learner, parent and teacher dashboard views.",
+      "areas": [
+        "Welcome::ui::Application entry experience",
+        "Role dashboards::ui::Learner parent teacher views"
+      ],
+      "order": 7
+    },
+    {
+      "sha": "5973f4903ad4119da78d71affc9eae4fbd7065b2",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Firebase-ready provider boundary",
+      "suggestedSummary": "Introduced the Firebase provider interface so cloud persistence can be added without rewriting lessons.",
+      "areas": [
+        "Persistence architecture::platform::Firebase provider boundary"
+      ],
+      "order": 8
+    },
+    {
+      "sha": "34b087c78f1e3bf6671e33b74864883769560333",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Homework-first learning hierarchy",
+      "suggestedSummary": "Separated required homework, understanding and extension so school work stays primary.",
+      "areas": [
+        "Learning hierarchy::learning::Required understanding extension tiers"
+      ],
+      "order": 9
+    },
+    {
+      "sha": "141c6f16d0db9e8698265335455693bbfbaa5373",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Required-homework completion model",
+      "suggestedSummary": "Changed French completion so required school homework, rather than optional extension, determines progress.",
+      "areas": [
+        "Progress model::learning::Required homework drives completion"
+      ],
+      "order": 10
+    },
+    {
+      "sha": "381362818f7cdd6167d504120cd1e31dca563b4c",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Shared pronunciation lab",
+      "suggestedSummary": "Added the reusable shared pronunciation lab to French lessons.",
+      "areas": [
+        "Pronunciation::learning::Shared voice analysis component"
+      ],
+      "order": 11
+    },
+    {
+      "sha": "30add77eff2e88fcd9aad88b7375eee9eb9967cb",
+      "date": "2026-09-29",
+      "tag": null,
+      "suggestedTitle": "Generated pronunciation reference",
+      "suggestedSummary": "Completed the generated pronunciation-reference integration and provider labelling in InClass.",
+      "areas": [
+        "Pronunciation model::learning::Generated default reference",
+        "Shared platform::platform::External pronunciation provider"
+      ],
+      "order": 12
+    }
+  ]
+}
