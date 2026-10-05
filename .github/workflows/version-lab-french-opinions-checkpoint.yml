@@ -1,0 +1,18 @@
+name: Capture French opinions homework checkpoint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/version-lab-french-opinions-checkpoint.yml"
+
+jobs:
+  checkpoint:
+    uses: nirav2000/Apps/.github/workflows/version-lab-release.yml@main
+    with:
+      title: "French opinions homework"
+      summary: "Added the latest Year 5 French homework as a dated InClass pack, progressing from picture-clue decoding through school vocabulary, sentence construction, pronunciation practice and independent writing."
+      areas: "Latest French homework::feature::Added the opinions-about-animals worksheet as a new dated week|Homework pathway::learning::Decode, learn, build, speak and write independently|Pronunciation::learning::Connected the shared generated-reference voice lab to the new school sentence|Source fidelity::quality::Flagged the Chantal worksheet ambiguity instead of silently correcting it"
+      product_version: "2026.10.05.1"
+    permissions:
+      contents: write
