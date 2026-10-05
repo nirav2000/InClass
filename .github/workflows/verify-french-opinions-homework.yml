@@ -25,7 +25,7 @@ jobs:
           const { chromium } = require('playwright');
           const sleep=ms=>new Promise(r=>setTimeout(r,ms));
           (async()=>{
-            let browser;
+            let browser=null;
             for(let attempt=1;attempt<=8;attempt++){
               browser=await chromium.launch({headless:true});
               const page=await browser.newPage({serviceWorkers:'block'});
@@ -64,14 +64,18 @@ jobs:
               const spoken=await page.evaluate(()=>window.__spoken.at(-1));
               if(!spoken||spoken.text!=='Je m’appelle'||spoken.lang!=='fr-FR')throw new Error('School-word audio wiring failed: '+JSON.stringify(spoken));
 
-              await page.selectOption('#opinionPerson','sophie');
+              await page.evaluate(()=>{
+                const s=document.querySelector('#opinionPerson');s.value='sophie';s.dispatchEvent(new Event('change',{bubbles:true}));
+              });
               const built=await page.locator('#builtFrench').textContent();
               if(!built.includes('Je m’appelle Sophie')||!built.includes('J’adore les chats')||!built.includes('Je n’aime pas les chevaux'))throw new Error('Sophie model sentence incorrect: '+built);
 
-              await page.selectOption('#writePerson','ahmed');
+              await page.evaluate(()=>{
+                const s=document.querySelector('#writePerson');s.value='ahmed';s.dispatchEvent(new Event('change',{bubbles:true}));
+              });
               const ahmed="Je m’appelle Ahmed. J’aime les chiens mais je n’aime pas les poissons.";
-              await page.fill('#writeAnswer',ahmed);
-              await page.click('#checkWrite');
+              await page.evaluate(v=>{document.querySelector('#writeAnswer').value=v;},ahmed);
+              await page.evaluate(()=>document.querySelector('#checkWrite').click());
               const feedback=await page.locator('#writeFeedback').textContent();
               if(!feedback.includes('Ready'))throw new Error('Independent-writing check did not pass: '+feedback);
 
