@@ -197,17 +197,17 @@ function renderProgress(){
     ];
   } else if(state.week.opinionsHomework){
     var opinionMeasures=[
-      Math.min((p.decodedCorrect||0)/4,1),
-      Math.min((p.requiredHeard||0)/6,1),
-      Math.min((p.pronunciationAttempts||0)/2,1),
+      Math.min((p.requiredHeard||0)/8,1),
+      Math.min((p.sentencesBuilt||0)/4,1),
+      Math.min((p.fluencyAttempts||0)/8,1),
       Math.min((p.independentCorrect||0)/3,1)
     ];
     pct=Math.round(opinionMeasures.reduce(function(a,b){return a+b;},0)/opinionMeasures.length*100);
     stats=[
-      ["Clues decoded",p.decodedCorrect||0],
-      ["French listened to",p.requiredHeard||0],
-      ["Speaking attempts",p.pronunciationAttempts||0],
-      ["Independent writing",p.independentCorrect||0]
+      ["French heard",p.requiredHeard||0],
+      ["Sentences built",p.sentencesBuilt||0],
+      ["Fluency cues",p.fluencyAttempts||0],
+      ["Homework-ready writes",p.independentCorrect||0]
     ];
   } else {
     var requiredHeard=p.requiredHeard||p.heard||0;
@@ -243,9 +243,9 @@ function renderSourceNote(){
       '<p><strong>Understanding layer:</strong> clickable grammar terms, visual examples and learner-friendly definitions sit behind the homework rather than replacing it.</p>';
   } else if(state.week.opinionsHomework){
     $("#sourceNote").innerHTML=
-      '<strong>Latest school homework retained</strong>'+
-      '<p>The required path follows the teacher instruction: <em>Je m’appelle + name</em>, animal opinions, and <em>et / mais</em>, progressing from picture clues to independent writing.</p>'+
-      '<p><strong>Source caution:</strong> the separate “Les Opinions” and animals sheets have not been supplied to InClass, and the printed Chantal example appears inconsistent with its pictured fish clue. The app flags that ambiguity instead of hiding it.</p>';
+      '<strong>Both school sheets stored</strong>'+
+      '<p>The writing homework and the supplied <em>Les opinions</em> reference sheet are available from inside the lesson. The lesson teaches the reusable language first—opinions, <em>les</em>, plural animal vocabulary and <em>et/mais</em>—then rehearses the actual homework at the end.</p>'+
+      '<p><strong>Source discrepancy retained:</strong> Chantal\'s printed model says she hates birds, while its picture shows a goldfish. The reference sheet supports <em>les poissons rouges</em>; InClass flags the mismatch rather than silently rewriting the source.</p>';
   } else {
     $("#sourceNote").innerHTML=
       '<strong>School homework retained</strong>'+
