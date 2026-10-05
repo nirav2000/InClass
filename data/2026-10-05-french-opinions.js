@@ -11,7 +11,7 @@ window.INCLASS_WEEKS.push({
   sourceNote:"The supplied ‘Les opinions’ sheet confirms the five opinion symbols and the animal vocabulary. The printed Chantal example on the writing sheet says ‘je déteste les oiseaux’ even though the negative picture is a fish/goldfish; the visual cue plus reference sheet support ‘les poissons rouges’. InClass keeps that source discrepancy visible.",
   sourceSheets:[
     {id:"homework",title:"Writing homework",kind:"homework",parts:["assets/source-sheets/2026-10-05-homework.01.b64","assets/source-sheets/2026-10-05-homework.02.b64","assets/source-sheets/2026-10-05-homework.03.b64"],mime:"image/webp"},
-    {id:"opinions",title:"Les opinions reference sheet",kind:"reference",parts:["assets/source-sheets/2026-10-05-opinions.01.b64","assets/source-sheets/2026-10-05-opinions.02.b64","assets/source-sheets/2026-10-05-opinions.03.b64","assets/source-sheets/2026-10-05-opinions.04.b64","assets/source-sheets/2026-10-05-opinions.05.b64","assets/source-sheets/2026-10-05-opinions.06.b64","assets/source-sheets/2026-10-05-opinions.07.b64"],mime:"image/webp"}
+    {id:"opinions",title:"Les opinions reference sheet",kind:"reference",parts:["assets/source-sheets/2026-10-05-opinions.01.b64","assets/source-sheets/2026-10-05-opinions.02.b64","assets/source-sheets/2026-10-05-opinions.03.b64","assets/source-sheets/2026-10-05-opinions.04.b64"],mime:"image/webp"}
   ],
   contentTiers:{
     required:[
@@ -73,7 +73,7 @@ window.INCLASS_WEEKS.push({
     {
       id:"ahmed",name:"Ahmed",
       first:{opinion:"aime",animal:"chiens"},
-      connector:"et",
+      connector:"mais",
       second:{opinion:"prefere",animal:"poissons"}
     },
     {
