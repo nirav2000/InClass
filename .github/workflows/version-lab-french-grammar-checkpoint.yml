@@ -1,0 +1,18 @@
+name: Capture French grammar fluency checkpoint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/version-lab-french-grammar-checkpoint.yml"
+
+jobs:
+  checkpoint:
+    uses: nirav2000/Apps/.github/workflows/version-lab-release.yml@main
+    with:
+      title: "French articles and negation fluency"
+      summary: "Expanded the French opinions lesson to explicitly teach the definite article and le/la/l’/les, explain and practise ne…pas, add pronunciation controls beside new French examples, make prior vocabulary meanings reveal on demand, and extend the language into Sai-relevant activities."
+      areas: "Definite articles::learning::Explained that les means the, defined definite article and introduced le la l’ and les|Negation::learning::Explained ne…pas and n’aime pas with additional practice|Pronunciation::learning::Added hear controls beside new French sentences and grammar examples|Retrieval::learning::Made old vocabulary English meanings reveal on touch so recall is attempted first|Personalisation::extension::Added sailing hockey netball orchestra and swimming French examples|Source fidelity::content::Kept beaucoup as an optional intensifier from the school reference sheet rather than part of the core phrase"
+      product_version: "2026.10.05.4"
+    permissions:
+      contents: write
