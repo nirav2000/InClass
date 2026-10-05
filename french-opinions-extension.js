@@ -210,9 +210,9 @@ function setupOpinions(){
     const meaning=card.querySelector(".personalMeaning"),play=card.querySelector(".personalSpeak");
     meaning.onclick=function(e){
       e.stopPropagation();
-      if(meaning.dataset.revealed==="1"){meaning.textContent="Hide English";meaning.dataset.revealed="2";return;}
-      if(meaning.dataset.revealed==="2"){meaning.textContent=card.dataset.meaning;meaning.dataset.revealed="1";return;}
-      meaning.textContent=card.dataset.meaning;meaning.dataset.revealed="1";
+      const open=meaning.dataset.revealed==="1";
+      meaning.textContent=open?"Tap for English":card.dataset.meaning;
+      meaning.dataset.revealed=open?"0":"1";
     };
     play.onclick=function(e){e.stopPropagation();speak(decodeURIComponent(card.dataset.audio),"fr-FR");};
   });
