@@ -73,7 +73,7 @@ window.INCLASS_WEEKS.push({
     {
       id:"ahmed",name:"Ahmed",
       first:{opinion:"aime",animal:"chiens"},
-      connector:"mais",
+      connector:"et",
       second:{opinion:"prefere",animal:"poissons"}
     },
     {
