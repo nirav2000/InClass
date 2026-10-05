@@ -68,7 +68,7 @@ jobs:
                 const s=document.querySelector('#opinionPerson');s.value='sophie';s.dispatchEvent(new Event('change',{bubbles:true}));
               });
               const built=await page.locator('#builtFrench').textContent();
-              if(!built.includes('Je m’appelle Sophie')||!built.includes('J’adore les chats')||!built.includes('Je n’aime pas les chevaux'))throw new Error('Sophie model sentence incorrect: '+built);
+              if(!built.includes('Je m’appelle Sophie')||!built.includes('J’adore les chats')||!built.includes('je n’aime pas les chevaux'))throw new Error('Sophie model sentence incorrect: '+built);
 
               await page.evaluate(()=>{
                 const s=document.querySelector('#writePerson');s.value='ahmed';s.dispatchEvent(new Event('change',{bubbles:true}));
@@ -91,5 +91,5 @@ jobs:
               return;
             }
             throw new Error('Latest deployed page did not expose the new opinions pack in time');
-          })().catch(async err=>{console.error(err);if(browser)await browser.close().catch(()=>{});process.exit(1)});
+          })().catch(async err=>{console.error(err);process.exit(1)});
           NODE
