@@ -158,9 +158,12 @@ function renderOpinions(){
       '<p class="tip">Now do what the worksheet asks, but after the teaching rather than before it. Use the source sheet if you genuinely need it; aim to need it less each time.</p>'+
       '<label class="wideLabel">Person<select id="writePerson"></select></label>'+
       '<div id="writeClue"></div>'+
-      '<textarea id="writeAnswer" rows="4" spellcheck="false" placeholder="Je m’appelle …"></textarea>'+
+      '<div class="answerModeBar" role="group" aria-label="Answer input method"><button type="button" class="answerMode active" id="writeTypeMode" aria-pressed="true">⌨️ Type</button><button type="button" class="answerMode" id="writePencilMode" aria-pressed="false">✏️ Write with Pencil</button><span class="answerLanguage">French · fr-FR</span></div>'+
+      '<div id="pencilKeyboardPrompt" class="pencilKeyboardPrompt hidden"><div><strong>Writing in French?</strong><p>For better Apple Pencil recognition, use the <strong>Français</strong> keyboard. Tap the 🌐 globe on the iPad keyboard and choose <strong>Français</strong>.</p><small>InClass can mark this answer as French, but iPadOS does not allow a website to switch the keyboard for you.</small></div><button type="button" class="secondary" id="dismissPencilKeyboardPrompt">Got it</button><label><input type="checkbox" id="dontShowPencilKeyboardPrompt"> Don’t show this again</label></div>'+
+      '<textarea id="writeAnswer" rows="4" lang="fr-FR" inputmode="text" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Je m’appelle …" aria-label="French sentence answer"></textarea>'+
+      '<p id="pencilHint" class="pencilHint hidden">Write directly in the lined box with Apple Pencil. Scribble will convert your handwriting to text. Check the <strong>I read</strong> line before marking your answer.</p>'+
       '<div class="row"><button class="primary" id="checkWrite">Check my sentence</button><button class="secondary sourceSheetButton" data-source-sheet="opinions">View Les opinions</button><button class="secondary" id="revealWrite">Reveal model</button></div>'+
-      '<p id="writeFeedback" class="feedback"></p><div id="writeChecklist" class="grammarGrid"></div>'
+      '<p id="writeReadback" class="writeReadback hidden"></p><p id="writeFeedback" class="feedback"></p><div id="writeChecklist" class="grammarGrid"></div>'
     )+
     panel("frExplore",7,"Extend towards real French",
       '<p class="tip">These are not required for this week’s homework. They turn the same language into something personal and reusable—the direction we want for long-term fluency.</p>'+
@@ -285,14 +288,47 @@ function setupOpinions(){
   renderFluency();
 
   $("#writePerson").innerHTML=peopleOptions;
+  let writeInputMode="type";
+  const pencilPromptKey="inclass:french-pencil-keyboard-hint-dismissed";
+  function setWriteInputMode(mode){
+    writeInputMode=mode;
+    const isPencil=mode==="pencil";
+    $("#writeTypeMode").classList.toggle("active",!isPencil);
+    $("#writePencilMode").classList.toggle("active",isPencil);
+    $("#writeTypeMode").setAttribute("aria-pressed",String(!isPencil));
+    $("#writePencilMode").setAttribute("aria-pressed",String(isPencil));
+    $("#pencilHint").classList.toggle("hidden",!isPencil);
+    $("#writeAnswer").classList.toggle("pencilAnswer",isPencil);
+    $("#writeAnswer").placeholder=isPencil?"Write here with Apple Pencil…":"Je m’appelle …";
+    if(isPencil && localStorage.getItem(pencilPromptKey)!=="1")$("#pencilKeyboardPrompt").classList.remove("hidden");
+    if(!isPencil)$("#pencilKeyboardPrompt").classList.add("hidden");
+    $("#writeAnswer").focus();
+  }
+  $("#writeTypeMode").onclick=function(){setWriteInputMode("type");};
+  $("#writePencilMode").onclick=function(){setWriteInputMode("pencil");};
+  $("#dismissPencilKeyboardPrompt").onclick=function(){
+    if($("#dontShowPencilKeyboardPrompt").checked)localStorage.setItem(pencilPromptKey,"1");
+    $("#pencilKeyboardPrompt").classList.add("hidden");
+    $("#writeAnswer").focus();
+  };
   function renderWrite(){
     const p=getById(w.people,$("#writePerson").value);
-    $("#writeClue").innerHTML=clueCard(w,p,true);$("#writeAnswer").value='';$("#writeFeedback").textContent='';$("#writeChecklist").innerHTML='';state.current.writePerson=p;
+    $("#writeClue").innerHTML=clueCard(w,p,true);
+    $("#writeAnswer").value='';
+    $("#writeFeedback").textContent='';
+    $("#writeChecklist").innerHTML='';
+    $("#writeReadback").textContent='';
+    $("#writeReadback").classList.add("hidden");
+    state.current.writePerson=p;
   }
   $("#writePerson").onchange=renderWrite;
   $("#revealWrite").onclick=function(){const s=opinionSentence(w,state.current.writePerson);$("#writeFeedback").textContent=s.fr;$("#writeFeedback").className="feedback try";};
   $("#checkWrite").onclick=function(){
-    const p=state.current.writePerson,s=opinionSentence(w,p),answer=norm($("#writeAnswer").value);
+    const p=state.current.writePerson,s=opinionSentence(w,p),rawAnswer=$("#writeAnswer").value,answer=norm(rawAnswer);
+    if(writeInputMode==="pencil"){
+      $("#writeReadback").innerHTML="<strong>I read:</strong> "+escapeHtml(rawAnswer||"—");
+      $("#writeReadback").classList.remove("hidden");
+    }
     const checks=[
       ["Je m’appelle + "+p.name,answer.indexOf(norm("Je m’appelle "+p.name))>=0],
       [s.firstOpinion.fr+" "+s.firstAnimal.fr,answer.indexOf(norm(s.firstOpinion.fr))>=0&&answer.indexOf(norm(s.firstAnimal.fr))>=0],
@@ -303,8 +339,13 @@ function setupOpinions(){
     $("#writeChecklist").innerHTML=checks.map(function(x){return '<div class="grammarCard"><strong>'+(x[1]?'✓ ':'○ ')+escapeHtml(x[0])+'</strong></div>';}).join('');
     $("#writeFeedback").textContent=ok?'Homework ready ✓ You produced the whole sentence from the visual clues.':'Nearly there. Fix the missing chunk rather than rewriting everything.';
     $("#writeFeedback").className='feedback '+(ok?'good':'try');
-    recordLearningAttempt("independent-writing",p.name,ok,{scope:"required",response:answer});
+    if(ok || writeInputMode!=="pencil"){
+      recordLearningAttempt("independent-writing",p.name,ok,{scope:"required",response:answer,inputMode:writeInputMode});
+    }
     if(ok)bump("independentCorrect");
+    if(!ok && writeInputMode==="pencil"){
+      $("#writeFeedback").textContent+=" If the ‘I read’ line is not what you wrote, correct Apple’s transcription and check again — it will not count as a wrong handwriting attempt.";
+    }
   };
   renderWrite();
 }
