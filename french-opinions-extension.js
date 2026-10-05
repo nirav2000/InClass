@@ -109,6 +109,7 @@ function renderOpinions(){
     panel("frOpinions",2,"Make the opinion symbols automatic",
       '<div class="requiredFlag">CORE VOCABULARY</div>'+
       '<p class="tip">This is the school’s own opinion key. Tap each row to hear it. The aim is to see the symbol and know the French without translating through English.</p>'+
+      '<div class="miniRule"><strong>About “beaucoup” on the school sheet</strong><span><strong>beaucoup</strong> means <strong>“a lot”</strong>. The sheet puts it in brackets after <em>J’aime</em> and <em>Je n’aime pas</em>, so it is optional here. Learn the core phrases first: <strong>J’aime</strong> and <strong>Je n’aime pas</strong>.</span></div>'+
       '<div class="opinionLadder">'+opinionLadder+'</div>'+
       '<div class="quickCheckCard"><div><p class="eyebrow">5-SECOND RECALL</p><h4 id="opinionPrompt">❤️❤️</h4><p id="opinionPromptHelp">Say the French aloud before revealing it.</p></div><button class="primary" id="revealOpinion">Reveal</button><button class="secondary" id="nextOpinion">Next</button><strong id="opinionReveal"></strong></div>'
     )+
