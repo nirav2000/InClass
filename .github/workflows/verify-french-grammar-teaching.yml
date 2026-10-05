@@ -1,3 +1,4 @@
+# retry after event-binding fix
 name: Verify French grammar and pronunciation teaching
 
 on:
