@@ -195,6 +195,20 @@ function renderProgress(){
       ["Meanings",(p.meaningCorrect||0)+"/"+(p.meaningAttempts||0)],
       ["Best test",p.bestTest===undefined?"—":p.bestTest+"/12"]
     ];
+  } else if(state.week.opinionsHomework){
+    var opinionMeasures=[
+      Math.min((p.decodedCorrect||0)/4,1),
+      Math.min((p.requiredHeard||0)/6,1),
+      Math.min((p.pronunciationAttempts||0)/2,1),
+      Math.min((p.independentCorrect||0)/3,1)
+    ];
+    pct=Math.round(opinionMeasures.reduce(function(a,b){return a+b;},0)/opinionMeasures.length*100);
+    stats=[
+      ["Clues decoded",p.decodedCorrect||0],
+      ["French listened to",p.requiredHeard||0],
+      ["Speaking attempts",p.pronunciationAttempts||0],
+      ["Independent writing",p.independentCorrect||0]
+    ];
   } else {
     var requiredHeard=p.requiredHeard||p.heard||0;
     var dictationKey="inclass:dictation:"+state.week.id+":"+state.learner;
@@ -227,6 +241,11 @@ function renderSourceNote(){
       '<strong>School homework retained</strong>'+
       '<p>The Year 5 spelling list, plural rule, irregular-plural warm-up and the stated 12-question test structure remain the required path. The supplied slide leaves the test date blank and says next week\'s rule is <em>Double consonants</em>.</p>'+
       '<p><strong>Understanding layer:</strong> clickable grammar terms, visual examples and learner-friendly definitions sit behind the homework rather than replacing it.</p>';
+  } else if(state.week.opinionsHomework){
+    $("#sourceNote").innerHTML=
+      '<strong>Latest school homework retained</strong>'+
+      '<p>The required path follows the teacher instruction: <em>Je m’appelle + name</em>, animal opinions, and <em>et / mais</em>, progressing from picture clues to independent writing.</p>'+
+      '<p><strong>Source caution:</strong> the separate “Les Opinions” and animals sheets have not been supplied to InClass, and the printed Chantal example appears inconsistent with its pictured fish clue. The app flags that ambiguity instead of hiding it.</p>';
   } else {
     $("#sourceNote").innerHTML=
       '<strong>School homework retained</strong>'+
