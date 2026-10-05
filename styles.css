@@ -170,3 +170,16 @@ body{min-height:100vh}
 .revealWord{position:relative}.revealWord .revealMeaning{color:#76899a}.revealWord .speakerHint{position:absolute;right:10px;top:10px}.revealWord .revealMeaning[data-revealed="1"]{color:#2f5e6e;font-weight:700}
 .personalFrench{margin-top:18px;padding:18px;border-radius:18px;background:#f7fafc;border:1px solid #dce4e9}.personalFrench h4{margin:3px 0 12px}.personalInterestGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.personalInterestCard{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;padding:13px 14px;border:1px solid #dce4e9;border-radius:14px;background:#fff;color:#173047}.personalInterestCard>span{font-size:28px}.personalInterestCard strong,.personalInterestCard small{grid-column:2;display:block}.personalInterestCard small{color:#6a7e8f}.personalInterestCard b{grid-column:3;grid-row:1/3}
 @media(max-width:700px){.articleGrid{grid-template-columns:1fr 1fr}.personalInterestGrid{grid-template-columns:1fr}.negationEquation{font-size:21px}}
+
+.verbExplain{border:0;border-bottom:2px dotted #1d6777;background:transparent;color:inherit;font:inherit;font-weight:inherit;padding:0 1px;cursor:pointer}
+.verbExplain:hover,.verbExplain:focus{background:#e9f6f8;border-radius:4px;outline:none}
+.personalInterestCard{position:relative}
+.personalInterestCard .personalSentence{display:block;line-height:1.5}
+.personalMeaning,.personalSpeak{border:1px solid #d7e2e8;background:#fff;border-radius:10px;padding:7px 10px;cursor:pointer}
+.personalMeaning{grid-column:2;text-align:left;color:#526b7a}
+.personalSpeak{grid-column:3;grid-row:1/3}
+.verbDialog{width:min(720px,92vw);max-height:86vh;border:0;border-radius:20px;padding:20px;box-shadow:0 24px 70px rgba(20,38,55,.25)}
+.verbDialog::backdrop{background:rgba(15,30,44,.35)}
+.verbMeaning{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;padding:14px 0}.verbMeaning strong{font-size:30px;color:#1d6777}.verbMeaning span{font-size:20px}.verbMeaning small{grid-column:1/-1;color:#687c8d}
+.verbForms{display:grid;gap:8px;margin:14px 0}.verbFormSpeak{display:grid;grid-template-columns:minmax(140px,1fr) 1fr auto;gap:12px;align-items:center;padding:11px 13px;border:1px solid #dce5ea;border-radius:12px;background:#fff;text-align:left}.verbFormSpeak strong{font-size:17px}.verbFormSpeak span{color:#607889}.verbFormSpeak b{font-size:18px}
+@media(max-width:620px){.verbFormSpeak{grid-template-columns:1fr auto}.verbFormSpeak span{grid-column:1}.verbMeaning{grid-template-columns:1fr}.verbMeaning small{grid-column:1}}
