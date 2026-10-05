@@ -36,9 +36,9 @@ window.INCLASS_WEEKS.push({
   },
   opinions:[
     {id:"adore",fr:"J’adore",display:"J’adore",en:"I love",symbol:"❤️❤️",strength:5},
-    {id:"aime",fr:"J’aime",display:"J’aime (beaucoup)",en:"I like",symbol:"❤️",strength:4},
+    {id:"aime",fr:"J’aime",display:"J’aime",en:"I like",symbol:"❤️",strength:4},
     {id:"prefere",fr:"Je préfère",display:"Je préfère",en:"I prefer",symbol:"❤️👍",strength:3},
-    {id:"naimepas",fr:"Je n’aime pas",display:"Je n’aime pas (beaucoup)",en:"I don’t like",symbol:"❌❤️",strength:2},
+    {id:"naimepas",fr:"Je n’aime pas",display:"Je n’aime pas",en:"I don’t like",symbol:"❌❤️",strength:2},
     {id:"deteste",fr:"Je déteste",display:"Je déteste",en:"I hate",symbol:"❌❤️❌❤️",strength:1}
   ],
   opinionAnimals:[
