@@ -1,0 +1,18 @@
+name: Capture French opinions fluency lesson checkpoint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/version-lab-french-fluency-checkpoint.yml"
+
+jobs:
+  checkpoint:
+    uses: nirav2000/Apps/.github/workflows/version-lab-release.yml@main
+    with:
+      title: "French opinions fluency lesson"
+      summary: "Rebuilt the latest French week around the school task’s core language: the supplied Les opinions reference sheet, explicit teaching of les, retrieval of prior animal vocabulary, fast opinion-to-animal fluency, sentence construction, homework-ready writing and optional extension towards longer-term French fluency."
+      areas: "Source sheets::content::Stored and made both supplied school sheets viewable inside InClass|Reference sheet::content::Applied Je préfère, the five opinion symbols and the full school animal vocabulary|Grammar teaching::learning::Explicitly taught les for animals in general and plural forms such as oiseaux and chevaux|Prior knowledge::learning::Connected last week’s singular animal sentences to this week’s general opinions|Fluency pathway::learning::Added opinion recall, chunked sentence construction and rapid cue-to-French practice|Homework readiness::learning::Moved worksheet-style rehearsal after teaching so the paper homework should feel easy|Extension::learning::Added personal opinions, preference comparisons and parce que as a GCSE runway|Quality::bug-fix::Corrected English et/mais translation handling and source mappings"
+      product_version: "2026.10.05.3"
+    permissions:
+      contents: write
