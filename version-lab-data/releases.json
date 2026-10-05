@@ -5,6 +5,96 @@
   "liveUrl": "https://nirav2000.github.io/InClass/",
   "releases": [
     {
+      "checkpointId": "vl-20261005T184249Z-ab531303",
+      "appId": "inclass",
+      "productVersion": "2026.10.05.4",
+      "commit": "ab531303813d2906f1d0a32e3f6b99677ed5d093",
+      "sourceRef": null,
+      "createdAt": "2026-10-05T18:42:49.405Z",
+      "title": "French articles and negation fluency",
+      "summary": "Expanded the French opinions lesson to explicitly teach the definite article and le/la/l’/les, explain and practise ne…pas, add pronunciation controls beside new French examples, make prior vocabulary meanings reveal on demand, and extend the language into Sai-relevant activities.",
+      "areas": [
+        {
+          "id": "definite-articles",
+          "title": "Definite articles",
+          "kind": "learning",
+          "summary": "Explained that les means the, defined definite article and introduced le la l’ and les"
+        },
+        {
+          "id": "negation",
+          "title": "Negation",
+          "kind": "learning",
+          "summary": "Explained ne…pas and n’aime pas with additional practice"
+        },
+        {
+          "id": "pronunciation",
+          "title": "Pronunciation",
+          "kind": "learning",
+          "summary": "Added hear controls beside new French sentences and grammar examples"
+        },
+        {
+          "id": "retrieval",
+          "title": "Retrieval",
+          "kind": "learning",
+          "summary": "Made old vocabulary English meanings reveal on touch so recall is attempted first"
+        },
+        {
+          "id": "personalisation",
+          "title": "Personalisation",
+          "kind": "extension",
+          "summary": "Added sailing hockey netball orchestra and swimming French examples"
+        },
+        {
+          "id": "source-fidelity",
+          "title": "Source fidelity",
+          "kind": "content",
+          "summary": "Kept beaucoup as an optional intensifier from the school reference sheet rather than part of the core phrase"
+        }
+      ],
+      "sourceUrl": "https://github.com/nirav2000/InClass/tree/ab531303813d2906f1d0a32e3f6b99677ed5d093",
+      "snapshotUrl": "./snapshots/vl-20261005T184249Z-ab531303/index.html",
+      "snapshotSafety": "read-only-adapter",
+      "compatibility": {
+        "frontend": "archived",
+        "source": "git",
+        "snapshot": "generated",
+        "backend": "shared read-only network adapter injected",
+        "data": "contract recorded"
+      },
+      "data": {
+        "provider": "localStorage",
+        "schemaVersion": "2",
+        "paths": [
+          "localStorage:inclass:v2:*",
+          "localStorage:inclass:*"
+        ],
+        "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+      },
+      "readOnlyAdapter": {
+        "version": 1,
+        "allowedOrigins": [
+          "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+          "https://firestore.googleapis.com",
+          "https://identitytoolkit.googleapis.com"
+        ],
+        "allowReadPostPatterns": [
+          "/reference",
+          ":runQuery",
+          ":batchGet",
+          "/Listen/channel"
+        ]
+      },
+      "platform": {
+        "contract": "v1",
+        "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+      },
+      "generator": {
+        "name": "Apps Version Lab",
+        "contractVersion": 1,
+        "backfilled": false
+      }
+    },
+    {
       "checkpointId": "vl-20261005T182034Z-b127daa0",
       "appId": "inclass",
       "productVersion": "2026.10.05.3",
@@ -1139,5 +1229,5 @@
       }
     }
   ],
-  "generatedAt": "2026-10-05T18:20:34.823Z"
+  "generatedAt": "2026-10-05T18:42:49.405Z"
 }
