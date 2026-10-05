@@ -1,0 +1,102 @@
+{
+  "checkpointId": "vl-20261005T182034Z-b127daa0",
+  "appId": "inclass",
+  "productVersion": "2026.10.05.3",
+  "commit": "b127daa0d91eabe73c5719e87a74664d11ca423d",
+  "sourceRef": null,
+  "createdAt": "2026-10-05T18:20:34.823Z",
+  "title": "French opinions fluency lesson",
+  "summary": "Rebuilt the latest French week around the school task’s core language: the supplied Les opinions reference sheet, explicit teaching of les, retrieval of prior animal vocabulary, fast opinion-to-animal fluency, sentence construction, homework-ready writing and optional extension towards longer-term French fluency.",
+  "areas": [
+    {
+      "id": "source-sheets",
+      "title": "Source sheets",
+      "kind": "content",
+      "summary": "Stored and made both supplied school sheets viewable inside InClass"
+    },
+    {
+      "id": "reference-sheet",
+      "title": "Reference sheet",
+      "kind": "content",
+      "summary": "Applied Je préfère, the five opinion symbols and the full school animal vocabulary"
+    },
+    {
+      "id": "grammar-teaching",
+      "title": "Grammar teaching",
+      "kind": "learning",
+      "summary": "Explicitly taught les for animals in general and plural forms such as oiseaux and chevaux"
+    },
+    {
+      "id": "prior-knowledge",
+      "title": "Prior knowledge",
+      "kind": "learning",
+      "summary": "Connected last week’s singular animal sentences to this week’s general opinions"
+    },
+    {
+      "id": "fluency-pathway",
+      "title": "Fluency pathway",
+      "kind": "learning",
+      "summary": "Added opinion recall, chunked sentence construction and rapid cue-to-French practice"
+    },
+    {
+      "id": "homework-readiness",
+      "title": "Homework readiness",
+      "kind": "learning",
+      "summary": "Moved worksheet-style rehearsal after teaching so the paper homework should feel easy"
+    },
+    {
+      "id": "extension",
+      "title": "Extension",
+      "kind": "learning",
+      "summary": "Added personal opinions, preference comparisons and parce que as a GCSE runway"
+    },
+    {
+      "id": "quality",
+      "title": "Quality",
+      "kind": "bug-fix",
+      "summary": "Corrected English et/mais translation handling and source mappings"
+    }
+  ],
+  "sourceUrl": "https://github.com/nirav2000/InClass/tree/b127daa0d91eabe73c5719e87a74664d11ca423d",
+  "snapshotUrl": "./snapshots/vl-20261005T182034Z-b127daa0/index.html",
+  "snapshotSafety": "read-only-adapter",
+  "compatibility": {
+    "frontend": "archived",
+    "source": "git",
+    "snapshot": "generated",
+    "backend": "shared read-only network adapter injected",
+    "data": "contract recorded"
+  },
+  "data": {
+    "provider": "localStorage",
+    "schemaVersion": "2",
+    "paths": [
+      "localStorage:inclass:v2:*",
+      "localStorage:inclass:*"
+    ],
+    "notes": "Current app data is local-only. Firebase architecture is documented but not connected. Historical snapshots do not imply historical learner data."
+  },
+  "readOnlyAdapter": {
+    "version": 1,
+    "allowedOrigins": [
+      "https://apps-pronunciation-api.nirav2000-github.workers.dev",
+      "https://firestore.googleapis.com",
+      "https://identitytoolkit.googleapis.com"
+    ],
+    "allowReadPostPatterns": [
+      "/reference",
+      ":runQuery",
+      ":batchGet",
+      "/Listen/channel"
+    ]
+  },
+  "platform": {
+    "contract": "v1",
+    "sharedPronunciation": "https://nirav2000.github.io/Apps/apps-pronunciation.js"
+  },
+  "generator": {
+    "name": "Apps Version Lab",
+    "contractVersion": 1,
+    "backfilled": false
+  }
+}
