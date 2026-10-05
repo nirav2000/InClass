@@ -35,9 +35,14 @@ jobs:
               await page.waitForSelector('#subjectSelect',{state:'attached'});
               await page.evaluate(()=>{
                 const s=document.querySelector('#subjectSelect');s.value='French';s.dispatchEvent(new Event('change',{bubbles:true}));
+              });
+              const ready=await page.waitForFunction(()=>Array.from(document.querySelector('#weekSelect').options).some(o=>o.value==='2026-10-05-french-opinions'),null,{timeout:10000}).then(()=>true).catch(()=>false);
+              if(!ready){await browser.close();await sleep(4000);continue;}
+              await page.evaluate(()=>{
                 const w=document.querySelector('#weekSelect');w.value='2026-10-05-french-opinions';w.dispatchEvent(new Event('change',{bubbles:true}));
               });
-              await page.waitForSelector('.opinionWorksheetCard',{state:'attached'});
+              const rendered=await page.waitForSelector('.opinionWorksheetCard',{state:'attached',timeout:10000}).then(()=>true).catch(()=>false);
+              if(!rendered){await browser.close();await sleep(4000);continue;}
               const result=await page.evaluate(()=>{
                 const card=document.querySelector('.opinionWorksheetCard');
                 const portrait=card.querySelector('.personPortraitSvg');
