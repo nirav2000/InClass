@@ -43,6 +43,7 @@ jobs:
               });
               const rendered=await page.waitForSelector('.opinionWorksheetCard',{state:'attached',timeout:10000}).then(()=>true).catch(()=>false);
               if(!rendered){await browser.close();await sleep(4000);continue;}
+              await page.evaluate(()=>document.querySelector('#appShell').classList.remove('hidden'));
               const result=await page.evaluate(()=>{
                 const card=document.querySelector('.opinionWorksheetCard');
                 const portrait=card.querySelector('.personPortraitSvg');
