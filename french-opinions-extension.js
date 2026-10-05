@@ -7,6 +7,9 @@ function getById(list,id){return list.find(function(x){return x.id===id;});}
 function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function englishConnector(fr){return fr==='et'?'and':'but';}
+function audioButton(text,label){
+  return '<button type="button" class="inlineSpeak" data-say="'+encodeURIComponent(text)+'" aria-label="'+(label||'Hear French pronunciation')+'">🔊</button>';
+}
 
 function opinionSentence(w,p){
   const firstOpinion=getById(w.opinions,p.first.opinion),firstAnimal=getById(w.opinionAnimals,p.first.animal);
@@ -72,6 +75,7 @@ function renderOpinions(){
   setNav([
     ['frBridge','Bridge'],
     ['frOpinions','Opinions'],
+    ['frNegation','Don’t / ne…pas'],
     ['frBuild','Build'],
     ['frFluency','Fluency'],
     ['frWrite','Homework ready'],
@@ -83,11 +87,11 @@ function renderOpinions(){
   }).join('');
 
   const animalWords=w.opinionAnimals.map(function(x){
-    return '<button class="wordButton animalRecallButton" data-audio="'+encodeURIComponent(x.fr)+'"><span class="animalEmojiSmall">'+x.emoji+'</span><strong>'+x.fr+'</strong><small>'+x.en+'</small></button>';
+    return '<button class="animalRecallButton revealWord" type="button" data-audio="'+encodeURIComponent(x.fr)+'" data-meaning="'+escapeHtml(x.en)+'"><span class="animalEmojiSmall">'+x.emoji+'</span><strong>'+x.fr+'</strong><small class="revealMeaning">Tap to reveal English</small><span class="speakerHint">🔊</span></button>';
   }).join('');
 
   const bridgeRows=w.priorKnowledge.bridge.map(function(x){
-    return '<div class="bridgeRow"><span class="bridgeOld">'+x.before+'</span><span class="bridgeArrow">→</span><span class="bridgeNew">'+x.after+'</span></div>';
+    return '<div class="bridgeRow"><span class="bridgeOld">'+x.before+' '+audioButton(x.before)+'</span><span class="bridgeArrow">→</span><span class="bridgeNew">'+x.after+' '+audioButton(x.after)+'</span></div>';
   }).join('');
 
   $("#lessonRoot").innerHTML=
@@ -97,8 +101,9 @@ function renderOpinions(){
       '<div class="requiredFlag">BUILD ON LAST WEEK</div>'+
       '<div class="lessonThesis"><strong>The new idea:</strong> last week you described <em>one</em> animal. This week you give an opinion about animals <em>in general</em>.</div>'+
       '<div class="bridgeGrid">'+bridgeRows+'</div>'+
-      '<div class="grammarSpotlight"><div class="grammarSpotlightWord">les</div><div><h4>Why <em>les chiens</em>, not just <em>chiens</em>?</h4><p>French normally uses the definite article when you like, dislike or talk about a whole category. So <strong>J’aime les chiens</strong> literally looks like “I like the dogs”, but natural English is simply <strong>“I like dogs.”</strong></p><p>You are not talking about one particular dog. You mean dogs in general.</p></div></div>'+
-      '<div class="miniRule"><strong>Fast rule</strong><span>Opinion + <b>les</b> + plural animal: J’adore les chats · Je déteste les souris.</span></div>'+
+      '<div class="grammarSpotlight"><div class="grammarSpotlightWord">les</div><div><h4><em>les</em> means <strong>“the”</strong></h4><p>A <strong>definite article</strong> is a small word that comes before a noun and points to a definite thing or group. English mainly uses one: <strong>the</strong>.</p><p>French changes “the” depending on the noun: <strong>le</strong> = masculine singular, <strong>la</strong> = feminine singular, <strong>l’</strong> = singular before a vowel sound, and <strong>les</strong> = plural for <em>both</em> masculine and feminine nouns.</p><p>So <strong>J’aime les chiens</strong> literally contains “the dogs”, but natural English is <strong>“I like dogs.”</strong> French normally keeps the definite article when talking about a whole category.</p></div></div>'+
+      '<div class="articleGrid"><div><strong>le</strong><span>the · masculine singular</span></div><div><strong>la</strong><span>the · feminine singular</span></div><div><strong>l’</strong><span>the · singular before vowel/silent h</span></div><div><strong>les</strong><span>the · all plurals</span></div></div>'+
+      '<div class="miniRule"><strong>Fast rule</strong><span>Opinion + <b>les</b> + plural animal: <span class="speakable">J’adore les chats. '+audioButton("J’adore les chats.")+'</span> <span class="speakable">Je déteste les souris. '+audioButton("Je déteste les souris.")+'</span></span></div>'+
       '<div class="challengeStrip"><strong>Notice the spelling</strong><span>un oiseau → <b>les oiseaux</b> · un cheval → <b>les chevaux</b> · un poisson rouge → <b>les poissons rouges</b></span></div>'
     )+
     panel("frOpinions",2,"Make the opinion symbols automatic",
@@ -107,7 +112,15 @@ function renderOpinions(){
       '<div class="opinionLadder">'+opinionLadder+'</div>'+
       '<div class="quickCheckCard"><div><p class="eyebrow">5-SECOND RECALL</p><h4 id="opinionPrompt">❤️❤️</h4><p id="opinionPromptHelp">Say the French aloud before revealing it.</p></div><button class="primary" id="revealOpinion">Reveal</button><button class="secondary" id="nextOpinion">Next</button><strong id="opinionReveal"></strong></div>'
     )+
-    panel("frBuild",3,"Turn meaning into a French sentence",
+    panel("frNegation",3,"How French says “don’t”: ne … pas",
+      '<div class="requiredFlag">NEW GRAMMAR</div>'+
+      '<div class="lessonThesis"><strong>French wraps the verb in two parts:</strong> <em>ne</em> comes before the verb and <em>pas</em> comes after it.</div>'+
+      '<div class="negationEquation"><span>Je</span><span class="negPart">n’</span><span>aime</span><span class="negPart">pas</span><span>les chiens.</span>'+audioButton("Je n’aime pas les chiens.")+'</div>'+
+      '<p class="tip">Because <strong>aime</strong> starts with a vowel sound, <strong>ne</strong> shortens to <strong>n’</strong>: <strong>ne + aime → n’aime</strong>. So <strong>Je n’aime pas</strong> means <strong>I don’t like</strong>.</p>'+
+      '<div class="miniRule"><strong>Pattern</strong><span>positive: <b>J’aime les chats.</b> '+audioButton("J’aime les chats.")+' → negative: <b>Je n’aime pas les chats.</b> '+audioButton("Je n’aime pas les chats.")+'</span></div>'+
+      '<div class="negationPractice"><label>Make this negative<select id="negationAnimal"></select></label><div id="negationPrompt" class="bigWord"></div><button class="primary" id="checkNegation">Reveal negative</button><div id="negationAnswer" class="feedback"></div></div>'
+    )+
+    panel("frBuild",4,"Turn meaning into a French sentence",
       '<div class="requiredFlag">THE CORE SKILL</div>'+
       '<p class="tip">Do not translate word by word. Think in four reusable chunks: <strong>name → opinion → les + animal → connector → opinion → les + animal</strong>.</p>'+
       '<label class="wideLabel">Person<select id="opinionPerson"></select></label>'+
@@ -120,13 +133,13 @@ function renderOpinions(){
       '</div>'+
       '<div class="miniRule"><strong>Connector meaning</strong><span><b>et</b> = and. <b>mais</b> = but. Choose by the relationship between the ideas, not by a memorised position.</span></div>'
     )+
-    panel("frFluency",4,"Build speed: see it → say it",
+    panel("frFluency",5,"Build speed: see it → say it",
       '<div class="requiredFlag">AUTOMATICITY</div>'+
       '<p class="tip">This is the quickest route to making the homework feel easy. Look at the cue and try to say the French phrase before pressing reveal.</p>'+
       '<div class="fluencyCard"><div id="fluencyCue" class="fluencyCue"></div><p id="fluencyInstruction">Say the opinion + animal in French.</p><strong id="fluencyAnswer" class="fluencyAnswer"></strong><div class="row"><button class="primary" id="fluencyReveal">Reveal</button><button class="secondary" id="fluencyNext">Next cue</button><button class="secondary" id="fluencyHear">🔊 Hear</button></div></div>'+
       '<div class="vocabGroup"><div class="vocabGroupTitle"><h4>Animal bank</h4><span class="homeworkBadge">previous + new</span></div><div class="wordList">'+animalWords+'</div></div>'
     )+
-    panel("frWrite",5,"Homework-ready rehearsal",
+    panel("frWrite",6,"Homework-ready rehearsal",
       '<div class="requiredFlag">SCHOOL TASK</div>'+
       '<p class="tip">Now do what the worksheet asks, but after the teaching rather than before it. Use the source sheet if you genuinely need it; aim to need it less each time.</p>'+
       '<label class="wideLabel">Person<select id="writePerson"></select></label>'+
@@ -135,23 +148,42 @@ function renderOpinions(){
       '<div class="row"><button class="primary" id="checkWrite">Check my sentence</button><button class="secondary sourceSheetButton" data-source-sheet="opinions">View Les opinions</button><button class="secondary" id="revealWrite">Reveal model</button></div>'+
       '<p id="writeFeedback" class="feedback"></p><div id="writeChecklist" class="grammarGrid"></div>'
     )+
-    panel("frExplore",6,"Extend towards real French",
+    panel("frExplore",7,"Extend towards real French",
       '<p class="tip">These are not required for this week’s homework. They turn the same language into something personal and reusable—the direction we want for long-term fluency.</p>'+
       '<div class="grammarGrid">'+
-        '<div class="grammarCard"><strong>Make it true about you</strong><p>Choose two animals and give your real opinions without a person card: <em>J’adore les chiens mais je n’aime pas les souris.</em></p></div>'+
-        '<div class="grammarCard"><strong>Use the new verb</strong><p><em>Je préfère</em> means “I prefer”. Stretch: <strong>Je préfère les chats aux chiens.</strong> That structure will become useful later.</p></div>'+
-        '<div class="grammarCard"><strong>Add a reason</strong><p>GCSE runway: start noticing <strong>parce que</strong> = because. Example: <em>J’aime les chiens parce qu’ils sont intelligents.</em> You do not need to master the whole reason yet.</p></div>'+
+        '<div class="grammarCard"><strong>Make it true about you</strong><p>Choose two animals and give your real opinions without a person card: <em>J’adore les chiens mais je n’aime pas les souris.</em> '+audioButton("J’adore les chiens mais je n’aime pas les souris.")+'</p></div>'+
+        '<div class="grammarCard"><strong>Use the new verb</strong><p><em>Je préfère</em> means “I prefer”. Stretch: <strong>Je préfère les chats aux chiens.</strong> '+audioButton("Je préfère les chats aux chiens.")+'</p></div>'+
+        '<div class="grammarCard"><strong>Add a reason</strong><p>GCSE runway: <strong>parce que</strong> = because. Example: <em>J’aime les chiens parce qu’ils sont intelligents.</em> '+audioButton("J’aime les chiens parce qu’ils sont intelligents.")+'</p></div>'+
         '<div class="grammarCard"><strong>Listen → speak → write</strong><p>Use the pronunciation activity below to make a correct sentence sound familiar before writing it from memory.</p></div>'+
       '</div>'+
+      '<div class="personalFrench"><p class="eyebrow">MAKE FRENCH ABOUT SAI</p><h4>Things you might genuinely have an opinion about</h4><div class="personalInterestGrid">'+w.personalInterests.map(function(x){return '<button class="personalInterestCard" type="button" data-audio="'+encodeURIComponent(x.fr)+'" data-meaning="'+escapeHtml(x.en)+'"><span>'+x.emoji+'</span><strong>'+x.fr+'</strong><small>Tap for English</small><b>🔊</b></button>';}).join('')+'</div></div>'+
       '<details class="optionalBlock"><summary><span>Source note</span><small>Why Chantal looks inconsistent</small></summary><div class="optionalBody"><p>'+escapeHtml(w.sourceNote)+'</p></div></details>'
     );
 
   setupOpinions();
 }
 
+function bindInlineAudio(){
+  $(".inlineSpeak").forEach(function(b){
+    if(b.dataset.bound)return;
+    b.dataset.bound="1";
+    b.onclick=function(e){e.preventDefault();e.stopPropagation();speak(decodeURIComponent(b.dataset.say),"fr-FR");};
+  });
+}
 function setupOpinions(){
   const w=state.week;
-  $$(".wordButton").forEach(function(b){b.onclick=function(){speak(decodeURIComponent(b.dataset.audio),"fr-FR");bump("requiredHeard");};});
+  bindInlineAudio();
+  $(".wordButton").forEach(function(b){b.onclick=function(){speak(decodeURIComponent(b.dataset.audio),"fr-FR");bump("requiredHeard");};});
+  $(".revealWord").forEach(function(b){b.onclick=function(){
+    const m=b.querySelector(".revealMeaning");
+    if(m.dataset.revealed==="1"){speak(decodeURIComponent(b.dataset.audio),"fr-FR");return;}
+    m.textContent=b.dataset.meaning;m.dataset.revealed="1";
+  };});
+  $(".personalInterestCard").forEach(function(b){b.onclick=function(){
+    const small=b.querySelector("small");
+    if(small.dataset.revealed==="1"){speak(decodeURIComponent(b.dataset.audio),"fr-FR");return;}
+    small.textContent=b.dataset.meaning;small.dataset.revealed="1";
+  };});
   $$(".sourceSheetButton").forEach(function(b){b.onclick=function(){openSourceSheet(w,b.dataset.sourceSheet);};});
   $("#closeSourceSheet").onclick=function(){const d=$("#sourceSheetDialog");if(d.close)d.close();else d.removeAttribute('open');};
 
@@ -159,6 +191,21 @@ function setupOpinions(){
   const opinionOptions=optionHtml(w.opinions,function(x){return x.symbol+' · '+x.fr;});
   const animalOptions=optionHtml(w.opinionAnimals,function(x){return x.emoji+' · '+x.fr;});
   const peopleOptions=w.people.map(function(p){return '<option value="'+p.id+'">'+p.name+'</option>';}).join('');
+
+  $("#negationAnimal").innerHTML=animalOptions;
+  function renderNegation(){
+    const a=getById(w.opinionAnimals,$("#negationAnimal").value);
+    $("#negationPrompt").textContent="J’aime "+a.fr+".";
+    $("#negationAnswer").textContent="";
+  }
+  $("#negationAnimal").onchange=renderNegation;
+  $("#checkNegation").onclick=function(){
+    const a=getById(w.opinionAnimals,$("#negationAnimal").value);
+    const text="Je n’aime pas "+a.fr+".";
+    $("#negationAnswer").innerHTML='<strong>'+text+'</strong> '+audioButton(text);
+    bindInlineAudio();
+  };
+  renderNegation();
 
   let opinionIndex=0;
   function renderOpinionPrompt(){
