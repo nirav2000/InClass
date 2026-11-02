@@ -131,15 +131,19 @@
   document.addEventListener("DOMContentLoaded",()=>{
     const s=session();
     $("#welcomeName").textContent=s.role==="learner"?s.displayName:s.displayName;
-    $("#authStatus").textContent=s.provider==="local"?"Local mode · Firebase not connected":"Signed in";
+    $("#authStatus").textContent=s.provider==="local"?"Learning progress · Local preview":"Signed in";
     $$(".roleTab").forEach(b=>b.onclick=()=>{
       const next=window.InClassAuth?.setPreviewRole(b.dataset.role)||Object.assign({},s,{role:b.dataset.role});
       $("#welcomeName").textContent=next.role==="learner"?next.displayName:next.displayName;
       renderRole(b.dataset.role);
     });
-    $("#signInButton").onclick=async()=>{
-      try{await window.InClassAuth.signIn();}
-      catch(e){$("#authMessage").textContent=e.message;$("#authMessage").classList.remove("hidden");}
+    // The app-wide learner accounts are still a local preview. Avoid a broken
+    // generic "Sign in" button: use the verified shared Notes identity flow.
+    $("#signInButton").textContent="Notes account";
+    $("#signInButton").setAttribute("aria-label","Open parent notes synchronisation sign-in");
+    $("#signInButton").onclick=()=>{
+      $("#authMessage").classList.add("hidden");
+      window.dispatchEvent(new Event("inclass:notes-identity-request"));
     };
     $("#enterAppButton").onclick=()=>{
       const last=localStorage.getItem("inclass:lastWeek")||WEEKS[WEEKS.length-1]?.id;
@@ -147,6 +151,7 @@
       launchPack(last,name);
     };
     $("#homeButton").onclick=showHome;
+    const label=$("#inclassReleaseLabel");if(label)label.textContent="v"+String(window.INCLASS_CONFIG?.release||"unknown");
     renderRole(s.role);
   });
 })();
