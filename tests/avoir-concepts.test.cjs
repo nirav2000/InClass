@@ -25,6 +25,10 @@ const convertDataset=s=>s.slice(5).replace(/-([a-z])/g,(_,x)=>x.toUpperCase());
 const parseAttrs=src=>{
   const a={};let m;const re=/([a-zA-Z][\w-]*)\s*=\s*"([^"]*)"/g;
   while((m=re.exec(src)))a[m[1]]=m[2];
+  // Support boolean HTML attributes such as data-av-concept-feedback.
+  for (const match of src.matchAll(/\bdata-[\w-]+(?=\s|\/|$)/g)) {
+    if (!Object.hasOwn(a,match[0])) a[match[0]]="";
+  }
   return a;
 };
 class Node{
