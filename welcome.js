@@ -18,6 +18,12 @@
       const m=[Math.min((p.ruleCorrect||0)/4,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.meaningCorrect||0)/6,1),Math.min((p.sentencesGood||0)/4,1),Math.min((p.testsCompleted||0),1)];
       return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
     }
+    if(pack.avoirHomework){
+      const seen=Object.keys(p.avoirHeard||{}).length;
+      const spell=Math.min((p.spellCorrect||0)/6,1);
+      const school=Math.min((p.bestTest||0)/6,1);
+      return Math.max(Math.round(school*100),Math.round((Math.min(seen/6,1)+spell)*25));
+    }
     const heard=p.requiredHeard||p.heard||0;
     const marks=window.InClassData?window.InClassData.getJson("inclass:dictation:"+pack.id+":"+learnerName,{}):{};
     const core=Object.keys(marks).filter(k=>k.indexOf("core:")===0);
