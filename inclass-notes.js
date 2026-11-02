@@ -24,7 +24,7 @@ const syncState=(state,message='')=>{
  if(state==='error')lastSyncError=message||'Cloud sync could not complete';
  else if(state==='synced')lastSyncError='';
  cloudUI.textContent='Notes sync · '+({synced:'Synced',syncing:'Syncing',pending:'Saving locally',error:'Needs attention'}[state]||'Local');
- cloudUI.title=(lastSyncError||message||'Open notes synchronisation settings')+' · InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Notes '+String(controller?.version||'1.2.5');
+ cloudUI.title=(lastSyncError||message||'Open notes synchronisation settings')+' · InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Notes '+String(controller?.version||'1.2.6');
  cloudUI.setAttribute('aria-label','Notes synchronisation. '+(lastSyncError||state));
 };
 function lesson(){
@@ -101,7 +101,7 @@ cloudUI.onclick=async()=>{
   cloudUI.disabled=false;status.textContent='';
   identityPickerModule.showNotesIdentityPicker({
     mode,error:lastSyncError,title:'Keep your notes in sync',
-    versionInfo:'InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Shared Notes '+String(controller?.version||'1.2.5'),
+    versionInfo:'InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Shared Notes '+String(controller?.version||'1.2.6'),
     onFirebase:async()=>{
       if(!await family.currentParent())throw Error('No parent Firebase session found in this browser. Use an existing App Monitor passkey, or sign in with Firebase below.');
       await adopt('firebase');
