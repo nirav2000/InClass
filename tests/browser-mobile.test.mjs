@@ -165,6 +165,8 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await send('Page.reload',{ignoreCache:true});
  await until(()=>evalJS('return document.querySelector("#enterAppButton")?.offsetWidth>0'),'app reload');
  await evalJS('document.querySelector("#enterAppButton").click();return true');
+ await wait(500);
+ console.log('INCLASS_RELOAD_DIAG',JSON.stringify(await evalJS(`return {ready:document.readyState,lesson:document.querySelector('#weekSelect')?.value,shellHidden:document.querySelector('#appShell')?.classList.contains('hidden'),notesStatus:document.querySelector('#inclassNotesStatus')?.textContent,launchers:document.querySelectorAll('.apps-notes-launcher').length,syncButtons:document.querySelectorAll('[data-inclass-sync-button]').length,errors:window.__browserErrors||[]}`)));
  await until(()=>evalJS('return document.querySelector(".apps-notes-launcher")?.getClientRects().length>0'),'note launcher after reload');
  await evalJS('document.querySelector(".apps-notes-launcher").click();return true');
  await until(()=>evalJS('return document.querySelector(".apps-notes-dialog .list")?.textContent.includes("InClass mobile browser persistent test note")'),'saved note after full page reload');
