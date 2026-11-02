@@ -61,7 +61,9 @@
           '<div class="childCard"><div class="childAvatar">'+child.name.charAt(0).toUpperCase()+'</div><div class="childIdentity"><strong>'+child.name+'</strong><span>'+child.yearGroup+'</span></div>'+
           '<div class="childMetric"><b>'+completion+'%</b><small>homework progress</small></div><div class="childMetric"><b>'+(s.requiredAccuracy===null?"—":s.requiredAccuracy+"%")+'</b><small>required accuracy</small></div><div class="childMetric"><b>'+s.extensionTotal+'</b><small>extension attempts</small></div></div>'+
           '<div class="welcomeHomeworkGrid">'+homeworkCards(child.name)+'</div>'+
-          '<div class="issuesCard"><strong>Things to revisit</strong><div>'+(s.issues.length?s.issues.map(x=>'<span>'+x.item+' · '+x.wrong+' miss'+(x.wrong===1?"":"es")+'</span>').join(""):'<span>No item-level issues recorded yet. Missed answers will appear here automatically.</span>')+'</div></div>'+
+          '<div class="issuesCard"><strong>Things to revisit</strong><div>'+(s.issues.length?s.issues.map(x=>'<span>'+x.item+' · '+x.wrong+' miss'+(x.wrong===1?"":"es")+'</span>').join(""):'<span>No item-level issues recorded yet. Missed answers will appear here automatically.</span>')+'</div>'+ 
+          (s.understandingTotal?'<p><strong>Concept understanding:</strong> '+s.understandingCorrect+'/'+s.understandingTotal+' correct checks (separate from school test accuracy).</p>'+ 
+          (s.understandingIssues?.length?'<p><strong>Concepts to revisit:</strong> '+s.understandingIssues.map(x=>x.item+' ('+x.wrong+')').join(', ')+'</p>':''):'')+'</div>'+
         '</section>';
       }).join("");
   }
