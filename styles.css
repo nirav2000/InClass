@@ -196,3 +196,9 @@ body{min-height:100vh}
 .pencilHint{margin:.35rem 0 .8rem;padding:.68rem .82rem;border-radius:12px;background:#f7fafc;color:#526b7a;font-size:.9rem;line-height:1.45}
 .writeReadback{margin:.8rem 0 .2rem;padding:.65rem .8rem;border-radius:12px;background:#f1f5f7}
 @media(max-width:600px){.answerLanguage{width:100%;margin-left:0}.pencilKeyboardPrompt{grid-template-columns:1fr}.pencilKeyboardPrompt label{grid-column:1}}
+
+/* PWA install help is opt-in, not an extra step in the school homework. */
+.inclassPwaHelp{position:relative;z-index:3;max-width:650px;width:calc(100% - 36px);margin:0 auto 10px}
+.inclassPwaHelp[hidden]{display:none!important}
+#installInClassButton{white-space:nowrap}
+@media(max-width:560px){.welcomeAuth{gap:6px}.welcomeAuth #installInClassButton{font-size:13px;padding:7px 9px}}
