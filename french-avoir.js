@@ -40,7 +40,6 @@ function renderAvoir() {
   const forms = w.forms;
   const subjects = w.practiceSubjects;
   const bySubject = Object.fromEntries(subjects.map(s => [s.id, s]));
-  const usedPronouns = forms.map(f => f.pronouns);
   setNav([
     ["avSchool","School task"],
     ["avHear","Hear + recall"],
@@ -156,7 +155,6 @@ function renderAvoir() {
       '<p id="avBuilderFeedback" class="feedback" aria-live="polite"></p></div>'
     );
 
-  const formMap = {"je":"je","tu":"tu","il":"il-elle","elle":"il-elle","nous":"nous","vous":"vous","ils":"ils-elles","elles":"ils-elles"};
   const heardCount = () => Object.keys(getProgress().avoirHeard || {}).length;
   function updateHeardCount() { $a("avHeardCount").textContent = heardCount() + "/6"; }
   function audio(subject) {
@@ -357,8 +355,10 @@ function renderAvoir() {
   }
   function renderBuilder() {
     const data = builderData();
-    $a("avBuilderCue").textContent = data.subject.subject.charAt(0).toUpperCase() +
-      data.subject.subject.slice(1) + " have / has " + data.object.english;
+    const who = data.subject.subject;
+    const auxiliary = who === "he" || who === "she" ? "has" : "have";
+    $a("avBuilderCue").textContent = who.charAt(0).toUpperCase() +
+      who.slice(1) + " " + auxiliary + " " + data.object.english;
     $a("avBuilderInput").value = "";
     $a("avBuilderFeedback").textContent = "";
     $a("avBuilderFeedback").className = "feedback";
@@ -383,6 +383,8 @@ function renderAvoir() {
     $a("avBuilderObject").value = String(Math.floor(Math.random() * w.objects.length));
     renderBuilder();
   };
+  $a("avBuilderSubject").value = subjects[0].id;
+  $a("avBuilderObject").value = "0";
   renderBuilder();
 
   renderProgress();
