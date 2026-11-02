@@ -1,0 +1,41 @@
+name: InClass mobile browser integration
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/browser-mobile.test.mjs'
+      - 'inclass-development-feedback.js'
+      - 'inclass-notes.js'
+      - 'index.html'
+      - 'styles.css'
+      - 'welcome.js'
+      - '.github/workflows/mobile-browser-tests.yml'
+permissions:
+  contents: read
+concurrency:
+  group: inclass-mobile-browser
+  cancel-in-progress: true
+jobs:
+  mobile-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout InClass
+        uses: actions/checkout@v4
+      - name: Checkout canonical shared libraries
+        uses: actions/checkout@v4
+        with:
+          repository: nirav2000/Apps
+          path: ../SharedApps
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check inclass-development-feedback.js
+          node --check welcome.js
+          node --experimental-default-type=module --check inclass-notes.js
+      - name: Real mobile Chrome interaction test
+        run: timeout 110s node --test tests/browser-mobile.test.mjs
