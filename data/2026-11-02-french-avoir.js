@@ -40,7 +40,7 @@ window.INCLASS_WEEKS.push({
   ],
   contentTiers: {
     required: ["recognise all six forms","listen to each French form","spell the forms accurately from memory","complete a six-question school-style test"],
-    understanding: ["present tense means a situation now","je becomes j’ before ai","as vs a: the pronoun determines the spelling","hear the liaison in nous avons, vous avez and ils ont"],
+    understanding: ["a verb expresses an action or state, such as having something","a pronoun identifies who the subject is without repeating a name","a form is a version of the same verb, and conjugation chooses a suitable form","the infinitive avoir names the verb without saying who has something","present, past and future express different times","present tense also describes what is generally true","je becomes j’ before ai","as vs a: the pronoun determines the spelling","hear the liaison in nous avons, vous avez and ils ont"],
     extension: ["make new avoir sentences with animals from earlier French homework","change the subject while keeping the same object","revisit errors on another day"]
   }
 });
