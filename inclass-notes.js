@@ -18,7 +18,7 @@ function preloadIdentityPicker(){
  return identityPickerPromise;
 }
 let mode='local',bridge=null;
-const cloudUI=document.createElement('button');cloudUI.type='button';cloudUI.textContent='Notes sync · Local';cloudUI.setAttribute('aria-label','Connect private lesson notes with parent Firebase account');cloudUI.style.cssText='position:fixed;bottom:72px;right:max(16px,env(safe-area-inset-right));z-index:2147482900;border:1px solid #b4c7d9;border-radius:999px;background:#fff;color:#132e45;padding:10px 14px;font:600 13px -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 5px 22px #102a4322';document.body.append(cloudUI);
+const cloudUI=document.createElement('button');cloudUI.type='button';cloudUI.className='inclassSyncButton';cloudUI.dataset.inclassSyncButton='';cloudUI.textContent='Notes sync · Local';cloudUI.setAttribute('aria-label','Connect private lesson notes with parent Firebase account');
 let lastSyncError='';
 const syncState=(state,message='')=>{
  if(state==='error')lastSyncError=message||'Cloud sync could not complete';
@@ -39,9 +39,17 @@ function lesson(){
   return {week,owner,learner,page:'inclass:lesson:'+week.id+':'+learner,key:owner+'|'+learner+'|'+week.id};
 }
 function toggleVisibility(){
+  const showingLesson=!document.getElementById('appShell')?.classList.contains('hidden');
+  const home=document.getElementById('inclassHomeTools');
+  const lessonHost=document.getElementById('inclassLessonTools');
+  const host=showingLesson?lessonHost:home;
+  if(host&&cloudUI.parentElement!==host)host.append(cloudUI);
   const launcher=document.querySelector('.apps-notes-launcher');
-  if(launcher)launcher.hidden=!!document.getElementById('appShell')?.classList.contains('hidden');
-  cloudUI.hidden=false;
+  if(launcher){
+    launcher.hidden=!showingLesson;
+    if(lessonHost&&launcher.parentElement!==lessonHost)lessonHost.prepend(launcher);
+  }
+  window.dispatchEvent(new Event('inclass:toolshostchange'));
 }
 async function refresh(){
   const details=lesson();
@@ -74,8 +82,10 @@ const shellObserver=new MutationObserver(()=>toggleVisibility());
 const shell=document.getElementById('appShell');if(shell)shellObserver.observe(shell,{attributes:true,attributeFilter:['class','hidden']});
 window.addEventListener('inclass:authchange',()=>{activeKey='';refresh()});
 window.addEventListener('pageshow',toggleVisibility);
+queueMicrotask(toggleVisibility);
 document.getElementById('homeButton')?.addEventListener('click',()=>queueMicrotask(toggleVisibility));
 document.getElementById('enterAppButton')?.addEventListener('click',()=>queueMicrotask(toggleVisibility));
+window.addEventListener('inclass:notes-identity-request',()=>cloudUI.click());
 document.addEventListener('DOMContentLoaded',()=>refresh());
 if(document.readyState!=='loading')refresh();
 
