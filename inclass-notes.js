@@ -11,7 +11,7 @@ document.body.append(status);
 let controller=null,activeKey='',generation=0,notesModule=null,transport=null;
 const family=await import('./services/family-notes.js');
 const monitor=await import('./services/app-monitor-notes.js');
-const {showNotesIdentityPicker}=await import('https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.0');
+let identityPickerModule=null;
 let mode='local',bridge=null;
 const cloudUI=document.createElement('button');cloudUI.type='button';cloudUI.textContent='Notes sync · Local';cloudUI.setAttribute('aria-label','Connect private lesson notes with parent Firebase account');cloudUI.style.cssText='position:fixed;bottom:72px;right:max(16px,env(safe-area-inset-right));z-index:2147482900;border:1px solid #b4c7d9;border-radius:999px;background:#fff;color:#132e45;padding:10px 14px;font:600 13px -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 5px 22px #102a4322';document.body.append(cloudUI);
 let lastSyncError='';
@@ -87,8 +87,12 @@ async function recognise(){
   }catch(e){console.warn('Existing InClass note session unavailable',e);}
 }
 queueMicrotask(()=>recognise());
-cloudUI.onclick=()=>{
-  showNotesIdentityPicker({
+cloudUI.onclick=async()=>{
+  if(!identityPickerModule){
+    try{identityPickerModule=await import('https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.0')}
+    catch(error){status.textContent='Login options unavailable offline; local notes remain saved.';return}
+  }
+  identityPickerModule.showNotesIdentityPicker({
     mode,error:lastSyncError,title:'Keep your notes in sync',
     onFirebase:async()=>{
       if(!await family.currentParent())throw Error('No parent Firebase session found in this browser. Use an existing App Monitor passkey, or sign in with Firebase below.');
