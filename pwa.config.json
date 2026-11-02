@@ -1,0 +1,14 @@
+{
+  "name": "InClass · Homework with understanding",
+  "short_name": "InClass",
+  "id": "/InClass/",
+  "start_url": "./",
+  "scope": "./",
+  "description": "Homework-first learning with explanations, retrieval practice, optional extension and role-based progress dashboards.",
+  "background_color": "#f5f7fa",
+  "theme_color": "#102a43",
+  "concept": "insight-book",
+  "icon_background": "#102a43",
+  "icon_accent": "#1a6674",
+  "assets_dir": "icons"
+}
