@@ -7,6 +7,8 @@ on:
       - 'tests/browser-mobile.test.mjs'
       - 'inclass-development-feedback.js'
       - 'inclass-notes.js'
+      - 'inclass-compact-tools.js'
+      - 'inclass-compact-tools.css'
       - 'index.html'
       - 'styles.css'
       - 'welcome.js'
