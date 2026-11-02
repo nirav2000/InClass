@@ -138,11 +138,14 @@ function addPronunciationLab(){
   });
 }
 
-window.renderFrench=function(){
+window.InClassPronunciationCleanup=function(){
   if(pronunciationCoach&&typeof pronunciationCoach.destroy==='function'){
     Promise.resolve(pronunciationCoach.destroy()).catch(function(){});
     pronunciationCoach=null;
   }
+};
+window.renderFrench=function(){
+  window.InClassPronunciationCleanup();
   previousFrench();
   addPronunciationLab();
 };
