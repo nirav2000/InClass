@@ -1,0 +1,57 @@
+name: Build and validate InClass PWA artwork
+on:
+  push:
+    branches: [main]
+    paths:
+      - pwa.config.json
+      - index.html
+      - icon.svg
+      - sw.js
+      - manifest.webmanifest
+      - .github/workflows/pwa-assets.yml
+      - tests/pwa-assets.test.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inclass-pwa-assets
+  cancel-in-progress: false
+
+jobs:
+  build-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install shared generator
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/apps-pwa-generator"
+          curl --fail --location --silent --show-error --retry 3 "https://raw.githubusercontent.com/nirav2000/Apps/main/pwa/v1/onboard.mjs" --output "$RUNNER_TEMP/apps-pwa-generator/onboard.mjs"
+          curl --fail --location --silent --show-error --retry 3 "https://raw.githubusercontent.com/nirav2000/Apps/main/pwa/v1/icon-factory.mjs" --output "$RUNNER_TEMP/apps-pwa-generator/icon-factory.mjs"
+          npm install --prefix "$RUNNER_TEMP/apps-pwa-generator" --no-save --no-package-lock @resvg/resvg-js@2.6.2
+          node --check "$RUNNER_TEMP/apps-pwa-generator/onboard.mjs"
+          node --check "$RUNNER_TEMP/apps-pwa-generator/icon-factory.mjs"
+      - name: Generate artwork and integrate existing PWA
+        run: node "$RUNNER_TEMP/apps-pwa-generator/onboard.mjs" --app-root "$GITHUB_WORKSPACE" --config pwa.config.json --apply
+      - name: Verify generated files and homework preservation
+        run: |
+          node "$RUNNER_TEMP/apps-pwa-generator/onboard.mjs" --app-root "$GITHUB_WORKSPACE" --config pwa.config.json --check
+          node tests/pwa-assets.test.mjs
+          node tests/avoir-concepts.test.cjs
+      - name: Commit generated assets to main
+        shell: bash
+        run: |
+          git add -- index.html icon.svg sw.js manifest.webmanifest pwa.config.json icons/
+          if git diff --cached --quiet; then
+            echo "All PWA assets are already current."
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'build(pwa): sync shared InClass icon assets'
+          git push origin HEAD:main
