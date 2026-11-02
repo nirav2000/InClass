@@ -28,7 +28,7 @@
       <div class="welcomeAuth">
         <span id="authStatus" class="authStatus">Local mode</span>
         <button id="installInClassButton" class="secondary" type="button" aria-expanded="false" aria-controls="inclassPwaHelp">Install app</button>
-        <button id="signInButton" class="secondary">Sign in</button>
+        <button id="signInButton" class="secondary" disabled aria-label="Notes account is loading">Loading account…</button>
       </div>
     </header>
     <div id="inclassPwaHelp" class="inclassPwaHelp" role="status" aria-live="polite" hidden></div>
@@ -44,7 +44,7 @@
             <span><b>2</b> Explain the idea</span>
             <span><b>3</b> Extend the thinking</span>
           </div>
-          <button id="enterAppButton" class="primary welcomePrimary">Continue latest homework →</button>
+          <button id="enterAppButton" class="primary welcomePrimary" disabled>Loading homework…</button>
           <p id="authMessage" class="authMessage hidden"></p>
         </div>
 
