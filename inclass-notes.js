@@ -66,7 +66,7 @@ cloudUI.onclick=async()=>{
  if(!controller)return;
  try{
   if(await family.currentParent()){
-   if(confirm('Disconnect this device from the parent notes account? Notes already on this device remain available.')){transport.disconnect();await family.signOut();syncState('local');}
+   if(confirm('Disconnect this device from the parent notes account? Notes already on this device remain available.')){transport.disconnect();await family.signOut();syncState('local');activeKey='';await refresh();}
    else{syncState('syncing');await transport.flush();await controller.load();controller.ui?.render();}
    return;
   }
