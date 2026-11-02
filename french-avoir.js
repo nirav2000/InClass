@@ -391,7 +391,12 @@ function renderAvoir() {
 }
 
 window.renderFrench = function() {
-  if (state.week && state.week.avoirHomework) return renderAvoir();
+  if (state.week && state.week.avoirHomework) {
+    if (typeof window.InClassPronunciationCleanup === "function") {
+      window.InClassPronunciationCleanup();
+    }
+    return renderAvoir();
+  }
   return previousFrench();
 };
 })();
