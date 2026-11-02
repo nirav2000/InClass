@@ -13,7 +13,7 @@ test('InClass no longer traps an older installed application on cache-first Java
 });
 test('Shared Notes is explicitly versioned, with a visible app build',()=>{
  assert.match(notes,/notes\/v1\/index\.js\?v=1\.2\.6/);
- assert.match(notes,/identity-picker\.js\?v=1\.0\.1/);
+ assert.match(notes,/identity-picker\.js\?v=1\.0\.2/);
  assert.match(notes,/versionInfo:/);
  assert.match(conf,/release:\s*"2026\.11\.02\.7"/);
 });
