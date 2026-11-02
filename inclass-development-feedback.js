@@ -10,7 +10,8 @@ async function admin(){
   adminAuth=window.AppsPasskeyAuth.create({baseUrl:API,sessionStoreKey:'app-monitor.admin-session.v2',failureStoreKey:'app-monitor.auth-failures.v2'});
   adminAuth.restoreSession();
  }
- if(!(await adminAuth.validateSession()))await adminAuth.passkeyLogin();
+ const session=await adminAuth.validateSession();
+ if(!session||session.method!=='passkey')await adminAuth.passkeyLogin();
  return adminAuth;
 }
 const launch=document.createElement('button');
