@@ -15,7 +15,13 @@
     b.dataset.action=action;b.textContent=label;menu.append(b);return b;
   };
   const note=make('✎  Lesson notes','notes');
-  make('☁  Account & sync','sync');
+  const syncAction=make('☁  Account & sync · Local','sync');
+  function setSyncStatus(state,details=''){
+    const names={synced:'Synced',syncing:'Connecting',pending:'Pending',error:'Needs attention',local:'Local'};
+    const description=names[state]||'Local';
+    syncAction.textContent='☁  Account & sync · '+description;
+    syncAction.title=details||'Manage private notes synchronisation';
+  }
   make('⚑  Report an issue','issue');
   const message=document.createElement('p');message.setAttribute('role','status');
   message.setAttribute('aria-live','polite');menu.append(message);
@@ -98,7 +104,7 @@
     if(action==='sync')openSync();
     if(action==='issue')openFeedback();
   };
-  window.InClassCompactTools={openSync,openMenu:()=>toggle.click(),closeMenu};
+  window.InClassCompactTools={openSync,openMenu:()=>toggle.click(),closeMenu,setSyncStatus};
   window.addEventListener('inclass:toolshostchange',place);
   window.addEventListener('inclass:lessonchange',place);
   window.addEventListener('pageshow',place);
