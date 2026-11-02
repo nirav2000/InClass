@@ -1,7 +1,7 @@
 // InClass consumes the canonical shared Notes UI and schema without forking them.
 // Learning notes are local and never sent to GitHub automatically. The preview
 // role switch is not authentication; it must not grant access to private notes.
-const ROOT='https://nirav2000.github.io/Apps/notes/v1/index.js?v=1.2.4';
+const ROOT='https://nirav2000.github.io/Apps/notes/v1/index.js?v=1.2.5';
 const notice='Notes are saved on this device. Parent sign-in enables encrypted-in-transit Firebase sync. Copy to ChatGPT only when approved.';
 const status=document.createElement('span');
 status.id='inclassNotesStatus';
