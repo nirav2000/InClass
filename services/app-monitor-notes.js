@@ -28,7 +28,12 @@ export function createBridge(a){
   const response=await fetch(ROOT+'/inclass/family-notes'+query,{method,cache:'no-store',
    headers:{...a.authHeaders(),...(method==='POST'?{'Content-Type':'application/json'}:{})},
    ...(method==='POST'?{body:JSON.stringify({notes,revision})}:{})});
-  if(!response.ok)throw Error(response.status===401?'App Monitor session expired':response.status===403?'App Monitor passkey required':'Notes cloud returned '+response.status);
+  if(!response.ok){
+   const detail=await response.json().catch(()=>null);
+   const reason=typeof detail?.error==='string'?detail.error.slice(0,170):'';
+   const message=response.status===401?'App Monitor session expired':response.status===403?'App Monitor passkey required':response.status===503?'Firebase notes backend is not configured (server-side service account required)':response.status===502?'Firebase notes backend failed':response.status===409?'409: Another device changed these notes':response.status===400?'Notes rejected by server': 'Notes cloud returned '+response.status;
+   throw Error(message+(reason?' · '+reason:''));
+  }
   return response.json();
  }
  return {
