@@ -50,6 +50,7 @@ window.addEventListener('inclass:lessonchange',placeLauncher);
 const appShell=document.getElementById('appShell');
 if(appShell)new MutationObserver(placeLauncher).observe(appShell,{attributes:true,attributeFilter:['class','hidden']});
 
+window.addEventListener('inclass:open-development-feedback',()=>launcher.click());
 launcher.addEventListener('click',()=>{
   // Avoid accidentally opening duplicate dialogs on repeated touch events.
   const previous=document.querySelector('dialog.inclass-dev-dialog');
