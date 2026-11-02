@@ -11,9 +11,23 @@ export async function firebase(){
    import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js'),
    import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js')
   ]);
-  const app=A.getApps().find(a=>a.options.projectId===project.projectId&&a.name==='[DEFAULT]')||A.getApps().find(a=>a.options.projectId===project.projectId)||A.initializeApp(project,'inclass-notes');
-  const auth=Auth.getAuth(app);await auth.authStateReady();
-  return {Auth,F,auth,db:F.getFirestore(app)};
+  // Firebase Auth browser persistence is keyed by app name. Previous InClass
+  // versions used the "inclass-notes" named app and therefore could not see
+  // the default app's saved session used by Beyond100/LearnLatin.
+  const app=A.getApps().find(a=>a.name==='[DEFAULT]'&&a.options.projectId===project.projectId)||(
+    A.getApps().some(a=>a.name==='[DEFAULT]')
+      ? A.getApps().find(a=>a.name==='inclass-notes')||A.initializeApp(project,'inclass-notes')
+      : A.initializeApp(project)
+  );
+  let auth=Auth.getAuth(app);await auth.authStateReady();
+  let selected=app;
+  // Preserve older named-app InClass sessions without demanding another login.
+  if(auth.currentUser?.uid!==owner&&app.name==='[DEFAULT]'){
+    const legacy=A.getApps().find(a=>a.name==='inclass-notes')||A.initializeApp(project,'inclass-notes');
+    const oldAuth=Auth.getAuth(legacy);await oldAuth.authStateReady();
+    if(oldAuth.currentUser?.uid===owner){auth=oldAuth;selected=legacy;}
+  }
+  return {Auth,F,auth,db:F.getFirestore(selected)};
  })().catch(e=>{sdkPromise=null;throw e});
  return sdkPromise;
 }
