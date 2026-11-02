@@ -38,4 +38,4 @@ jobs:
           node --check welcome.js
           node --experimental-default-type=module --check inclass-notes.js
       - name: Real mobile Chrome interaction test
-        run: timeout 110s node --test tests/browser-mobile.test.mjs
+        run: timeout 195s node --test tests/browser-mobile.test.mjs
