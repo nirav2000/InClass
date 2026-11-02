@@ -1,0 +1,48 @@
+/* Avoir · 2 Nov 2026. Independent from older French lesson styling. */
+.avoirIntro{padding:23px;border-radius:23px;background:linear-gradient(120deg,#f0fbf7,#eaf4ff);border:1px solid #cbe7e4;margin:18px 0}
+.avoirIntro h3{margin:5px 0 8px;font-size:clamp(21px,4vw,29px);letter-spacing:-.02em}
+.avoirIntro p{margin:7px 0;color:#304a5d}
+.avoirIntroLine{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.avoirDeadline{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;padding:7px 10px;border-radius:999px;color:#234037;background:#dff3e9}
+.avoirVideo{display:inline-flex;align-items:center;gap:7px;text-decoration:none;border-radius:12px;padding:10px 13px;background:#102a43;color:#fff;font-weight:800}
+.avoirSource{border-top:1px solid #c7e3df;padding-top:12px;margin-top:12px}.avoirSource summary{cursor:pointer;font-weight:750;color:#174b5b}
+.avoirTable{width:100%;border-collapse:separate;border-spacing:0 7px}
+.avoirTable th{text-align:left;font-size:12px;color:#617a89;letter-spacing:.09em;text-transform:uppercase;padding:4px 12px}
+.avoirTable td{background:#f7fafc;padding:13px 12px;border-top:1px solid #e2edf2;border-bottom:1px solid #e2edf2}
+.avoirTable td:first-child{border-radius:12px 0 0 12px;border-left:1px solid #e2edf2;font-weight:800}
+.avoirTable td:last-child{border-radius:0 12px 12px 0;border-right:1px solid #e2edf2}
+.avoirTable .avoirBlue{font-size:1.25em;color:#0873a6;font-weight:850}.avoirTable .avoirHear{border:0;background:#e2f3fb;border-radius:10px;padding:8px 12px;font-size:16px}
+.avoirTable .avoirHear:focus-visible{outline:3px solid #0b7285;outline-offset:2px}
+.avoirPrompt{max-width:710px;margin:auto;background:#f6fafc;border-radius:22px;padding:22px;text-align:center;border:1px solid #e0edf3}
+.avoirPromptText{font-size:clamp(23px,5vw,33px);font-weight:850;min-height:1.5em;margin:12px 0}
+.avoirReveal{font-size:clamp(24px,5vw,40px);font-weight:900;color:#086b9d;min-height:1.5em;margin:10px 0;letter-spacing:-.02em}
+.avoirActions{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin:13px auto}
+.avoirNoticeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:16px 0}
+.avoirNotice{border:1px solid #dbe8ed;border-radius:17px;background:#fbfdfe;padding:16px}
+.avoirNotice strong{display:block;font-size:17px;color:#163a4c}.avoirNotice p{margin:5px 0;color:#536b7c}
+.avoirNotice .avoirComparison{font-size:1.4em;font-weight:900;letter-spacing:.01em;color:#076c9e}
+.avoirInput{width:100%;padding:15px;border:2px solid #cddce5;background:#fff;border-radius:15px;font-size:1.15em;color:#102a43;min-width:0}
+.avoirInput:focus{outline:3px solid rgba(11,114,133,.2);border-color:#0b7285}
+.avoirInput.pencilAnswer{min-height:155px;line-height:2.4rem;padding-top:10px;resize:vertical;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(2.4rem - 1px),rgba(80,100,120,.2) calc(2.4rem - 1px),rgba(80,100,120,.2) 2.4rem)}
+.avoirModeBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}.avoirModeBar .answerLanguage{margin-left:auto}
+.avoirModeHelp{padding:12px 15px;border:1px solid #c7e3e9;border-radius:13px;background:#eff9fa;color:#2f5263;font-size:14px}
+.avoirTranscription{border:1px solid #bad9e4;background:#eef8fc;padding:13px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0;color:#173e55}
+.avoirQuizFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}
+.avoirQuizField{display:grid;gap:8px;border:1px solid #dce8ed;padding:14px;background:#fbfcfe;border-radius:15px}
+.avoirQuizField label{font-weight:850}.avoirQuizField small{color:#547184}
+.avoirQuizField input{width:100%;font-size:16px}
+.avoirQuizAnswers{display:grid;gap:10px;margin:16px 0}
+.avoirQuizAnswer{padding:11px 13px;border-radius:12px;border:1px solid #dbe7ed;background:#fbfcfd}
+.avoirQuizAnswer.correct{border-color:#a8dfb4;background:#f2fbf4}
+.avoirQuizAnswer.incorrect{border-color:#efce9d;background:#fffbf2}
+.avoirQuizAnswer strong,.avoirQuizAnswer span{display:block}.avoirQuizAnswer small{color:#586f7d}
+.avoirScore{padding:16px;background:#eaf7f1;border-radius:15px;font-size:1.2em;font-weight:800}
+.avoirBuilder{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}.avoirBuilder label{display:grid;gap:6px;font-size:14px;color:#4e6574;font-weight:750}
+.avoirBuilder select{border:1px solid #cbdce6;border-radius:12px;padding:12px;background:white;width:100%;min-width:0;color:#102a43}
+.avoirHistory{padding:14px;border:1px solid #e0ebef;border-radius:14px;margin-top:15px;background:#fbfcfe}.avoirHistory strong{display:block}
+.avoirChecklist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0}
+.avoirChecklist div{background:#f6fafc;border:1px solid #e2ecef;padding:12px;border-radius:13px;font-size:14px}
+.avoirChecklist strong{display:block;font-size:23px}
+.avoirMastery{color:#244e63;background:#e9f6fd;border-radius:13px;padding:12px}
+@media(max-width:700px){.avoirNoticeGrid{grid-template-columns:1fr}.avoirQuizFields{grid-template-columns:1fr}.avoirChecklist{grid-template-columns:1fr 1fr}.avoirBuilder{grid-template-columns:1fr}}
+@media(max-width:430px){.avoirIntro{padding:17px}.avoirTable td{padding:10px 6px}.avoirTable th{padding:4px 6px}.avoirTable td:nth-child(3){font-size:.82em}.avoirTable .avoirHear{padding:7px 9px}.avoirPrompt{padding:15px}.avoirChecklist{grid-template-columns:1fr}}
