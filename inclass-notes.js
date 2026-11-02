@@ -85,7 +85,7 @@ window.addEventListener('pageshow',toggleVisibility);
 queueMicrotask(toggleVisibility);
 document.getElementById('homeButton')?.addEventListener('click',()=>queueMicrotask(toggleVisibility));
 document.getElementById('enterAppButton')?.addEventListener('click',()=>queueMicrotask(toggleVisibility));
-window.addEventListener('inclass:notes-identity-request',()=>cloudUI.click());
+window.addEventListener('inclass:notes-identity-request',()=>window.InClassCompactTools?.openSync());
 document.addEventListener('DOMContentLoaded',()=>refresh());
 if(document.readyState!=='loading')refresh();
 
@@ -103,13 +103,9 @@ async function recognise(){
 }
 queueMicrotask(()=>recognise());
 queueMicrotask(()=>preloadIdentityPicker().catch(()=>{}));
-cloudUI.onclick=async()=>{
-  cloudUI.disabled=true;
-  status.textContent='Opening note sync settings…';
-  try{await preloadIdentityPicker()}
-  catch(error){status.textContent='Sync settings unavailable offline; local notes remain saved.';cloudUI.disabled=false;return;}
-  cloudUI.disabled=false;status.textContent='';
-  identityPickerModule.showNotesIdentityPicker({
+async function showSharedIdentityPicker(){
+  const module=await preloadIdentityPicker();
+  return module.showNotesIdentityPicker({
     mode,error:lastSyncError,title:'Keep your notes in sync',
     versionInfo:'InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Shared Notes '+String(controller?.version||'1.2.6'),
     onFirebase:async()=>{
@@ -134,4 +130,7 @@ cloudUI.onclick=async()=>{
       syncState('local');
     }
   });
-};
+}
+window.InClassNotesShowIdentity=showSharedIdentityPicker;
+window.dispatchEvent(new Event('inclass:notes-account-ready'));
+cloudUI.onclick=()=>window.InClassCompactTools?.openSync();
