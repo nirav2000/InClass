@@ -157,6 +157,8 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await until(()=>evalJS('return !document.querySelector("#welcomeScreen").classList.contains("hidden")'),'home navigation');
  assert.equal(await evalJS('return document.querySelector("#enterAppButton").getClientRects().length>0'),true);
  await evalJS('document.querySelector("#signInButton").click();return true');
+ await wait(800);
+ console.log('INCLASS_PICKER_DIAG',JSON.stringify(await evalJS(`return {status:document.querySelector('#inclassNotesStatus')?.textContent,buttonDisabled:document.querySelector('[data-inclass-sync-button]')?.disabled,picker:!!document.querySelector('dialog.apps-notes-identity'),message:document.querySelector('#authMessage')?.textContent,errors:window.__browserErrors||[]}`)));
  await until(()=>evalJS('return !!document.querySelector("dialog.apps-notes-identity[open]")'),'shared Notes sign-in picker from home');
  assert.equal(await evalJS('return document.querySelector("#authMessage").classList.contains("hidden")'),true,'The generic unavailable Firebase error must not appear');
  await evalJS('document.querySelector("dialog.apps-notes-identity [data-action=close]").click();return true');
