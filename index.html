@@ -25,9 +25,11 @@
       </button>
       <div class="welcomeAuth">
         <span id="authStatus" class="authStatus">Local mode</span>
+        <button id="installInClassButton" class="secondary" type="button" aria-expanded="false" aria-controls="inclassPwaHelp">Install app</button>
         <button id="signInButton" class="secondary">Sign in</button>
       </div>
     </header>
+    <div id="inclassPwaHelp" class="inclassPwaHelp" role="status" aria-live="polite" hidden></div>
 
     <main class="welcomeMain">
       <section class="welcomeHero">
@@ -151,5 +153,16 @@
   <script src="pronunciation-extension.js"></script>
   <script src="french-avoir.js"></script>
   <script src="welcome.js"></script>
-<script type="module">import{initPWA}from'https://nirav2000.github.io/Apps/pwa/v1/index.js';initPWA({serviceWorkerUrl:'./sw.js',scope:'./'}).catch(error=>console.warn('Shared PWA setup failed',error));</script></body>
+<script type="module">
+import {initPWA,pwaStyles} from 'https://nirav2000.github.io/Apps/pwa/v1/index.js';
+const pwaStyle=document.createElement('style');pwaStyle.textContent=pwaStyles();document.head.appendChild(pwaStyle);
+const root=document.getElementById('inclassPwaHelp');
+const installButton=document.getElementById('installInClassButton');
+installButton.addEventListener('click',()=>{
+  root.hidden=!root.hidden;
+  installButton.setAttribute('aria-expanded',String(!root.hidden));
+});
+initPWA({root,serviceWorkerUrl:'./sw.js',scope:'./'})
+  .catch(error=>{root.textContent='Installation diagnostics are unavailable: '+String(error?.message||error);console.warn('Shared PWA setup failed',error)});
+</script></body>
 </html>
