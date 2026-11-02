@@ -10,13 +10,14 @@ status.style.cssText='position:fixed;left:12px;bottom:12px;z-index:2147482999;fo
 document.body.append(status);
 let controller=null,activeKey='',generation=0,notesModule=null;
 function lesson(){
-  const week=window.state?.week;
+  const packId=document.getElementById('weekSelect')?.value;
+  const week=(window.INCLASS_WEEKS||[]).find(x=>x.id===packId);
   const auth=window.InClassAuth?.getSession?.();
   if(!week||!auth)return null;
   // Preview role is cosmetic, not proof of parent access. In local mode notes
   // live in this browser's isolated owner namespace, not the public backend.
   const owner=String(auth.dataOwnerId||auth.userId||'local').replace(/[^a-zA-Z0-9_-]/g,'_');
-  const learner=String(window.state?.learner||'learner').replace(/[^a-zA-Z0-9_-]/g,'_');
+  const learner=String(document.getElementById('learnerSelect')?.value||'learner').replace(/[^a-zA-Z0-9_-]/g,'_');
   return {week,owner,learner,page:'inclass:lesson:'+week.id+':'+learner,key:owner+'|'+learner+'|'+week.id};
 }
 function toggleVisibility(){
