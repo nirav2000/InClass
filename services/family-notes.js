@@ -11,8 +11,9 @@ export async function firebase(){
    import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js'),
    import('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js')
   ]);
-  const app=A.getApps().find(a=>a.name==='inclass-notes')||A.initializeApp(project,'inclass-notes');
-  const auth=Auth.getAuth(app);await Auth.setPersistence(auth,Auth.browserLocalPersistence);await auth.authStateReady();
+  const app=A.getApps().find(a=>a.options.projectId===project.projectId&&a.name==='[DEFAULT]')||A.getApps().find(a=>a.options.projectId===project.projectId)||A.initializeApp(project,'inclass-notes');
+  const auth=Auth.getAuth(app);await Auth.authStateReady?.call(auth).catch?.(()=>{});
+  await auth.authStateReady();
   return {Auth,F,auth,db:F.getFirestore(app)};
  })().catch(e=>{sdkPromise=null;throw e});
  return sdkPromise;
