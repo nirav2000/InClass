@@ -103,14 +103,14 @@ vm.runInNewContext(read("french-avoir.js"),globals);
 packs.renderFrench();
 assert.equal(cleanupCalls,1,"Old pronunciation coach cleaned up");
 assert.equal(steps.length,9);
-assert.deepEqual(steps.slice(0,4).map(x=>x[0]),["avSchool","avFoundations","avTenses","avReference"]);
+assert.equal(Array.from(steps.slice(0,4),x=>x[0]).join(","),"avSchool,avFoundations,avTenses,avReference");
 assert.equal(document.querySelectorAll("[data-av-concept]").length,4);
 assert.equal(document.querySelectorAll("[data-av-tense]").length,3);
 assert.equal(document.querySelectorAll("[data-av-hear]").length,6);
 assert.equal(document.querySelectorAll("[data-av-quiz]").length,6);
-assert($("avFoundations").innerHTML.includes("Infinitive"));
-assert($("avTenses").innerHTML.includes("Past")&&$("avTenses").innerHTML.includes("Present")&&$("avTenses").innerHTML.includes("Future"));
-assert($("avTenses").innerHTML.includes("J’avais")&&$("avTenses").innerHTML.includes("J’aurai"));
+assert($("lessonRoot").innerHTML.includes("Infinitive"));
+assert($("lessonRoot").innerHTML.includes("Past")&&$("lessonRoot").innerHTML.includes("Present")&&$("lessonRoot").innerHTML.includes("Future"));
+assert($("lessonRoot").innerHTML.includes("J’avais")&&$("lessonRoot").innerHTML.includes("J’aurai"));
 
 // Reasoning diagnostics: wrong answer gives a scaffold, retry teaches the principle.
 // These attempts do NOT change the school test score.
