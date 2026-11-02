@@ -27,5 +27,5 @@ test('compact Notes actions are available on fresh and offline loads',()=>{
  const compact=readFileSync(new URL('../inclass-compact-tools.js',import.meta.url),'utf8');
  assert.match(compact,/dialog\.showModal\(\)/);
  assert.match(compact,/window\.InClassCompactTools=/);
- assert.match(compact,/data-action=sync|data-action.*sync/);
+ assert.match(compact,/make\([^)]*'sync'\)/);
 });
