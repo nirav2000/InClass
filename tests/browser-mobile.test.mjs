@@ -107,7 +107,7 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await send('Page.navigate',{url:'http://127.0.0.1:'+http.address().port+'/InClass/'});
  await wait(1500);
  console.log('INCLASS_BROWSER_DIAG',JSON.stringify(await evalJS(`return {ready:document.readyState,url:location.href,enter:!!document.querySelector('#enterAppButton'),enterWidth:document.querySelector('#enterAppButton')?.offsetWidth,dev:!!document.querySelector('[data-inclass-dev-launch]'),sync:!!document.querySelector('[data-inclass-sync-button]'),errors:window.__browserErrors||[],body:document.body?.textContent.slice(0,150)}`)));
- await until(()=>evalJS('return document.querySelector("#enterAppButton")?.offsetWidth>0&&document.querySelector("[data-inclass-dev-launch]")!==null'),'welcome tools');
+ await until(()=>evalJS('const b=document.querySelector("#enterAppButton");return document.readyState==="complete"&&!!b?.offsetWidth&&!b.disabled&&typeof b.onclick==="function"&&document.querySelector("[data-inclass-dev-launch]")!==null'),'welcome tools');
  const overlap=await evalJS(`
   const main=document.querySelector('#enterAppButton').getBoundingClientRect();
   return [...document.querySelectorAll('[data-inclass-dev-launch],[data-inclass-sync-button]')].some(el=>{
@@ -163,7 +163,7 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  assert.equal(await evalJS('return document.querySelector("#authMessage").classList.contains("hidden")'),true,'The generic unavailable Firebase error must not appear');
  await evalJS('document.querySelector("dialog.apps-notes-identity [data-action=close]").click();return true');
  await send('Page.reload',{ignoreCache:true});
- await until(()=>evalJS('return document.querySelector("#enterAppButton")?.offsetWidth>0'),'app reload');
+ await until(()=>evalJS('const b=document.querySelector("#enterAppButton");return document.readyState==="complete"&&!!b?.offsetWidth&&!b.disabled&&typeof b.onclick==="function"'),'interactive app reload');
  await evalJS('document.querySelector("#enterAppButton").click();return true');
  await wait(500);
  console.log('INCLASS_RELOAD_DIAG',JSON.stringify(await evalJS(`return {ready:document.readyState,lesson:document.querySelector('#weekSelect')?.value,shellHidden:document.querySelector('#appShell')?.classList.contains('hidden'),notesStatus:document.querySelector('#inclassNotesStatus')?.textContent,launchers:document.querySelectorAll('.apps-notes-launcher').length,syncButtons:document.querySelectorAll('[data-inclass-sync-button]').length,errors:window.__browserErrors||[]}`)));
