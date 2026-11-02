@@ -89,6 +89,18 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  t.after(async()=>{await browser?.close();http.closeAllConnections();await new Promise(ok=>http.close(ok))});
  browser=await chrome();
  const {send,evalJS}=browser;
+ async function touch(selector){
+   const point=await evalJS(`
+     const el=document.querySelector(${JSON.stringify(selector)});
+     if(!el)return null;
+     el.scrollIntoView({block:'center',inline:'nearest'});
+     const r=el.getBoundingClientRect();
+     return {x:r.left+r.width/2,y:r.top+r.height/2,visible:r.width>0&&r.height>=35}
+   `);
+   assert.ok(point?.visible,'Touch target must be visible and large enough: '+selector);
+   await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:0,x:point.x,y:point.y}]});
+   await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ }
  await send('Page.enable');await send('Runtime.enable');
  await send('Emulation.setDeviceMetricsOverride',{width:390,height:740,deviceScaleFactor:2,mobile:true});
  await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
@@ -163,7 +175,8 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await evalJS('document.querySelector("#homeButton").click();return true');
  await until(()=>evalJS('return !document.querySelector("#welcomeScreen").classList.contains("hidden")'),'home navigation');
  assert.equal(await evalJS('return document.querySelector("#enterAppButton").getClientRects().length>0'),true);
- assert.equal(await evalJS('document.querySelector("#signInButton").click();return !!document.querySelector("dialog.inclassAccountLoader[open]")'),true,'Account button must display a dialog on the same tap');
+ await touch('#signInButton');
+ assert.equal(await evalJS('return !!document.querySelector("dialog.inclassAccountLoader[open]")'),true,'A real touchscreen tap on Sign in must immediately display the account dialog');
  await wait(800);
  console.log('INCLASS_PICKER_DIAG',JSON.stringify(await evalJS(`return {status:document.querySelector('#inclassNotesStatus')?.textContent,buttonDisabled:document.querySelector('[data-inclass-sync-button]')?.disabled,picker:!!document.querySelector('dialog.apps-notes-identity'),message:document.querySelector('#authMessage')?.textContent,errors:window.__browserErrors||[]}`)));
  await until(()=>evalJS('return !!document.querySelector("dialog.apps-notes-identity[open]")'),'shared Notes sign-in picker from home');
@@ -172,12 +185,10 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
 
  // A first tap on the compact sync action must open a dialog even when
  // the shared options fail. Errors must be visible and recoverable.
- assert.equal(await evalJS(`
-  window.__goodIdentityHandler=window.InClassNotesShowIdentity;
-  window.InClassNotesShowIdentity=()=>Promise.reject(Error("Simulated connection failure"));
-  document.querySelector(".inclassCompactToggle").click();
-  document.querySelector(".inclassCompactMenu [data-action=sync]").click();
-  return !!document.querySelector("dialog.inclassAccountLoader[open]")`),true,'Notes sync must respond immediately to a tap');
+ await evalJS('window.__goodIdentityHandler=window.InClassNotesShowIdentity;window.InClassNotesShowIdentity=()=>Promise.reject(Error("Simulated connection failure"));return true');
+ await touch('.inclassCompactToggle');
+ await touch('.inclassCompactMenu [data-action=sync]');
+ assert.equal(await evalJS('return !!document.querySelector("dialog.inclassAccountLoader[open]")'),true,'A real touchscreen tap on Notes sync must open the account dialog');
  await until(()=>evalJS('return !document.querySelector("dialog.inclassAccountLoader [data-retry]")?.hidden'),'retry after failed notes account import');
  assert.match(await evalJS('return document.querySelector("dialog.inclassAccountLoader [data-progress]").textContent'),/Simulated connection failure/);
  await evalJS('window.InClassNotesShowIdentity=window.__goodIdentityHandler;document.querySelector("dialog.inclassAccountLoader [data-retry]").click();return true');
