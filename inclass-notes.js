@@ -1,7 +1,7 @@
 // InClass consumes the canonical shared Notes UI and schema without forking them.
 // Learning notes are local and never sent to GitHub automatically. The preview
 // role switch is not authentication; it must not grant access to private notes.
-const ROOT='https://nirav2000.github.io/Apps/notes/v1/index.js';
+const ROOT='https://nirav2000.github.io/Apps/notes/v1/index.js?v=1.2.4';
 const notice='Notes are saved on this device. Parent sign-in enables encrypted-in-transit Firebase sync. Copy to ChatGPT only when approved.';
 const status=document.createElement('span');
 status.id='inclassNotesStatus';
@@ -12,8 +12,15 @@ let controller=null,activeKey='',generation=0,notesModule=null,transport=null;
 const family=await import('./services/family-notes.js');
 const monitor=await import('./services/app-monitor-notes.js');
 let mode='local',bridge=null;
-const cloudUI=document.createElement('button');cloudUI.type='button';cloudUI.textContent='Notes sync · Local';cloudUI.setAttribute('aria-label','Connect private lesson notes with parent Firebase account');cloudUI.style.cssText='position:fixed;bottom:70px;right:18px;z-index:2147482900;border:1px solid #aebfd0;border-radius:14px;background:#fff;color:#132e45;padding:8px 12px;font:600 12px sans-serif';document.body.append(cloudUI);
-const syncState=(mode,message='')=>{cloudUI.textContent='Notes sync · '+({synced:'Synced',syncing:'Syncing',pending:'Saving',error:'Needs attention'}[mode]||'Local');cloudUI.title=message};
+const cloudUI=document.createElement('button');cloudUI.type='button';cloudUI.textContent='Notes sync · Local';cloudUI.setAttribute('aria-label','Connect private lesson notes with parent Firebase account');cloudUI.style.cssText='position:fixed;bottom:72px;right:max(16px,env(safe-area-inset-right));z-index:2147482900;border:1px solid #b4c7d9;border-radius:999px;background:#fff;color:#132e45;padding:10px 14px;font:600 13px -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 5px 22px #102a4322';document.body.append(cloudUI);
+let lastSyncError='';
+const syncState=(state,message='')=>{
+ if(state==='error')lastSyncError=message||'Cloud sync could not complete';
+ else if(state==='synced')lastSyncError='';
+ cloudUI.textContent='Notes sync · '+({synced:'Synced',syncing:'Syncing',pending:'Saving locally',error:'Needs attention'}[state]||'Local');
+ cloudUI.title=lastSyncError||message||'Open notes synchronisation settings';
+ cloudUI.setAttribute('aria-label','Notes synchronisation. '+(lastSyncError||state));
+};
 function lesson(){
   const packId=document.getElementById('weekSelect')?.value;
   const week=(window.INCLASS_WEEKS||[]).find(x=>x.id===packId);
@@ -28,11 +35,11 @@ function lesson(){
 function toggleVisibility(){
   const launcher=document.querySelector('.apps-notes-launcher');
   if(launcher)launcher.hidden=!!document.getElementById('appShell')?.classList.contains('hidden');
-  cloudUI.hidden=!!document.getElementById('appShell')?.classList.contains('hidden');
+  cloudUI.hidden=false;
 }
 async function refresh(){
   const details=lesson();
-  if(!details)return;
+  if(!details){toggleVisibility();return;}
   const token=++generation;
   if(details.key===activeKey&&controller){controller.ui?.render();toggleVisibility();return;}
   try{
@@ -57,6 +64,8 @@ async function refresh(){
   }catch(error){status.textContent='Notes unavailable; lessons are unaffected.';console.warn('InClass Notes:',error);}
 }
 window.addEventListener('inclass:lessonchange',()=>refresh());
+const shellObserver=new MutationObserver(()=>toggleVisibility());
+const shell=document.getElementById('appShell');if(shell)shellObserver.observe(shell,{attributes:true,attributeFilter:['class','hidden']});
 window.addEventListener('inclass:authchange',()=>{activeKey='';refresh()});
 window.addEventListener('pageshow',toggleVisibility);
 document.getElementById('homeButton')?.addEventListener('click',()=>queueMicrotask(toggleVisibility));
@@ -79,10 +88,13 @@ async function recognise(){
 queueMicrotask(()=>recognise());
 cloudUI.onclick=async()=>{
  const dialog=document.createElement('dialog');
- dialog.style.cssText='border:0;border-radius:18px;background:#fff;color:#173348;padding:20px;width:min(430px,calc(100vw - 30px));box-sizing:border-box';
- dialog.innerHTML='<h2>Sync private lesson notes</h2><p id="notesIdentityInfo"></p><p>Use your existing parent Firebase sign-in or App Monitor passkey. Existing local notes are preserved.</p><div style="display:grid;gap:10px"><button data-action="firebase">Use existing Firebase sign-in</button><button data-action="monitor">Use App Monitor passkey</button><button data-action="email">Sign in with Firebase email</button><button data-action="disconnect">Keep notes on this device only</button><button data-action="close">Close</button></div><p id="notesIdentityMessage" role="status"></p>';
+ dialog.className='inclass-notes-sync-dialog';
+ dialog.innerHTML='<div class="inclass-sync-top"><span class="inclass-sync-icon">☁</span><div><p class="inclass-sync-eyebrow">PRIVATE LEARNING NOTES</p><h2>Keep your notes in sync</h2></div></div><p class="inclass-sync-subtitle">Access the same homework notes across your iPad, iPhone and other devices.</p><div class="inclass-sync-current"><span class="inclass-sync-dot"></span><div><strong id="notesIdentityInfo">Checking connection</strong><p id="notesSyncDetail"></p></div></div><div class="inclass-sync-options"><button data-action="firebase"><span class="inclass-sync-option-icon">✓</span><span><strong>Existing Firebase account</strong><small>Use the parent session already saved on this device</small></span><span aria-hidden="true">›</span></button><button data-action="monitor"><span class="inclass-sync-option-icon">⌁</span><span><strong>App Monitor passkey</strong><small>Secure sign-in without entering a password</small></span><span aria-hidden="true">›</span></button><button data-action="email"><span class="inclass-sync-option-icon">@</span><span><strong>Firebase email</strong><small>Alternative sign-in method</small></span><span aria-hidden="true">›</span></button></div><p id="notesIdentityMessage" role="status" aria-live="polite"></p><div class="inclass-sync-bottom"><button data-action="disconnect">Use this device only</button><button data-action="close" class="inclass-sync-close">Done</button></div>';
  document.body.append(dialog);dialog.showModal();
- dialog.querySelector('#notesIdentityInfo').textContent=mode==='firebase'?'Connected: Firebase parent':mode==='app-monitor'?'Connected: App Monitor passkey':'Local notes only';
+ dialog.querySelector('#notesIdentityInfo').textContent=mode==='firebase'?'Connected with Firebase':mode==='app-monitor'?'Connected with App Monitor passkey':'Notes saved on this device';
+ dialog.querySelector('#notesSyncDetail').textContent=lastSyncError|| (mode==='local'?'Sign in below to turn on cross-device synchronisation.':'Your sign-in is recognised. Note storage is checked separately.');
+ dialog.querySelector('.inclass-sync-dot').classList.toggle('has-error',!!lastSyncError);
+ dialog.querySelector('.inclass-sync-dot').classList.toggle('is-connected',mode!=='local'&&!lastSyncError);
  const $=s=>dialog.querySelector(s);
  dialog.addEventListener('close',()=>dialog.remove());
  dialog.onclick=async event=>{
@@ -103,7 +115,7 @@ cloudUI.onclick=async()=>{
     const password=prompt('Firebase password');if(!password)return;
     await family.signIn(email.trim(),password);await adopt('firebase');dialog.close();return;
    }
-   if(action==='disconnect'){transport?.disconnect?.();await adopt('local');syncState('local');dialog.close();return;}
+   if(action==='disconnect'){transport?.disconnect?.();await adopt('local');lastSyncError='';syncState('local');dialog.close();return;}
   }catch(e){$('#notesIdentityMessage').textContent=e.message;syncState('error',e.message);}
  };
 };
