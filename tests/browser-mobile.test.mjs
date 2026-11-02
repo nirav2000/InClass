@@ -169,6 +169,21 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await until(()=>evalJS('return !!document.querySelector("dialog.apps-notes-identity[open]")'),'shared Notes sign-in picker from home');
  assert.equal(await evalJS('return document.querySelector("#authMessage").classList.contains("hidden")'),true,'The generic unavailable Firebase error must not appear');
  await evalJS('document.querySelector("dialog.apps-notes-identity [data-action=close]").click();return true');
+
+ // A first tap on the compact sync action must open a dialog even when
+ // the shared options fail. Errors must be visible and recoverable.
+ assert.equal(await evalJS(`
+  window.__goodIdentityHandler=window.InClassNotesShowIdentity;
+  window.InClassNotesShowIdentity=()=>Promise.reject(Error("Simulated connection failure"));
+  document.querySelector(".inclassCompactToggle").click();
+  document.querySelector(".inclassCompactMenu [data-action=sync]").click();
+  return !!document.querySelector("dialog.inclassAccountLoader[open]")`),true,'Notes sync must respond immediately to a tap');
+ await until(()=>evalJS('return !document.querySelector("dialog.inclassAccountLoader [data-retry]")?.hidden'),'retry after failed notes account import');
+ assert.match(await evalJS('return document.querySelector("dialog.inclassAccountLoader [data-progress]").textContent'),/Simulated connection failure/);
+ await evalJS('window.InClassNotesShowIdentity=window.__goodIdentityHandler;document.querySelector("dialog.inclassAccountLoader [data-retry]").click();return true');
+ await until(()=>evalJS('return !!document.querySelector("dialog.apps-notes-identity[open]")'),'sync account picker after retry');
+ await evalJS('document.querySelector("dialog.apps-notes-identity [data-action=close]").click();return true');
+
  await send('Page.reload',{ignoreCache:true});
  await until(()=>evalJS('const b=document.querySelector("#enterAppButton");return document.readyState==="complete"&&!!b?.offsetWidth&&!b.disabled&&typeof b.onclick==="function"'),'interactive app reload');
  await evalJS('document.querySelector("#enterAppButton").click();return true');
