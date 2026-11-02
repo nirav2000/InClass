@@ -2,13 +2,16 @@
 // Learning notes are local and never sent to GitHub automatically. The preview
 // role switch is not authentication; it must not grant access to private notes.
 const ROOT='https://nirav2000.github.io/Apps/notes/v1/index.js';
-const notice='Private device notes. Not synced to cloud. Copy to ChatGPT only when you approve.';
+const notice='Notes are saved on this device. Parent sign-in enables encrypted-in-transit Firebase sync. Copy to ChatGPT only when approved.';
 const status=document.createElement('span');
 status.id='inclassNotesStatus';
 status.setAttribute('role','status');
 status.style.cssText='position:fixed;left:12px;bottom:12px;z-index:2147482999;font-size:12px;color:#41566d;max-width:210px;pointer-events:none';
 document.body.append(status);
-let controller=null,activeKey='',generation=0,notesModule=null;
+let controller=null,activeKey='',generation=0,notesModule=null,transport=null;
+const family=await import('./services/family-notes.js');
+const cloudUI=document.createElement('button');cloudUI.type='button';cloudUI.textContent='Notes sync · Local';cloudUI.setAttribute('aria-label','Connect private lesson notes with parent Firebase account');cloudUI.style.cssText='position:fixed;bottom:70px;right:18px;z-index:2147482900;border:1px solid #aebfd0;border-radius:14px;background:#fff;color:#132e45;padding:8px 12px;font:600 12px sans-serif';document.body.append(cloudUI);
+const syncState=(mode,message='')=>{cloudUI.textContent='Notes sync · '+({synced:'Synced',syncing:'Syncing',pending:'Saving',error:'Needs attention'}[mode]||'Local');cloudUI.title=message};
 function lesson(){
   const packId=document.getElementById('weekSelect')?.value;
   const week=(window.INCLASS_WEEKS||[]).find(x=>x.id===packId);
@@ -23,6 +26,7 @@ function lesson(){
 function toggleVisibility(){
   const launcher=document.querySelector('.apps-notes-launcher');
   if(launcher)launcher.hidden=!!document.getElementById('appShell')?.classList.contains('hidden');
+  cloudUI.hidden=!!document.getElementById('appShell')?.classList.contains('hidden');
 }
 async function refresh(){
   const details=lesson();
@@ -32,9 +36,10 @@ async function refresh(){
   try{
     if(!notesModule)notesModule=await import(ROOT);
     if(token!==generation)return;
-    controller?.ui?.destroy?.();
+    transport?.disconnect?.();controller?.ui?.destroy?.();
     const storageKey='inclass:private-notes:v1:'+details.owner+':'+details.learner+':'+details.week.id;
-    const transport=notesModule.createLocalStorageTransport({storageKey});
+    const cloudKey=details.learner.toLowerCase()==='sai'?'sai':details.learner;
+    transport=family.createFamilyNotesTransport({learner:cloudKey,pack:details.week.id,localKey:storageKey,onStatus:syncState});
     const notes=await notesModule.default.init({
       appId:'inclass',appVersion:String(window.INCLASS_CONFIG?.release||'2026.11.02'),
       page:()=>details.page,transport,reviewFeed:false,
@@ -45,6 +50,7 @@ async function refresh(){
     });
     if(token!==generation){notes.ui?.destroy?.();return;}
     controller=notes;activeKey=details.key;status.textContent='';
+    if(await family.currentParent())await transport.connect().then(async()=>{await controller.load();controller.ui?.render()}).catch(e=>syncState('error',e.message));
     toggleVisibility();
   }catch(error){status.textContent='Notes unavailable; lessons are unaffected.';console.warn('InClass Notes:',error);}
 }
@@ -55,3 +61,21 @@ document.getElementById('homeButton')?.addEventListener('click',()=>queueMicrota
 document.getElementById('enterAppButton')?.addEventListener('click',()=>queueMicrotask(toggleVisibility));
 document.addEventListener('DOMContentLoaded',()=>refresh());
 if(document.readyState!=='loading')refresh();
+
+cloudUI.onclick=async()=>{
+ if(!controller)return;
+ try{
+  if(await family.currentParent()){
+   if(confirm('Disconnect this device from the parent notes account? Notes already on this device remain available.')){transport.disconnect();await family.signOut();syncState('local');}
+   else{syncState('syncing');await transport.flush();await controller.load();controller.ui?.render();}
+   return;
+  }
+  const email=prompt('Parent Firebase email (same account used by LearnLatin):');
+  if(!email)return;
+  const password=prompt('Parent Firebase password (used only to sign in to Firebase):');
+  if(!password)return;
+  syncState('syncing');
+  await family.signIn(email.trim(),password);
+  await transport.connect();await controller.load();controller.ui?.render();
+ }catch(e){syncState('error',e.message);alert('Notes sync: '+e.message)}
+};
