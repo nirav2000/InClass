@@ -176,5 +176,15 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await until(()=>evalJS('return document.querySelector(".apps-notes-launcher")?.getClientRects().length>0'),'note launcher after reload');
  await evalJS('document.querySelector(".apps-notes-launcher").click();return true');
  await until(()=>evalJS('return document.querySelector(".apps-notes-dialog .list")?.textContent.includes("InClass mobile browser persistent test note")'),'saved note after full page reload');
+ await evalJS('document.querySelector(".apps-notes-dialog [data-close]").click();return true');
+ await send('Emulation.setDeviceMetricsOverride',{width:820,height:1180,deviceScaleFactor:2,mobile:true});
+ const ipad=await evalJS(`const dock=document.querySelector('#inclassLessonTools').getBoundingClientRect();return {viewport:innerWidth,dockLeft:dock.left,dockRight:dock.right,buttons:[...document.querySelectorAll('#inclassLessonTools button')].map(b=>{const r=b.getBoundingClientRect();return {label:b.textContent.trim(),left:r.left,right:r.right,height:r.height}})}`);
+ assert.ok(ipad.dockLeft>=0&&ipad.dockRight<=ipad.viewport+1,'iPad tools must stay within viewport');
+ assert.ok(ipad.buttons.length>=3,'iPad tools must expose Notes, Notes sync and development feedback');
+ assert.ok(ipad.buttons.every(b=>b.left>=0&&b.right<=ipad.viewport+1&&b.height>=40),'iPad tool buttons must remain visible and tappable');
+ await evalJS('document.querySelector("[data-inclass-dev-launch]").click();return true');
+ await until(()=>evalJS('return !!document.querySelector("dialog.inclass-dev-dialog[open]")'),'development form on iPad');
+ assert.equal(await evalJS('const r=document.querySelector("dialog.inclass-dev-dialog").getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight'),true,'Feedback panel fits iPad screen');
+ await evalJS('document.querySelector("[data-dev-cancel]").click();return true');
 
 });
