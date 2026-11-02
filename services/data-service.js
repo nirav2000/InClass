@@ -48,7 +48,8 @@
 
   function learnerSummary(learnerId){
     const attempts=getAttempts(learnerId);
-    const required=attempts.filter(x=>x.scope!=="extension");
+    const required=attempts.filter(x=>x.scope!=="extension" && x.scope!=="understanding");
+    const understanding=attempts.filter(x=>x.scope==="understanding");
     const extension=attempts.filter(x=>x.scope==="extension");
     const total=attempts.length;
     const correct=attempts.filter(x=>x.correct===true).length;
@@ -67,6 +68,12 @@
       requiredTotal:required.length,
       requiredCorrect,
       requiredAccuracy:required.length?Math.round(requiredCorrect/required.length*100):null,
+      understandingTotal:understanding.length,
+      understandingCorrect:understanding.filter(x=>x.correct===true).length,
+      understandingAccuracy:understanding.length?Math.round(understanding.filter(x=>x.correct===true).length/understanding.length*100):null,
+      understandingIssues:Object.entries(understanding.filter(x=>x.correct===false).reduce((acc,x)=>{
+        const k=x.item||x.skill||"Unknown";acc[k]=(acc[k]||0)+1;return acc;
+      },{})).map(([item,wrong])=>({item,wrong})).sort((a,b)=>b.wrong-a.wrong).slice(0,6),
       extensionTotal:extension.length,
       extensionCorrect,
       extensionAccuracy:extension.length?Math.round(extensionCorrect/extension.length*100):null,
