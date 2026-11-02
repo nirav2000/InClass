@@ -101,7 +101,7 @@
     </header>
 
     <main class="shell">
-      <section class="weekHero" id="weekHero">
+      <section class="weekHero" id="weekHero" data-note-anchor="inclass:lesson" data-note-label="Current homework lesson">
         <div>
           <p class="eyebrow" id="heroMeta"></p>
           <h2 id="heroTitle"></h2>
@@ -115,9 +115,9 @@
 
       <nav class="stepNav" id="stepNav" aria-label="Homework steps"></nav>
       <div id="reviewBanner"></div>
-      <div id="lessonRoot"></div>
+      <div id="lessonRoot" data-note-anchor="inclass:activities" data-note-label="Homework activities"></div>
 
-      <section class="panel parentPanel">
+      <section class="panel parentPanel" data-note-anchor="inclass:progress" data-note-label="Homework progress">
         <div class="sectionHead">
           <div>
             <p class="eyebrow">PROGRESS</p>
@@ -154,6 +154,7 @@
   <script src="pronunciation-extension.js"></script>
   <script src="french-avoir.js"></script>
   <script src="welcome.js"></script>
+  <script type="module" src="inclass-notes.js"></script>
 <script type="module">
 import {initPWA,pwaStyles} from 'https://nirav2000.github.io/Apps/pwa/v1/index.js';
 const pwaStyle=document.createElement('style');pwaStyle.textContent=pwaStyles();document.head.appendChild(pwaStyle);
