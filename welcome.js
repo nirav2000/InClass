@@ -39,7 +39,7 @@
     return Math.round(WEEKS.reduce((sum,p)=>sum+completionFor(p,learnerName),0)/WEEKS.length);
   }
   function homeworkCards(learnerName){
-    return WEEKS.map(pack=>{
+    return WEEKS.slice().reverse().map(pack=>{
       const p=progressFor(pack,learnerName),pct=completionFor(pack,learnerName);
       return '<button class="welcomeHomeworkCard" data-pack="'+pack.id+'" data-learner="'+learnerName+'">'+
         '<span class="subjectOrb '+pack.subjectKey+'">'+(pack.subjectKey==="french"?"FR":"EN")+'</span>'+
@@ -140,7 +140,7 @@
       catch(e){$("#authMessage").textContent=e.message;$("#authMessage").classList.remove("hidden");}
     };
     $("#enterAppButton").onclick=()=>{
-      const last=localStorage.getItem("inclass:lastWeek")||WEEKS[0]?.id;
+      const last=localStorage.getItem("inclass:lastWeek")||WEEKS[WEEKS.length-1]?.id;
       const name=s.role==="learner"?s.displayName:(children()[0]?.name||"Sai");
       launchPack(last,name);
     };
