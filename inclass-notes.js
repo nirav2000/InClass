@@ -39,7 +39,7 @@ async function refresh(){
     transport?.disconnect?.();controller?.ui?.destroy?.();
     const storageKey='inclass:private-notes:v1:'+details.owner+':'+details.learner+':'+details.week.id;
     const cloudKey=details.learner.toLowerCase()==='sai'?'sai':details.learner;
-    transport=family.createFamilyNotesTransport({learner:cloudKey,pack:details.week.id,localKey:storageKey,onStatus:syncState});
+    transport=family.createFamilyNotesTransport({learner:cloudKey,pack:details.week.id,localKey:storageKey,onStatus:syncState,onData:async()=>{if(controller&&activeKey===details.key){await controller.load();controller.ui?.render();}}});
     const notes=await notesModule.default.init({
       appId:'inclass',appVersion:String(window.INCLASS_CONFIG?.release||'2026.11.02'),
       page:()=>details.page,transport,reviewFeed:false,
