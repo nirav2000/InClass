@@ -195,6 +195,17 @@ function renderProgress(){
       ["Meanings",(p.meaningCorrect||0)+"/"+(p.meaningAttempts||0)],
       ["Best test",p.bestTest===undefined?"—":p.bestTest+"/12"]
     ];
+  } else if(state.week.avoirHomework){
+    var seen=Object.keys(p.avoirHeard||{}).length;
+    var spell=Math.min((p.spellCorrect||0)/6,1);
+    var school=Math.min((p.bestTest||0)/6,1);
+    pct=Math.max(Math.round(school*100),Math.round((Math.min(seen/6,1)+spell)*25));
+    stats=[
+      ["Forms heard",seen+"/6"],
+      ["Full-form spelling",(p.spellCorrect||0)+"/"+(p.spellAttempts||0)],
+      ["Best six-form test",typeof p.bestTest==="number"?p.bestTest+"/6":"—"],
+      ["Tests completed",p.testsCompleted||0]
+    ];
   } else if(state.week.opinionsHomework){
     var opinionMeasures=[
       Math.min((p.requiredHeard||0)/8,1),
@@ -241,6 +252,11 @@ function renderSourceNote(){
       '<strong>School homework retained</strong>'+
       '<p>The Year 5 spelling list, plural rule, irregular-plural warm-up and the stated 12-question test structure remain the required path. The supplied slide leaves the test date blank and says next week\'s rule is <em>Double consonants</em>.</p>'+
       '<p><strong>Understanding layer:</strong> clickable grammar terms, visual examples and learner-friendly definitions sit behind the homework rather than replacing it.</p>';
+  } else if(state.week.avoirHomework){
+    $("#sourceNote").innerHTML=
+      '<strong>School instructions preserved · Monsieur Bloom</strong>'+
+      '<p>Learn the six forms of the present tense of <em>avoir</em> (to have) for je, tu, il/elle, nous, vous and ils/elles. A quick spelling test is planned for Friday 6 November 2026.</p>'+
+      '<p><strong>Spelling warning:</strong> <em>tu as</em> and <em>il/elle a</em> sound alike at the end. The new lesson includes the supplied Pink Panther video, audio models, Apple Pencil practice and six-answer assessment. Earlier French weeks remain available.</p>';
   } else if(state.week.opinionsHomework){
     $("#sourceNote").innerHTML=
       '<strong>Both school sheets stored</strong>'+
