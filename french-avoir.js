@@ -35,6 +35,77 @@ function explainMismatch(answer, target, subject) {
   return "Look at the subject first, then choose its matching verb. Keep the spelling exact.";
 }
 
+// Conceptual understanding is tracked independently from the six-mark spelling test.
+const AVOIR_CONCEPT_CHECKS = [
+  {
+    id:"pronoun", section:"foundations", label:"Pronouns",
+    prompt:"Sai has a dog. He has a dog. Which word is a pronoun that refers to Sai?",
+    choices:[{id:"sai",text:"Sai"},{id:"he",text:"He"},{id:"dog",text:"Dog"}],
+    answer:"he",
+    explain:"Yes. He is a pronoun: a short word referring to Sai, so we do not need to repeat his name.",
+    hint:"A pronoun points to a person or thing. Here it replaces the name Sai."
+  },
+  {
+    id:"form", section:"foundations", label:"Verb forms",
+    prompt:"Which pair shows two different forms of the SAME verb?",
+    choices:[{id:"have-has",text:"have / has"},{id:"have-dog",text:"have / dog"},{id:"dog-cat",text:"dog / cat"}],
+    answer:"have-has",
+    explain:"Correct. Have and has are two forms of one verb: to have. They both describe having something.",
+    hint:"Choose two words that both express the idea of having something."
+  },
+  {
+    id:"conjugation", section:"foundations", label:"Conjugation",
+    prompt:"Why do we write 'I have' but 'he has'?",
+    choices:[{id:"time",text:"Because 'he' is in the past"},{id:"subject",text:"Because the verb matches who has something"},{id:"animal",text:"Because the object changes"}],
+    answer:"subject",
+    explain:"Exactly. The subject changes (I → he), so the verb changes (have → has). This is conjugation.",
+    hint:"Both sentences are in the present. Look at who is having something."
+  },
+  {
+    id:"tense", section:"tenses", label:"Tense",
+    prompt:"Which sentence is about the FUTURE?",
+    choices:[{id:"past",text:"I had a dog."},{id:"present",text:"I have a dog."},{id:"future",text:"I will have a dog."}],
+    answer:"future",
+    explain:"Yes. Will have points to the future. Had is past; have is present.",
+    hint:"Which sentence describes something that will be true later, rather than now or earlier?"
+  }
+];
+const AVOIR_TIMES = [
+  {
+    id:"past", name:"Past", english:"I had", french:"J’avais", symbol:"↶",
+    detail:"Past means earlier. J’avais can mean “I had” or “I used to have”; it is a past form called the imperfect."
+  },
+  {
+    id:"present", name:"Present", english:"I have", french:"J’ai", symbol:"◎",
+    detail:"Present means now, or something that is generally true. J’ai means “I have”. THIS is the tense in Friday’s test."
+  },
+  {
+    id:"future", name:"Future", english:"I will have", french:"J’aurai", symbol:"➜",
+    detail:"Future means later. J’aurai means “I will have”. You do not need to memorise this form for Friday."
+  }
+];
+function avoirConceptCard(q) {
+  return '<div class="avoirConceptQuestion" data-av-concept="' + h(q.id) + '">' +
+    '<div class="avoirConceptQuestionHead"><span class="avoirConceptDot" aria-hidden="true">?</span>' +
+    '<strong>' + h(q.prompt) + '</strong></div>' +
+    '<div class="avoirConceptChoices">' + q.choices.map(choice =>
+      '<button type="button" class="avoirConceptChoice" data-av-concept-answer="' + h(choice.id) + '">' +
+        h(choice.text) + '</button>'
+    ).join("") + '</div>' +
+    '<p class="avoirConceptFeedback" data-av-concept-feedback aria-live="polite"></p></div>';
+}
+function avoirTenseCard(t) {
+  return '<button type="button" class="avoirTenseCard' + (t.id === "present" ? ' is-current is-selected' : '') + '"' +
+    ' data-av-tense="' + h(t.id) + '" aria-pressed="' + (t.id === "present" ? "true" : "false") + '"' +
+    ' aria-label="' + h(t.name + " tense: " + t.english + "; " + t.french + ". Play French example") + '">' +
+      '<span class="avoirTenseIcon" aria-hidden="true">' + h(t.symbol) + '</span>' +
+      '<strong class="avoirTenseTitle">' + h(t.name) + '</strong>' +
+      '<span class="avoirTenseEnglish">' + h(t.english) + '</span>' +
+      '<span class="avoirTenseFrench" lang="fr-FR">' + h(t.french) + '</span>' +
+      '<span class="avoirTenseSpeaker" aria-hidden="true">🔊 Hear</span>' +
+    '</button>';
+}
+
 function renderAvoir() {
   const w = state.week;
   const forms = w.forms;
@@ -42,8 +113,11 @@ function renderAvoir() {
   const bySubject = Object.fromEntries(subjects.map(s => [s.id, s]));
   setNav([
     ["avSchool","School task"],
+    ["avFoundations","Why forms?"],
+    ["avTenses","Past · Present · Future"],
+    ["avReference","Six forms"],
     ["avHear","Hear + recall"],
-    ["avNotice","Why it works"],
+    ["avNotice","Spelling patterns"],
     ["avWrite","Spell from memory"],
     ["avTest","Friday test"],
     ["avTransfer","Use new sentences"]
@@ -62,7 +136,41 @@ function renderAvoir() {
       '<p>' + h(w.sourceInstruction) + '</p><p>Original source: ' + h(w.source) + '</p></details>' +
     '</section>' +
 
-    panel("avReference",1,"The six forms you need for school",
+    panel("avFoundations",1,"Why do verbs have different forms?",
+      '<p class="tip">We will learn six spellings shortly. First, discover what a <strong>verb</strong>, a <strong>pronoun</strong> and a <strong>form</strong> are — and why languages need them.</p>' +
+      '<div class="avoirConceptCompare"><div><span class="avoirMiniLabel">English</span>' +
+        '<p>I <strong>have</strong> a dog.</p><p>He <strong>has</strong> a dog.</p></div>' +
+        '<div><span class="avoirMiniLabel">French</span>' +
+        '<p>J’<strong>ai</strong> un chien.</p><p>Il <strong>a</strong> un chien.</p></div></div>' +
+      '<p class="avoirConceptInsight">The <strong>person changes</strong>, but the idea of <strong>having</strong> something stays the same. The verb changes to fit the person. Those different versions are called <strong>forms</strong>.</p>' +
+      '<div class="avoirConceptDefinitions">' +
+        '<div class="avoirConceptDefinition"><span>01</span><div><strong>Verb</strong><p>A word about doing, being or having something. <em>Have</em>, <em>has</em> and French <em>avoir</em> are connected to the same idea.</p></div></div>' +
+        '<div class="avoirConceptDefinition"><span>02</span><div><strong>Subject</strong><p>The person or thing the sentence is about — in these examples, <em>I</em>, <em>he</em>, <em>je</em> or <em>il</em>.</p></div></div>' +
+        '<div class="avoirConceptDefinition"><span>03</span><div><strong>Pronoun</strong><p>A short word referring to someone or something, often instead of repeating a name: <em>Sai</em> → <em>he</em>. French has <em>je, tu, il, elle, nous, vous, ils, elles</em>.</p></div></div>' +
+        '<div class="avoirConceptDefinition"><span>04</span><div><strong>Form and conjugation</strong><p>A <em>form</em> is one version of a verb, such as <em>have</em> or <em>has</em>. <em>Conjugation</em> means changing the verb to match who is involved (and the time).</p></div></div>' +
+        '<div class="avoirConceptDefinition"><span>05</span><div><strong>Infinitive</strong><p>The dictionary name of a verb, without choosing who is doing it. <em>Avoir</em> means <em>to have</em>; <em>j’ai</em> is a form used with <em>je</em>.</p></div></div>' +
+        '<div class="avoirConceptDefinition"><span>06</span><div><strong>Why have forms?</strong><p>They help us make a sentence grammatically correct and show who is doing or having something. English changes <em>have → has</em>; French changes the verb more often.</p></div></div>' +
+      '</div>' +
+      '<p class="avoirConceptBridge">One verb can also change for <strong>when</strong> something happens. That brings us to <strong>tense</strong>.</p>' +
+      '<div class="avoirConceptQuizHead"><div><strong>Check the idea</strong><p>Explain the reason, not just the answer.</p></div><small id="avConceptProgress">0/4 ideas understood</small></div>' +
+      AVOIR_CONCEPT_CHECKS.filter(q => q.section === "foundations").map(avoirConceptCard).join("")
+    ) +
+
+    panel("avTenses",2,"What is present tense? Are there other tenses?",
+      '<p class="tip"><strong>Tense tells us when something happens or is true.</strong> The three big time ideas are past, present and future. We use them in English too.</p>' +
+      '<div class="avoirTenseMap"><div class="avoirTenseCards">' +
+        AVOIR_TIMES.map(avoirTenseCard).join("") + '</div>' +
+        '<p id="avTenseDetail" class="avoirTenseDetail" aria-live="polite">' + h(AVOIR_TIMES[1].detail) + '</p>' +
+        '<p class="avoirTenseNote">French has several past tenses and other verb constructions too. This is a simplified first map, not the complete system. Tap a card to hear its French example.</p>' +
+      '</div>' +
+      '<p class="avoirTenseExplanation">The <strong>present tense</strong> describes what is happening now or what is generally true. The <strong>past</strong> describes what was true earlier; the <strong>future</strong> describes what will be true later.</p>' +
+      '<details class="avoirTenseMore"><summary>Are these the only French tenses?</summary>' +
+        '<p>No. For instance, <strong>j’avais</strong> is one way to talk about the past, and <strong>j’ai eu</strong> is another. You will learn the differences later. <strong>Friday’s homework is only the present tense</strong>: j’ai, tu as, il/elle a, nous avons, vous avez, ils/elles ont.</p></details>' +
+      '<div class="avoirConceptQuizHead"><strong>Check your understanding of time</strong><small id="avConceptProgressTime">0/4 ideas understood</small></div>' +
+      AVOIR_CONCEPT_CHECKS.filter(q => q.section === "tenses").map(avoirConceptCard).join("")
+    ) +
+
+    panel("avReference",3,"The six forms you need for school",
       '<p class="tip">Say each French phrase after listening. Notice that the coloured word is the part of <em>avoir</em> that changes.</p>' +
       '<table class="avoirTable"><thead><tr><th>Pronoun</th><th>French</th><th>Meaning</th><th>Hear</th></tr></thead><tbody>' +
       forms.map((f, i) =>
@@ -75,7 +183,7 @@ function renderAvoir() {
       '<div><strong>6</strong>forms to memorise</div><div><strong>100%</strong>spelling target</div></div>'
     ) +
 
-    panel("avHear",2,"Hear it, picture its meaning, recall it",
+    panel("avHear",4,"Hear it, picture its meaning, recall it",
       '<p class="tip">First understand who has something. Say the French from memory, then reveal and compare it to the spoken model.</p>' +
       '<div class="avoirPrompt"><p class="promptLabel">SAY IT IN FRENCH</p><div id="avHearCue" class="avoirPromptText"></div>' +
       '<div class="avoirActions"><button id="avHearPlay" type="button" class="primary">🔊 Hear French</button>' +
@@ -85,7 +193,7 @@ function renderAvoir() {
       '<small>Say it aloud before revealing. Pronunciation is best learnt from audio, not English-looking spellings.</small></div>'
     ) +
 
-    panel("avNotice",3,"Understand why the spelling changes",
+    panel("avNotice",5,"Understand why the spelling changes",
       '<p class="tip"><strong>Present tense</strong> tells us about what someone has now. ' +
       '<strong>Conjugating</strong> means changing the verb to match who is doing or having something.</p>' +
       '<div class="avoirNoticeGrid">' +
@@ -105,7 +213,7 @@ function renderAvoir() {
       '<button id="avChooseNext" class="secondary" type="button">Different pronoun →</button></div>'
     ) +
 
-    panel("avWrite",4,"Spell the whole French form from memory",
+    panel("avWrite",6,"Spell the whole French form from memory",
       '<p class="tip">Look at the English meaning and write the complete French phrase. Exact spelling matters; <em>a</em> and <em>as</em> are not interchangeable.</p>' +
       '<div class="avoirPrompt"><p class="promptLabel">TRANSLATE INTO FRENCH</p>' +
       '<div id="avWriteCue" class="avoirPromptText"></div>' +
@@ -122,7 +230,7 @@ function renderAvoir() {
       '<p id="avWriteFeedback" class="feedback" aria-live="polite"></p></div>'
     ) +
 
-    panel("avTest",5,"Friday’s school-style spelling test",
+    panel("avTest",7,"Friday’s school-style spelling test",
       '<p class="tip">No multiple choice, no hints. Fill in the correct form of <strong>avoir</strong> for each pronoun. ' +
       'There are six marks. All spellings must be correct.</p>' +
       '<div class="avoirQuizFields">' + forms.map((f, i) =>
@@ -136,7 +244,7 @@ function renderAvoir() {
       '<div id="avQuizResults" aria-live="polite"></div><div id="avHistory" class="avoirHistory"></div>'
     ) +
 
-    panel("avTransfer",6,"Use avoir to make sentences of your own",
+    panel("avTransfer",8,"Use avoir to make sentences of your own",
       '<p class="tip"><strong>Optional extension:</strong> use the animal words from previous French lessons. ' +
       'This checks whether you can change the pronoun and still use the correct verb.</p>' +
       '<div class="avoirBuilder">' +
@@ -154,6 +262,69 @@ function renderAvoir() {
       '<button id="avBuilderNext" type="button" class="secondary">New combination →</button></div>' +
       '<p id="avBuilderFeedback" class="feedback" aria-live="polite"></p></div>'
     );
+
+  // This check lives in the understanding strand; it never inflates the school spelling score.
+  function refreshAvoirConceptProgress() {
+    const p = getProgress();
+    const mastered = AVOIR_CONCEPT_CHECKS.filter(q => (p.avoirConceptMastery || {})[q.id]).length;
+    const summary = mastered + "/" + AVOIR_CONCEPT_CHECKS.length + " ideas understood";
+    ["avConceptProgress","avConceptProgressTime"].forEach(id => {
+      const item = $a(id);
+      if (item) item.textContent = summary;
+    });
+  }
+  document.querySelectorAll("[data-av-concept]").forEach(card => {
+    const question = AVOIR_CONCEPT_CHECKS.find(q => q.id === card.dataset.avConcept);
+    if (!question) return;
+    card.querySelectorAll("[data-av-concept-answer]").forEach(button => {
+      button.onclick = () => {
+        if (card.dataset.avConceptCompleted === "true") return;
+        const answer = button.dataset.avConceptAnswer;
+        const correct = answer === question.answer;
+        const p = getProgress();
+        p.avoirConceptAttempts = (p.avoirConceptAttempts || 0) + 1;
+        if (correct) {
+          p.avoirConceptCorrect = (p.avoirConceptCorrect || 0) + 1;
+          p.avoirConceptMastery = p.avoirConceptMastery || {};
+          p.avoirConceptMastery[question.id] = true;
+        } else {
+          p.avoirConceptMisses = p.avoirConceptMisses || {};
+          p.avoirConceptMisses[question.id] = (p.avoirConceptMisses[question.id] || 0) + 1;
+        }
+        saveProgress(p);
+        recordAvoir("avoir-concept-check",question.id,correct,{
+          scope:"understanding",concept:question.id,response:answer,expected:question.answer
+        });
+        const feedback = card.querySelector("[data-av-concept-feedback]");
+        feedback.textContent = correct ? question.explain : question.hint + " Try again.";
+        feedback.className = "avoirConceptFeedback " + (correct ? "good" : "try");
+        if (correct) {
+          card.dataset.avConceptCompleted = "true";
+          card.classList.add("is-understood");
+          card.querySelectorAll("[data-av-concept-answer]").forEach(option => {
+            option.disabled = true;
+            if (option === button) option.classList.add("is-correct");
+          });
+        } else button.classList.add("was-tried");
+        refreshAvoirConceptProgress();
+        renderTestHistory();
+      };
+    });
+  });
+  document.querySelectorAll("[data-av-tense]").forEach(card => {
+    card.onclick = () => {
+      const tense = AVOIR_TIMES.find(t => t.id === card.dataset.avTense);
+      if (!tense) return;
+      document.querySelectorAll("[data-av-tense]").forEach(other => {
+        const active = other === card;
+        other.classList.toggle("is-selected",active);
+        other.setAttribute("aria-pressed",String(active));
+      });
+      $a("avTenseDetail").textContent = tense.detail;
+      speak(tense.french,"fr-FR");
+    };
+  });
+  refreshAvoirConceptProgress();
 
   const heardCount = () => Object.keys(getProgress().avoirHeard || {}).length;
   function updateHeardCount() { $a("avHeardCount").textContent = heardCount() + "/6"; }
@@ -297,7 +468,13 @@ function renderAvoir() {
     const p = getProgress();
     const scores = p.avoirTestHistory || [];
     const last = scores[scores.length - 1];
+    const masteredConcepts = AVOIR_CONCEPT_CHECKS.filter(q => (p.avoirConceptMastery || {})[q.id]).length;
+    const conceptRevisit = AVOIR_CONCEPT_CHECKS.filter(q => (p.avoirConceptMisses || {})[q.id])
+      .map(q => h(q.label) + " (" + p.avoirConceptMisses[q.id] + ")");
     $a("avHistory").innerHTML = "<strong>Parent review · saved for " + h(state.learner) + "</strong>" +
+      "<p><strong>Understanding:</strong> " + masteredConcepts + "/" + AVOIR_CONCEPT_CHECKS.length +
+        " concepts understood · " + (p.avoirConceptAttempts || 0) + " checks attempted" +
+        (conceptRevisit.length ? " · Earlier misconceptions: " + conceptRevisit.join(", ") : "") + "</p>" +
       "<p>Attempts: " + (p.testsCompleted || 0) + " · Best: " +
         (typeof p.bestTest === "number" ? p.bestTest + "/6" : "not taken") +
         (last ? " · Latest: " + last.score + "/6" : "") + "</p>" +
