@@ -7,7 +7,7 @@ import { join, resolve, extname, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
-const ROOT=fileURLToPath(new URL('../',import.meta.url));
+const ROOT=resolve(fileURLToPath(new URL('../',import.meta.url)));
 const APPS=resolve(ROOT,'SharedApps');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const importmap={imports:{
