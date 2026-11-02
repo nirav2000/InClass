@@ -276,6 +276,17 @@ function renderAvoir() {
   document.querySelectorAll("[data-av-concept]").forEach(card => {
     const question = AVOIR_CONCEPT_CHECKS.find(q => q.id === card.dataset.avConcept);
     if (!question) return;
+    if ((getProgress().avoirConceptMastery || {})[question.id]) {
+      card.dataset.avConceptCompleted = "true";
+      card.classList.add("is-understood");
+      const savedFeedback = card.querySelector("[data-av-concept-feedback]");
+      savedFeedback.textContent = "Previously understood ✓ " + question.explain;
+      savedFeedback.className = "avoirConceptFeedback good";
+      card.querySelectorAll("[data-av-concept-answer]").forEach(option => {
+        option.disabled = true;
+        if (option.dataset.avConceptAnswer === question.answer) option.classList.add("is-correct");
+      });
+    }
     card.querySelectorAll("[data-av-concept-answer]").forEach(button => {
       button.onclick = () => {
         if (card.dataset.avConceptCompleted === "true") return;
