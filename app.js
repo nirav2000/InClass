@@ -278,6 +278,7 @@ function renderWeek(){
   else if(state.week.subjectKey==="english") renderEnglish();
   else renderFrench();
   renderSourceNote();
+  window.dispatchEvent(new CustomEvent("inclass:lessonchange",{detail:{packId:state.week.id,learner:state.learner}}));
   renderProgress();
   renderReviewBanner();
   $("#resetProgress").onclick=function(){
