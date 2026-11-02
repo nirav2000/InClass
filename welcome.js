@@ -145,7 +145,8 @@
     $("#signInButton").setAttribute("aria-label","Open parent notes synchronisation sign-in");
     $("#signInButton").onclick=()=>{
       $("#authMessage").classList.add("hidden");
-      window.dispatchEvent(new Event("inclass:notes-identity-request"));
+      if(window.InClassCompactTools?.openSync)window.InClassCompactTools.openSync();
+      else window.dispatchEvent(new Event("inclass:notes-identity-request"));
     };
     $("#enterAppButton").disabled=false;
     $("#enterAppButton").textContent="Continue latest homework →";
