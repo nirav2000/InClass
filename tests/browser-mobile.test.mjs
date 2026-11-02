@@ -29,7 +29,7 @@ function server(){
   try{
    let body=readFileSync(file);
    if(file.endsWith('index.html')){
-    const html=body.toString().replace('<head>',`<head><base href="/InClass/"><script type="importmap">${JSON.stringify(importmap)}</script>`);
+    const html=body.toString().replace('<head>',`<head><base href="/InClass/"><script type="importmap">${JSON.stringify(importmap)}</script>`).replace('https://nirav2000.github.io/Apps/apps-pronunciation.js?v=3','/Apps/apps-pronunciation.js?v=3');
     body=Buffer.from(html);
    }
    const type={'.js':'text/javascript','.css':'text/css','.html':'text/html','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json'}[extname(file)]||'text/plain';
@@ -88,6 +88,9 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
  await send('Page.addScriptToEvaluateOnNewDocument',{source:`
   window.__submitCalls=[];
+  window.__browserErrors=[];
+  window.addEventListener('error',event=>window.__browserErrors.push(String(event.message||event.error)));
+  window.addEventListener('unhandledrejection',event=>window.__browserErrors.push(String(event.reason)));
   window.AppsPasskeyAuth={create:()=>({
    restoreSession:()=>{},validateSession:async()=>({method:'passkey'}),
    passkeyLogin:async()=>{},authHeaders:()=>({'X-App-Monitor-Session':'test-session'})
@@ -102,6 +105,8 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
   };
  `});
  await send('Page.navigate',{url:'http://127.0.0.1:'+http.address().port+'/InClass/'});
+ await wait(1500);
+ console.log('INCLASS_BROWSER_DIAG',JSON.stringify(await evalJS(`return {ready:document.readyState,url:location.href,enter:!!document.querySelector('#enterAppButton'),enterWidth:document.querySelector('#enterAppButton')?.offsetWidth,dev:!!document.querySelector('[data-inclass-dev-launch]'),sync:!!document.querySelector('[data-inclass-sync-button]'),errors:window.__browserErrors||[],body:document.body?.textContent.slice(0,150)}`)));
  await until(()=>evalJS('return document.querySelector("#enterAppButton")?.offsetWidth>0&&document.querySelector("[data-inclass-dev-launch]")!==null'),'welcome tools');
  const overlap=await evalJS(`
   const main=document.querySelector('#enterAppButton').getBoundingClientRect();
