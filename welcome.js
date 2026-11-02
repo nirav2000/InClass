@@ -140,11 +140,15 @@
     // The app-wide learner accounts are still a local preview. Avoid a broken
     // generic "Sign in" button: use the verified shared Notes identity flow.
     $("#signInButton").textContent="Notes account";
+    $("#signInButton").disabled=false;
+    $("#signInButton").removeAttribute("aria-label");
     $("#signInButton").setAttribute("aria-label","Open parent notes synchronisation sign-in");
     $("#signInButton").onclick=()=>{
       $("#authMessage").classList.add("hidden");
       window.dispatchEvent(new Event("inclass:notes-identity-request"));
     };
+    $("#enterAppButton").disabled=false;
+    $("#enterAppButton").textContent="Continue latest homework →";
     $("#enterAppButton").onclick=()=>{
       const last=localStorage.getItem("inclass:lastWeek")||WEEKS[WEEKS.length-1]?.id;
       const name=s.role==="learner"?s.displayName:(children()[0]?.name||"Sai");
