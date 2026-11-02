@@ -38,6 +38,7 @@ jobs:
       - name: Syntax check
         run: |
           node --check inclass-development-feedback.js
+          node --check inclass-compact-tools.js
           node --check welcome.js
           node --experimental-default-type=module --check inclass-notes.js
       - name: Real mobile Chrome interaction test
