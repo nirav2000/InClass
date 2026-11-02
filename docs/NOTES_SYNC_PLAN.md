@@ -35,3 +35,11 @@
 - Legacy local note keys are not automatically copied into another account. No automatic transfer of private notes to ChatGPT or GitHub.
 - Cross-device note storage is separate from InClass's still-local homework progress and attempts.
 - The sync conflict strategy is record-level with bounded conflict history, not collaborative per-character editing.
+
+## Existing-account authentication (2026-11-02)
+- InClass now checks the saved `kk-syllabus` Firebase session rather than asking for an email as the first step. Firebase Auth persistence is shared **only when the same Firebase app identity and browser storage are reused**; a separate PWA/browser profile may still need sign-in once.
+- InClass also recognises an existing App Monitor **passkey** session using its canonical `app-monitor.admin-session.v2` storage entry. Recovery sessions do not count as owner-passkey authentication for family-note access.
+- When the saved parent Firebase login is unavailable, the **Notes sync** control offers App Monitor passkey login. The server validates the session before reading or writing the selected InClass learner and lesson.
+- App Monitor family-note sync uses the same Firestore documents as Firebase. Conditional Firestore writes protect against overwriting a newer device change. Other-device changes are refreshed when the app regains focus; Firebase mode continues to use a live Firestore listener.
+- An email-and-password login remains an optional fallback; nobody should ever paste a password or session token into ChatGPT.
+- The App Monitor bridge requires a server-side Firebase service-account credential, and must be tested on two authenticated devices before claiming production readiness.
