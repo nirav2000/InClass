@@ -47,6 +47,18 @@ Practice includes:
 - listen-and-repeat speaking practice
 - a constrained mini-conversation using the taught vocabulary, with typed input and microphone speech recognition where the browser supports it
 
+
+## Home Screen app installation and icon workflow (November 2026)
+
+InClass consumes the **shared** Apps PWA v1 infrastructure rather than maintaining a separate installation library. The app already has one `sw.js` worker that imports the shared worker, an app-specific manifest and a visible `Install app` control on the welcome page.
+
+- Open [InClass](https://nirav2000.github.io/InClass/) in **Safari** on an iPhone or iPad. Use **Share → Add to Home Screen**, then launch it from the new icon. Inside InClass, **Install app** displays the shared installation/standalone diagnostic.
+- The current initial brand is `insight-book`: a book with an understanding spark. The full set of editable SVG concept previews is available in the [PWA Icon Lab](https://nirav2000.github.io/Apps/pwa/v1/icon-gallery.html).
+- `pwa.config.json` controls app name, colours, URL scope and icon concept. `.github/workflows/pwa-assets.yml` uses the shared generator to create `icon.svg`, `icons/favicon.svg`, PNG 180/192/512 and a 512px maskable PNG. The workflow checks icon dimensions, manifest integrity and the preservation of French lessons before committing updated assets to main.
+- The [PWA portfolio readiness dashboard](https://nirav2000.github.io/Apps/pwa/v1/portfolio.html) distinguishes verified manifest/icon files from on-device service-worker and standalone testing.
+
+**Device verification is separate:** GitHub Actions passing does not verify Add to Home Screen, actual offline behaviour or updates on a physical iPhone/iPad.
+
 ## Pronunciation lab prototype
 
 French lessons now include a reusable pronunciation-coaching component loaded from the central `Apps` shared library: `apps-pronunciation.js`.
