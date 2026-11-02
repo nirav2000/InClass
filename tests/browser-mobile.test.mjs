@@ -43,9 +43,15 @@ async function chrome(){
  if(!bin)throw Error('Chrome/Chromium missing from test runner');
  const processChrome=spawn(bin,['--headless=new','--no-sandbox','--disable-dev-shm-usage','--no-first-run','--no-default-browser-check','--remote-allow-origins=*','--remote-debugging-port=0','--user-data-dir='+dir,'about:blank'],{stdio:['ignore','ignore','pipe'],detached:true});
  const wsurl=await new Promise((ok,fail)=>{
-  const timer=setTimeout(()=>fail(Error('Chrome did not start')),16000);
-  processChrome.stderr.on('data',b=>{const match=String(b).match(/DevTools listening on (ws:\/\/[^\s]+)/);if(match){clearTimeout(timer);ok(match[1])}});
-  processChrome.on('error',fail);
+  let stderr='';
+  const timer=setTimeout(()=>fail(Error('Chrome did not start: '+stderr.slice(-1800))),45000);
+  processChrome.stderr.on('data',b=>{
+    stderr+=String(b);
+    const match=String(b).match(/DevTools listening on (ws:\/\/[^\s]+)/);
+    if(match){clearTimeout(timer);ok(match[1])}
+  });
+  processChrome.on('error',e=>{clearTimeout(timer);fail(e)});
+  processChrome.on('exit',(code,signal)=>{clearTimeout(timer);fail(Error('Chrome exited before starting: '+code+' '+signal+' '+stderr.slice(-1800)))});
  });
  const endpoint=new URL(wsurl).origin.replace('ws:','http:');
  const tab=await (await fetch(endpoint+'/json/new?about:blank',{method:'PUT'})).json();
@@ -76,7 +82,7 @@ async function until(callback,what){
  for(let i=0;i<100;i++){if(await callback())return;await wait(100)}
  throw Error('Timed out waiting for '+what);
 }
-test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation', {timeout:90000},async t=>{
+test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation', {timeout:155000},async t=>{
  const http=server();
  await new Promise(ok=>http.listen(0,'127.0.0.1',ok));
  let browser;
