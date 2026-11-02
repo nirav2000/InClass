@@ -7,6 +7,9 @@ on:
       - 'inclass-notes.js'
       - 'inclass-development-feedback.js'
       - 'tests/family-notes.test.mjs'
+      - 'tests/pwa-update.test.mjs'
+      - 'sw.js'
+      - 'config/app-config.js'
       - '.github/workflows/notes-tests.yml'
   workflow_dispatch:
 permissions:
@@ -25,4 +28,4 @@ jobs:
           node --experimental-default-type=module --check inclass-notes.js
           node --experimental-default-type=module --check inclass-development-feedback.js
       - name: Test note merging
-        run: node --experimental-default-type=module --test tests/family-notes.test.mjs
+        run: node --experimental-default-type=module --test tests/family-notes.test.mjs tests/pwa-update.test.mjs
