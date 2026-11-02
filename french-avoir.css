@@ -46,3 +46,56 @@
 .avoirMastery{color:#244e63;background:#e9f6fd;border-radius:13px;padding:12px}
 @media(max-width:700px){.avoirNoticeGrid{grid-template-columns:1fr}.avoirQuizFields{grid-template-columns:1fr}.avoirChecklist{grid-template-columns:1fr 1fr}.avoirBuilder{grid-template-columns:1fr}}
 @media(max-width:430px){.avoirIntro{padding:17px}.avoirTable td{padding:10px 6px}.avoirTable th{padding:4px 6px}.avoirTable td:nth-child(3){font-size:.82em}.avoirTable .avoirHear{padding:7px 9px}.avoirPrompt{padding:15px}.avoirChecklist{grid-template-columns:1fr}}
+
+/* First-principles teaching: same visual grammar as the supplied tense cards. */
+.avoirConceptCompare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.avoirConceptCompare>div{background:#f1f8fb;border:1px solid #d7eaf1;border-radius:18px;padding:16px 18px}
+.avoirMiniLabel{color:#456f80;text-transform:uppercase;letter-spacing:.1em;font-size:12px;font-weight:850}
+.avoirConceptCompare p{font-size:clamp(17px,2.9vw,22px);margin:10px 0}
+.avoirConceptCompare strong{color:#067aa9}
+.avoirConceptInsight{background:#e7f7ec;border-left:4px solid #30aa74;border-radius:0 15px 15px 0;padding:15px 17px;line-height:1.55}
+.avoirConceptDefinitions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:19px 0}
+.avoirConceptDefinition{display:grid;grid-template-columns:31px minmax(0,1fr);gap:11px;border:1px solid #dce6eb;border-radius:16px;background:#fbfdfe;padding:15px}
+.avoirConceptDefinition>span{display:grid;place-items:center;align-self:start;width:31px;height:31px;border-radius:50%;background:#e3f2f7;color:#0b7285;font-size:12px;font-weight:900}
+.avoirConceptDefinition strong{color:#163d55;font-size:16px}
+.avoirConceptDefinition p{margin:5px 0 0;color:#536b7b;line-height:1.5}
+.avoirConceptBridge{padding:14px 17px;border-radius:14px;background:#eaf6fc;margin:19px 0;color:#234e66}
+.avoirConceptQuizHead{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:1px solid #e0e9ee;margin:21px 0 12px;padding-top:19px}
+.avoirConceptQuizHead strong{font-size:17px}
+.avoirConceptQuizHead p{margin:4px 0 0;color:#5c7180;font-size:14px}
+.avoirConceptQuizHead small{font-weight:850;color:#126a75;background:#e7f5f4;border-radius:99px;padding:7px 10px}
+.avoirConceptQuestion{margin:12px 0;padding:17px 18px;border:1px solid #dfe9ef;background:#f9fcfd;border-radius:18px}
+.avoirConceptQuestion.is-understood{border-color:#9ed7be;background:#f3fbf7}
+.avoirConceptQuestionHead{display:flex;align-items:flex-start;gap:11px}
+.avoirConceptQuestionHead strong{font-size:16px;line-height:1.5}
+.avoirConceptDot{display:grid;place-items:center;background:#0f344b;color:white;flex:none;width:28px;height:28px;font-weight:850;border-radius:50%}
+.avoirConceptChoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:13px}
+.avoirConceptChoice{background:white;color:#17374c;border-radius:12px;border:1px solid #cddfe8;padding:12px 13px;text-align:left;font-weight:650;min-width:0;white-space:normal}
+.avoirConceptChoice:hover:not(:disabled),.avoirConceptChoice:focus-visible{border-color:#1184a7;outline:2px solid rgba(17,132,167,.19)}
+.avoirConceptChoice.was-tried{border-color:#e9b78a;background:#fff5eb}
+.avoirConceptChoice.is-correct{border-color:#22a271;background:#e6f8ec}
+.avoirConceptChoice:disabled{cursor:default;opacity:.77}
+.avoirConceptFeedback{font-size:14px;font-weight:700;min-height:0;margin:11px 0 0;line-height:1.5}
+.avoirConceptFeedback:empty{display:none}.avoirConceptFeedback.good{color:#157345}.avoirConceptFeedback.try{color:#996321}
+.avoirTenseMap{background:#090c0d;color:#fff;padding:20px;border-radius:25px;border:1px solid #383b3d;margin:19px 0}
+.avoirTenseCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.avoirTenseCard{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;background:#262626;color:#fff;border:1px solid #262626;border-radius:21px;padding:26px 14px 19px;min-height:235px;text-align:center;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.avoirTenseCard.is-current{background:#001611;border-color:#001611}
+.avoirTenseCard.is-selected{box-shadow:inset 0 0 0 1px rgba(28,173,115,.45)}
+.avoirTenseCard:hover{border-color:#5d6964;transform:translateY(-2px)}
+.avoirTenseCard:focus-visible{outline:3px solid #29bf8a;outline-offset:3px}
+.avoirTenseIcon{display:block;font-size:31px;line-height:1;color:#b3b3b3;margin-bottom:9px}
+.avoirTenseCard.is-current .avoirTenseIcon{color:#19bb70}
+.avoirTenseTitle{display:block;font-size:clamp(18px,2.6vw,30px);font-weight:850;line-height:1.18;letter-spacing:-.02em}
+.avoirTenseEnglish{display:block;font-size:clamp(17px,2.3vw,26px);margin-top:9px;font-weight:450}
+.avoirTenseFrench{color:#b4b4b4;font-size:clamp(15px,1.9vw,22px);margin-top:2px}
+.avoirTenseSpeaker{font-size:12px;letter-spacing:.02em;color:#b5cdc2;margin-top:9px}
+.avoirTenseDetail{border-top:1px solid #39413f;padding:15px 2px 4px;color:#dbe8e2;font-size:15px;line-height:1.55}
+.avoirTenseNote{margin:10px 2px 0;color:#b8baba;line-height:1.5;font-size:14px}
+.avoirTenseExplanation{line-height:1.6;margin:17px 0}
+.avoirTenseMore{background:#eff7fb;border:1px solid #d6e7ed;border-radius:14px;padding:13px 16px}
+.avoirTenseMore summary{cursor:pointer;font-weight:800;color:#1a5771}.avoirTenseMore p{color:#385d70;margin:9px 0 0;line-height:1.5}
+@media(max-width:740px){.avoirConceptDefinitions{grid-template-columns:1fr}.avoirTenseMap{padding:13px}.avoirTenseCards{gap:8px}.avoirTenseCard{min-height:188px;padding:19px 7px 13px;border-radius:17px}.avoirTenseIcon{font-size:25px;margin-bottom:7px}.avoirTenseSpeaker{font-size:11px}}
+@media(max-width:580px){.avoirConceptChoices{grid-template-columns:1fr}.avoirTenseCard{min-height:160px}.avoirConceptCompare{gap:8px}.avoirConceptCompare>div{padding:13px 11px}.avoirTenseTitle{font-size:18px}.avoirTenseEnglish{font-size:16px}.avoirTenseFrench{font-size:14px}.avoirTenseIcon{font-size:24px}.avoirTenseSpeaker{font-size:10px}}
+@media(max-width:375px){.avoirTenseCards{grid-template-columns:1fr}.avoirTenseCard{min-height:105px;padding:13px;gap:3px}.avoirTenseIcon{margin:0}.avoirTenseMap{padding:12px}}
+@media(prefers-reduced-motion:reduce){.avoirTenseCard{transition:none}.avoirTenseCard:hover{transform:none}}
