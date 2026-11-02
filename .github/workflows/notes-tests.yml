@@ -1,0 +1,28 @@
+name: InClass notes security and sync checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/family-notes.js'
+      - 'inclass-notes.js'
+      - 'inclass-development-feedback.js'
+      - 'tests/family-notes.test.mjs'
+      - '.github/workflows/notes-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --experimental-default-type=module --check services/family-notes.js
+          node --experimental-default-type=module --check inclass-notes.js
+          node --experimental-default-type=module --check inclass-development-feedback.js
+      - name: Test note merging
+        run: node --experimental-default-type=module --test tests/family-notes.test.mjs
