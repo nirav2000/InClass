@@ -14,7 +14,7 @@ const monitor=await import('./services/app-monitor-notes.js');
 let identityPickerModule=null,identityPickerPromise=null;
 function preloadIdentityPicker(){
  if(identityPickerModule)return Promise.resolve(identityPickerModule);
- if(!identityPickerPromise)identityPickerPromise=import('https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.1').then(m=>(identityPickerModule=m,m)).catch(error=>{identityPickerPromise=null;throw error});
+ if(!identityPickerPromise)identityPickerPromise=import('https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.2').then(m=>(identityPickerModule=m,m)).catch(error=>{identityPickerPromise=null;throw error});
  return identityPickerPromise;
 }
 let mode='local',bridge=null;
