@@ -186,3 +186,16 @@ The app still runs locally, but authentication and persistence are now separated
 - `docs/FIREBASE_ARCHITECTURE.md` — proposed Firestore model, parent-child links, classes, enrolments and security-rule intent.
 
 This means Firebase Authentication and Firestore can be connected later without rewriting each subject lesson.
+
+## Shared Notes & Annotations (InClass)
+
+The lesson screen consumes the canonical `Apps/notes/v1` module and UI via `inclass-notes.js`; it does not fork the editor. Notes are isolated by local data-owner identifier, learner and permanent homework-pack ID. The week, learner and app version are included in each note. The floating Lesson notes button is hidden on the welcome screen. Stable anchors cover the lesson, activities and progress panel; element-level annotations, edit/archive/reopen, draft recovery and note history remain in the shared implementation.
+
+**Privacy and persistence:** This integration uses the canonical *localStorage transport* deliberately. InClass's role switch is only a local preview, not a verified parent/teacher login. Therefore learner observations are not uploaded to Firestore, GitHub, an AI model or the Development Control Centre. They remain on the same browser profile, are not cross-device synced and are visible to anyone with access to that device/browser profile. Users should avoid sensitive information until production authentication and user-scoped Firestore permissions exist. Existing homework packs, test marks and progress keys are unchanged.
+
+**ChatGPT-assisted edits:** The parent can select **Copy for ChatGPT** (with an explicit private-data warning), paste the exported JSON in ChatGPT and ask for revised note wording. ChatGPT returns `apps-shared-notes-edits-v1` JSON with the same app, lesson and existing IDs. The parent pastes it into **Apply ChatGPT edits**, explicitly confirms and saves. Only the text of matching *open* notes can be modified; app/lesson scope, flags, existing metadata and implementation history cannot be altered by the pasted payload. The system does not silently grant ChatGPT access to the user's browser, and does not claim that ChatGPT has automatically saved updates. If the user declines sharing, notes are fully usable offline.
+
+**Development pipeline:** Flagging a note for review does not publish it. The shared library's authenticated cloud backend can be enabled only after InClass has real verified parent/developer login and app-scoped access controls; the existing App Monitor administrator session must not be reused for ordinary learners. A development task can be manually created from a reviewed note. Automatic GitHub publishing, cross-device Firestore sync and verified return of deployed fixes are **not configured for InClass** yet; do not describe them as installed. The reusable Notes cloud workflow is documented in `Apps/notes/v1/FULL_WORKFLOW.md`.
+
+**Verification:** On the live app, open a specific lesson, add an element note and a general note, reload, change weeks and learners to verify isolation, return to the original week, edit/archive/reopen, check draft recovery, run the ChatGPT JSON round trip, verify invalid/cross-week payloads are rejected, and check iPhone/iPad layout. If the shared library fails to load, InClass should remain usable and show a small failure message.
+
