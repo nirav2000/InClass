@@ -16,7 +16,7 @@ const pack=packs.INCLASS_WEEKS[0];
 assert.equal(pack.forms.map(f=>f.verb).join(" "),"ai as a avons avez ont","School six spellings unchanged");
 assert(pack.videoUrl.includes("3kWwS1_Kark"),"Teacher's video link preserved");
 assert(html.includes('data/2026-11-02-french-avoir.js'));
-assert(html.indexOf("french-avoir.js")>html.indexOf("pronunciation-extension.js"));
+assert(html.indexOf('<script src="french-avoir.js"')>html.indexOf('<script src="pronunciation-extension.js"'));
 assert(css.includes(".avoirTenseCards")&&css.includes(".avoirTenseCard.is-current")&&css.includes("background:#001611"));
 assert(css.includes(".avoirConceptDefinition")&&css.includes(".avoirConceptFeedback"));
 
