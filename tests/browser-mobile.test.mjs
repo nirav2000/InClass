@@ -12,7 +12,7 @@ const APPS=resolve(ROOT,'SharedApps');
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const importmap={imports:{
   'https://nirav2000.github.io/Apps/notes/v1/index.js?v=1.2.6':'/Apps/notes/v1/index.js?v=1.2.6',
-  'https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.1':'/Apps/notes/v1/identity-picker.js?v=1.0.1',
+  'https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.2':'/Apps/notes/v1/identity-picker.js?v=1.0.2',
   'https://nirav2000.github.io/Apps/notes/v1/cloud.js':'/Apps/notes/v1/cloud.js',
   'https://nirav2000.github.io/Apps/pwa/v1/index.js':'/Apps/pwa/v1/index.js'
 }};
