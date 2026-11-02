@@ -11,6 +11,7 @@ on:
       - 'inclass-compact-tools.css'
       - 'index.html'
       - 'styles.css'
+      - 'sw.js'
       - 'welcome.js'
       - '.github/workflows/mobile-browser-tests.yml'
 permissions:
