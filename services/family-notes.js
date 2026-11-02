@@ -29,71 +29,104 @@ export async function signOut(){const f=await firebase();await f.Auth.signOut(f.
 const clone=x=>JSON.parse(JSON.stringify(x));
 const date=n=>Date.parse(n?.updatedAt||n?.createdAt||'')||0;
 const summary=n=>JSON.stringify([n.text,n.status,n.reviewRequired,n.updatedAt]);
+function version(note){return {text:note.text,status:note.status||'open',reviewRequired:note.reviewRequired===true,updatedAt:note.updatedAt||note.createdAt||''}}
+const versionKey=note=>JSON.stringify([note.text,note.status||'open',note.reviewRequired===true,note.updatedAt||note.createdAt||'']);
 export function mergeNotes(local=[],remote=[]){
+ if(!Array.isArray(local)||!Array.isArray(remote))throw Error('Invalid notes collection');
  const map=new Map();
  for(const item of [...remote,...local]){
   if(!item||typeof item.id!=='string'||!item.text)continue;
   const n=clone(item),prior=map.get(n.id);
   if(!prior){map.set(n.id,n);continue;}
-  const winner=date(n)>date(prior)?n:date(n)<date(prior)?prior:summary(n)>=summary(prior)?n:prior;
+  const winner=date(n)>date(prior)?n:date(n)<date(prior)?prior:versionKey(n)>=versionKey(prior)?n:prior;
   const loser=winner===n?prior:n;
-  if(summary(winner)!==summary(loser)){
-   const conflicts=[...(prior.metadata?.syncConflicts||[]),...(n.metadata?.syncConflicts||[]),
-    {text:loser.text,updatedAt:loser.updatedAt,status:loser.status}];
-   winner.metadata={...winner.metadata,syncConflicts:[...new Map(conflicts.map(c=>[JSON.stringify(c),c])).values()].slice(-8)};
+  const history=[...(prior.metadata?.syncConflicts||[]),...(n.metadata?.syncConflicts||[])];
+  if(versionKey(winner)!==versionKey(loser))history.push(version(loser));
+  const unique=new Map();
+  for(const item of history){
+   if(item&&typeof item.text==='string'&&item.text.length&&versionKey(item)!==versionKey(winner))unique.set(versionKey(item),item);
   }
-  map.set(n.id,winner);
+  const values=[...unique.values()].sort((a,b)=>date(a)-date(b)||versionKey(a).localeCompare(versionKey(b))).slice(-8);
+  const combined={...winner,metadata:{...(loser.metadata||{}),...(winner.metadata||{})}};
+  if(values.length)combined.metadata.syncConflicts=values;
+  else delete combined.metadata.syncConflicts;
+  map.set(n.id,combined);
  }
- return [...map.values()].sort((a,b)=>a.id.localeCompare(b.id));
+ const result=[...map.values()].sort((a,b)=>a.id.localeCompare(b.id));
+ if(result.length>50)throw Error('Lesson exceeds 50 notes: export a backup before saving more.');
+ if(new TextEncoder().encode(JSON.stringify(result)).byteLength>700000)throw Error('Lesson notes exceed Firestore limit; local copy remains safe.');
+ return result;
 }
 const same=(a,b)=>JSON.stringify([...a].sort((x,y)=>x.id.localeCompare(y.id)))===JSON.stringify([...b].sort((x,y)=>x.id.localeCompare(y.id)));
 const valid=v=>/^[a-zA-Z0-9_.-]{1,120}$/.test(v);
-export function createFamilyNotesTransport({learner,pack,localKey,onStatus=()=>{}}){
- if(!valid(learner)||!valid(pack))throw Error('Invalid lesson identity');
+export function createFamilyNotesTransport({learner,pack,localKey,onStatus=()=>{},onData=()=>{},getParent=currentParent}){
+ if(!valid(learner)||!valid(pack)||!localKey)throw Error('Invalid lesson identity');
  const draftKey=localKey+'.draft';
  const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')??fallback}catch{return fallback}};
  const write=rows=>localStorage.setItem(localKey,JSON.stringify(rows));
- let connected=false,cloud=[],pending=false,unsub=null,active=true,busy=Promise.resolve();
- const doc=async()=>{const f=await currentParent();if(!f)throw Error('Parent sign-in required');
+ let connected=false,pending=false,unsub=null,active=true,busy=Promise.resolve(),listeners=false;
+ const doc=async()=>{const f=await getParent();if(!f)throw Error('Parent sign-in required');
   return {f,ref:f.F.doc(f.db,'families',owner,'learners',learner,'progress','inclass-notes-'+pack)};
  };
+ function notify(error){pending=true;onStatus('error',String(error?.message||error));}
  async function sync(){
-  if(!active||!connected)return;
+  if(!active||!connected)return null;
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){pending=true;onStatus('pending','Offline: notes remain saved on this device');return null;}
   const {f,ref}=await doc();
-  const snap=await f.F.getDoc(ref),remote=snap.exists()?snap.data()?.notes||[]:[];
-  const merged=mergeNotes(read(localKey,[]),remote);
+  const local=read(localKey,[]);
+  const snap=await f.F.getDoc(ref);
+  const remote=snap.exists()?snap.data()?.notes||[]:[];
+  const merged=mergeNotes(local,remote);
+  let result=merged;
   if(!same(merged,remote)){
-   const result=await f.F.runTransaction(f.db,async transaction=>{
+   result=await f.F.runTransaction(f.db,async transaction=>{
     const fresh=await transaction.get(ref);
     const latest=mergeNotes(merged,fresh.exists()?fresh.data()?.notes||[]:[]);
-    transaction.set(ref,{app:'inclass',schema:1,learner,pack,notes:latest,updatedAt:new Date().toISOString()});
+    if(!same(latest,fresh.exists()?fresh.data()?.notes||[]:[]))
+     transaction.set(ref,{app:'inclass',schema:1,learner,pack,notes:latest,updatedAt:new Date().toISOString()});
     return latest;
    });
-   write(result);cloud=result;
-  }else{write(merged);cloud=merged;}
-  pending=false;onStatus('synced');return merged;
+  }
+  if(!active)return null;
+  const current=read(localKey,[]);
+  result=mergeNotes(current,result);
+  if(!same(result,current)){write(result);await onData(result);}
+  pending=false;onStatus('synced');return result;
  }
- const queue=()=>{busy=busy.catch(()=>{}).then(()=>sync()).catch(e=>{pending=true;onStatus('error',e.message)});return busy};
+ function queue(){
+  const task=busy.catch(()=>{}).then(()=>sync());
+  busy=task;
+  return task;
+ }
+ function retry(){if(active&&connected)queue().catch(notify)}
  return {
   mode:'family-firebase',
   async connect(){
-   if(!await currentParent())throw Error('Parent sign-in required');
-   connected=true;onStatus('syncing');await queue();
-   const {f,ref}=await doc();
-   unsub=f.F.onSnapshot(ref,()=>{if(active&&connected)queue() },error=>onStatus('error',error.message));
+   if(!await getParent())throw Error('Parent sign-in required');
+   active=true;connected=true;onStatus('syncing');
+   try{
+    await queue();
+    const {f,ref}=await doc();
+    unsub=f.F.onSnapshot(ref,()=>{if(active&&connected)queue().catch(notify)},notify);
+    if(typeof window!=='undefined'&&!listeners){window.addEventListener('online',retry);listeners=true;}
+   }catch(error){connected=false;notify(error);throw error;}
   },
-  disconnect(){active=false;connected=false;unsub?.();unsub=null},
+  disconnect(){
+   active=false;connected=false;unsub?.();unsub=null;
+   if(typeof window!=='undefined'&&listeners){window.removeEventListener('online',retry);listeners=false;}
+  },
   async list(){return read(localKey,[])},
   async save(note){
+   if(!note||typeof note.text!=='string'||!note.text.trim())throw Error('Note text required');
    const rows=read(localKey,[]),i=rows.findIndex(x=>x.id===note.id);
    if(i<0)rows.push(note);else rows[i]=note;
-   write(rows);pending=true;onStatus('pending');if(connected)queue();
+   write(rows);pending=true;onStatus('pending');
+   if(connected)queue().catch(notify);
    return note;
   },
   async remove(id){
-   // Preserve deletion as an archive marker rather than silently resurrecting.
    const rows=read(localKey,[]),i=rows.findIndex(x=>x.id===id);
-   if(i>=0){rows[i]={...rows[i],status:'archived',updatedAt:new Date().toISOString()};write(rows);pending=true;if(connected)queue();}
+   if(i>=0){rows[i]={...rows[i],status:'archived',updatedAt:new Date().toISOString()};write(rows);pending=true;onStatus('pending');if(connected)queue().catch(notify)}
   },
   async getDraft(){return read(draftKey,null)},
   async saveDraft(value){value?localStorage.setItem(draftKey,JSON.stringify(value)):localStorage.removeItem(draftKey)},
