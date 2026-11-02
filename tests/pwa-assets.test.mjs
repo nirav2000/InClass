@@ -33,4 +33,13 @@ for(const icon of manifest.icons){
 assert.ok(manifest.icons.some(icon=>icon.sizes==='192x192'));
 assert.ok(manifest.icons.some(icon=>icon.sizes==='512x512'&&icon.purpose==='maskable'));
 assert.ok(fs.existsSync('icons/favicon.svg'));
+const precached=Array.from(sw.matchAll(/['"](\.\/[^'"]+)['"]/g),m=>m[1]);
+assert.ok(precached.length>=20,'Existing lessons and app shell must remain precached');
+assert.equal(precached.length,new Set(precached).size,'Duplicate precache URLs waste storage');
+for(const url of precached){
+ const local=url.slice(2).split('?')[0];
+ assert.ok(fs.existsSync(local||'.'),'Service worker precaches missing file: '+url);
+}
+const launch=new URL(manifest.start_url,'https://example.org/InClass/');
+assert.ok(launch.pathname.startsWith('/InClass/'),'App start URL escapes installation scope');
 console.log('PASS: InClass iOS/Android icons, manifest, shared worker, old and new lessons');
