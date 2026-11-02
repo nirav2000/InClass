@@ -90,15 +90,21 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  browser=await chrome();
  const {send,evalJS}=browser;
  async function touch(selector){
+   await evalJS(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});return true`);
+   await wait(200);
    const point=await evalJS(`
      const el=document.querySelector(${JSON.stringify(selector)});
      if(!el)return null;
-     el.scrollIntoView({block:'center',inline:'nearest'});
-     const r=el.getBoundingClientRect();
-     return {x:r.left+r.width/2,y:r.top+r.height/2,visible:r.width>0&&r.height>=35}
+     const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+     const hit=document.elementFromPoint(x,y);
+     return {x,y,visible:r.width>0&&r.height>=35,hit:hit?.outerHTML.slice(0,160),direct:hit===el||!!hit?.closest('button')?.isSameNode(el),disabled:el.disabled}
    `);
+   console.log('INCLASS_TOUCH_TARGET',selector,JSON.stringify(point));
    assert.ok(point?.visible,'Touch target must be visible and large enough: '+selector);
+   assert.ok(!point.disabled,'Touch target must be enabled: '+selector);
+   assert.ok(point.direct,'Another element intercepted the touch: '+selector+' hit '+point.hit);
    await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:0,x:point.x,y:point.y}]});
+   await wait(65);
    await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  }
  await send('Page.enable');await send('Runtime.enable');
