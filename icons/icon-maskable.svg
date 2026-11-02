@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="App icon">
+<defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#102a43"/><stop offset="1" stop-color="#1a6674"/></linearGradient></defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<circle cx="85" cy="69" r="160" fill="#7de7d9" opacity=".055"/><circle cx="474" cy="440" r="170" fill="#ffffff" opacity=".045"/>
+<g transform="translate(51.2 51.2) scale(.8)">
+
+    <path d="M105 178 Q172 153 251 196 L251 374 Q177 335 106 360 Z" fill="#f3faff"/>
+    <path d="M261 196 Q334 153 407 178 L406 360 Q330 335 261 374 Z" fill="#d3f5f2"/>
+    <path d="M256 198 V379" stroke="#44bfbc" stroke-width="13" stroke-linecap="round"/>
+    <path d="M130 215 Q177 200 225 226 M130 252 Q178 237 225 263 M286 224 Q331 199 373 213 M286 260 Q331 236 373 247" stroke="#2b6081" stroke-width="9" opacity=".36" fill="none" stroke-linecap="round"/>
+    <path d="M345 80 L356 113 L389 125 L356 137 L345 170 L333 137 L300 125 L333 113 Z" fill="#ffcf70"/>
+  
+</g>
+</svg>
