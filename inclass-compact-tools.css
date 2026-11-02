@@ -1,0 +1,23 @@
+/* Compact InClass tools: one accessible menu instead of three permanent buttons. */
+.inclassToolsBar{position:relative;display:flex;align-items:center;justify-content:flex-end;margin:8px 0 12px;padding:0;border:0;border-radius:0;background:transparent;min-height:42px}
+.inclassToolsBar:empty{display:none}
+.inclassToolsBar[data-compact-ready]>.apps-notes-launcher,
+.inclassToolsBar[data-compact-ready]>.inclassSyncButton,
+.inclassToolsBar[data-compact-ready]>.inclassDevButton{display:none!important}
+.inclassCompactTools{position:relative;display:inline-flex;align-items:center;max-width:100%;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif}
+.inclassCompactToggle{display:inline-flex;align-items:center;gap:7px;min-height:42px!important;padding:8px 14px!important;border:1px solid #becddb!important;border-radius:999px!important;background:#fff!important;color:#163650!important;font:700 13px -apple-system,BlinkMacSystemFont,sans-serif!important;box-shadow:0 3px 10px #172c4214!important;white-space:nowrap}
+.inclassCompactToggle:focus-visible,.inclassCompactMenu button:focus-visible{outline:3px solid #64a9d8;outline-offset:2px}
+.inclassCompactMenu{position:absolute;z-index:2147482000;top:calc(100% + 7px);right:0;width:min(270px,calc(100vw - 28px));padding:7px;border:1px solid #d7e3ec;border-radius:16px;background:#fff;box-shadow:0 16px 50px #122f4445}
+.inclassCompactMenu[hidden]{display:none!important}
+.inclassCompactMenu button{display:block;text-align:left;width:100%;padding:11px 12px!important;min-height:43px!important;border:0!important;border-radius:10px!important;background:transparent!important;color:#173951!important;font:650 13px -apple-system,BlinkMacSystemFont,sans-serif!important;box-shadow:none!important}
+.inclassCompactMenu button:hover,.inclassCompactMenu button:active{background:#edf4f8!important}
+.inclassCompactMenu button[hidden]{display:none!important}
+.inclassCompactMenu p{margin:7px 9px;font:12px/1.45 -apple-system,BlinkMacSystemFont,sans-serif;color:#9b3b3b}
+.inclassAccountLoader{box-sizing:border-box;width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 24px);overflow:auto;border:1px solid #dce5ed;border-radius:22px;padding:23px;background:white;color:#16334a;box-shadow:0 24px 85px #0d243c50;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.inclassAccountLoader::backdrop{background:#0b20377d;backdrop-filter:blur(3px)}
+.inclassAccountLoader h2{margin:0 0 10px;font-size:23px;letter-spacing:-.02em}
+.inclassAccountLoader p{line-height:1.5;font-size:14px;overflow-wrap:anywhere}
+.inclassAccountLoader div{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.inclassAccountLoader button{min-height:43px;padding:9px 16px;border:1px solid #cbdbe5;border-radius:11px;background:#fff;color:#153650;font-weight:700}
+.inclassAccountLoader button[data-retry]{background:#153d59;color:#fff}
+.inclassAccountLoader [hidden]{display:none!important}
