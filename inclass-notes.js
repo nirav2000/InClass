@@ -26,6 +26,7 @@ const syncState=(state,message='')=>{
  cloudUI.textContent='Notes sync · '+({synced:'Synced',syncing:'Syncing',pending:'Saving locally',error:'Needs attention'}[state]||'Local');
  cloudUI.title=(lastSyncError||message||'Open notes synchronisation settings')+' · InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Notes '+String(controller?.version||'1.2.6');
  cloudUI.setAttribute('aria-label','Notes synchronisation. '+(lastSyncError||state));
+ window.InClassCompactTools?.setSyncStatus(state,lastSyncError||message);
 };
 function lesson(){
   const packId=document.getElementById('weekSelect')?.value;
