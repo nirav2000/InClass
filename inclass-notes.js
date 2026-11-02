@@ -19,7 +19,7 @@ const syncState=(state,message='')=>{
  if(state==='error')lastSyncError=message||'Cloud sync could not complete';
  else if(state==='synced')lastSyncError='';
  cloudUI.textContent='Notes sync · '+({synced:'Synced',syncing:'Syncing',pending:'Saving locally',error:'Needs attention'}[state]||'Local');
- cloudUI.title=lastSyncError||message||'Open notes synchronisation settings';
+ cloudUI.title=(lastSyncError||message||'Open notes synchronisation settings')+' · InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Notes '+String(controller?.version||'1.2.5');
  cloudUI.setAttribute('aria-label','Notes synchronisation. '+(lastSyncError||state));
 };
 function lesson(){
@@ -89,11 +89,12 @@ async function recognise(){
 queueMicrotask(()=>recognise());
 cloudUI.onclick=async()=>{
   if(!identityPickerModule){
-    try{identityPickerModule=await import('https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.0')}
+    try{identityPickerModule=await import('https://nirav2000.github.io/Apps/notes/v1/identity-picker.js?v=1.0.1')}
     catch(error){status.textContent='Login options unavailable offline; local notes remain saved.';return}
   }
   identityPickerModule.showNotesIdentityPicker({
     mode,error:lastSyncError,title:'Keep your notes in sync',
+    versionInfo:'InClass '+String(window.INCLASS_CONFIG?.release||'unknown')+' · Shared Notes '+String(controller?.version||'1.2.5'),
     onFirebase:async()=>{
       if(!await family.currentParent())throw Error('No parent Firebase session found in this browser. Use an existing App Monitor passkey, or sign in with Firebase below.');
       await adopt('firebase');
