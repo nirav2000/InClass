@@ -9,6 +9,9 @@ on:
       - "manifest.webmanifest"
       - "sw.js"
       - "icon.svg"
+      - "icons/**"
+      - "pwa.config.json"
+      - "tests/pwa-assets.test.mjs"
       - ".github/workflows/validate-pwa.yml"
 
 permissions:
@@ -42,3 +45,6 @@ jobs:
           }
           console.log('Shared PWA adoption is valid.');
           NODE
+
+      - name: Verify raster artwork and historical lessons
+        run: node tests/pwa-assets.test.mjs
