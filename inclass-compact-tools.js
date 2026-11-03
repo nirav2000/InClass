@@ -14,6 +14,19 @@
     const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitem');
     b.dataset.action=action;b.textContent=label;menu.append(b);return b;
   };
+  // Keep the welcome header to a single compact control. Preserve the
+  // existing install button and app-progress status by moving them into menu.
+  const header=document.querySelector('.welcomeAuth');
+  if(header){
+    header.append(home);
+    const install=document.getElementById('installInClassButton');
+    const progress=document.getElementById('authStatus');
+    const account=document.getElementById('signInButton');
+    if(install){install.setAttribute('role','menuitem');install.classList.add('inclassCompactInstall');menu.append(install)}
+    if(progress){progress.classList.add('inclassCompactStatus');menu.append(progress)}
+    if(account)account.hidden=true;
+    header.classList.add('inclassHeaderTidy');
+  }
   const note=make('✎  Lesson notes','notes');
   const syncAction=make('☁  Account & sync · Local','sync');
   function setSyncStatus(state,details=''){
@@ -26,6 +39,8 @@
   const message=document.createElement('p');message.setAttribute('role','status');
   message.setAttribute('aria-live','polite');menu.append(message);
   root.append(toggle,menu);
+  const installButton=document.getElementById('installInClassButton');
+  installButton?.addEventListener('click',()=>closeMenu());
   function closeMenu(){menu.hidden=true;toggle.setAttribute('aria-expanded','false');message.textContent=''}
   function place(){
     const inLesson=!document.getElementById('appShell')?.classList.contains('hidden');
