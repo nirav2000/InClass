@@ -15,13 +15,42 @@ export async function existing(){
 }
 export async function signIn(){
  const a=await auth();
- // Passkey challenge starts directly from the click handler.
  const session=await a.validateSession();
- if(session?.method!=='passkey')await a.passkeyLogin();
+ if(session?.method!=='passkey'){
+  let config;
+  try{config=await a.status()}
+  catch{throw Error('App Monitor authentication service could not be reached. Check your connection and retry.')}
+  if(config?.bootstrapNeeded||config?.passkeyCount===0)
+   throw Error('No App Monitor administrator passkey is registered on the backend. Open App Monitor to finish passkey setup.');
+  if(!config?.ok)
+   throw Error('App Monitor passkey backend did not report ready.');
+  await a.passkeyLogin();
+ }
  const verified=await a.validateSession();
  if(verified?.method!=='passkey')throw Error('Administrator passkey verification required');
  return a;
 }
+// Requires an administrator passkey session; returns only a health stage, never
+// Firebase credentials, account details, or any learner notes.
+export async function checkHealth(a){
+ let response;
+ try{response=await fetch(ROOT+'/inclass/family-notes/status',{cache:'no-store',headers:a.authHeaders()})}
+ catch{throw Error('App Monitor notes backend could not be reached. The passkey session is retained; local notes remain available.')}
+ const detail=await response.json().catch(()=>({}));
+ if(response.ok&&detail.ok)return detail;
+ const stage=String(detail.stage||'').slice(0,70);
+ const reason={
+  'firebase-credential-missing':'Firebase service-account secret is missing from the Cloudflare Worker.',
+  'firebase-google-auth-failed':'Firebase service-account authentication failed.',
+  'firestore-permission-denied':'Firebase accepted the credential but Firestore access was denied.',
+  'firestore-unreachable':'Firestore could not be reached by the Worker.',
+  'firestore-read-failed':'The Firestore health request failed.'
+ }[stage]|| (response.status===404?'The current Cloudflare Worker has not been updated with the notes diagnostics endpoint.':
+ response.status===401?'The App Monitor passkey session expired.':
+ response.status===403?'An App Monitor administrator passkey is required.':'The notes backend failed its health check.');
+ throw Error('App Monitor passkey connected, but private notes sync is not ready: '+reason);
+}
+
 export function createBridge(a){
  async function request(learner,pack,method='GET',notes=null,revision=null){
   const query='?learner='+encodeURIComponent(learner)+'&pack='+encodeURIComponent(pack);
