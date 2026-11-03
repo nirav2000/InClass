@@ -116,6 +116,8 @@ async function showSharedIdentityPicker(){
     },
     onPasskey:async()=>{
       const a=await monitor.signIn();
+      // Distinguish a valid passkey session from working Firebase note storage.
+      await monitor.checkHealth(a);
       await adopt('app-monitor',monitor.createBridge(a));
       if(lastSyncError)throw Error(lastSyncError);
     },
