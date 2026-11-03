@@ -182,15 +182,26 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await evalJS('document.querySelector("#homeButton").click();return true');
  await until(()=>evalJS('return !document.querySelector("#welcomeScreen").classList.contains("hidden")'),'home navigation');
  assert.equal(await evalJS('return document.querySelector("#enterAppButton").getClientRects().length>0'),true);
- await touch('#signInButton');
+ // Only ONE persistent header action is visible on mobile: the Notes menu.
+ const header=await evalJS(`const bar=document.querySelector('.welcomeAuth');return {buttons:[...bar.querySelectorAll('button')].filter(b=>b.getClientRects().length>0).map(b=>b.className),accountHidden:document.querySelector('#signInButton')?.getClientRects().length===0,installInside:!!document.querySelector('.inclassCompactMenu #installInClassButton'),progressInside:!!document.querySelector('.inclassCompactMenu #authStatus')}`);
+ assert.deepEqual(header.buttons,['inclassCompactToggle'],'Welcome header must show only one small Notes control');
+ assert.ok(header.accountHidden&&header.installInside&&header.progressInside,'Install app, preview status and sign-in must be inside the menu');
+ await touch('#inclassHomeTools .inclassCompactToggle');
+ await touch('#inclassHomeTools .inclassCompactMenu [data-action=sync]');
  await wait(160);
- console.log('INCLASS_TOUCH_RESULT',JSON.stringify(await evalJS(`return {loader:!!document.querySelector('dialog.inclassAccountLoader[open]'),picker:!!document.querySelector('dialog.apps-notes-identity[open]'),events:window.__touchClicks,errors:window.__browserErrors}`)));
- assert.equal(await evalJS('return !!document.querySelector("dialog.inclassAccountLoader[open]")||!!document.querySelector("dialog.apps-notes-identity[open]")'),true,'A real touchscreen tap on Sign in must promptly display an account dialog');
+ console.log('INCLASS_HEADER_ACCOUNT',JSON.stringify(await evalJS(`return {loader:!!document.querySelector('dialog.inclassAccountLoader[open]'),picker:!!document.querySelector('dialog.apps-notes-identity[open]'),errors:window.__browserErrors}`)));
+ assert.equal(await evalJS('return !!document.querySelector("dialog.inclassAccountLoader[open]")||!!document.querySelector("dialog.apps-notes-identity[open]")'),true,'First touchscreen tap on Account & sync must show a dialog');
  await wait(800);
  console.log('INCLASS_PICKER_DIAG',JSON.stringify(await evalJS(`return {status:document.querySelector('#inclassNotesStatus')?.textContent,buttonDisabled:document.querySelector('[data-inclass-sync-button]')?.disabled,picker:!!document.querySelector('dialog.apps-notes-identity'),message:document.querySelector('#authMessage')?.textContent,errors:window.__browserErrors||[]}`)));
  await until(()=>evalJS('return !!document.querySelector("dialog.apps-notes-identity[open]")'),'shared Notes sign-in picker from home');
  assert.equal(await evalJS('return document.querySelector("#authMessage").classList.contains("hidden")'),true,'The generic unavailable Firebase error must not appear');
  await evalJS('document.querySelector("dialog.apps-notes-identity [data-action=close]").click();return true');
+ await touch('#inclassHomeTools .inclassCompactToggle');
+ assert.equal(await evalJS('return !document.querySelector("#inclassHomeTools .inclassCompactMenu").hidden'),true,'Header Notes menu opens after login');
+ await touch('#inclassHomeTools .inclassCompactMenu #installInClassButton');
+ assert.equal(await evalJS('return !document.querySelector("#inclassPwaHelp").hidden'),true,'Install app is accessible from the compact menu');
+ assert.equal(await evalJS('return document.querySelector(".inclassCompactMenu").hidden'),true,'Install action closes the compact menu');
+
 
  // A first tap on the compact sync action must open a dialog even when
  // the shared options fail. Errors must be visible and recoverable.
