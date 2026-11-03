@@ -118,6 +118,7 @@
     void load();
   }
   menu.onclick=e=>{
+    if(e.target.closest('#installInClassButton')){closeMenu();return}
     const action=e.target.closest('button[data-action]')?.dataset.action;
     if(action==='notes')void openNotes();
     if(action==='sync')openSync();
