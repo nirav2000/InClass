@@ -1,5 +1,5 @@
 self.APPS_PWA_CONFIG={
-  cacheName:'inclass-shared-v15',
+  cacheName:'inclass-shared-v16',
   cachePrefix:'inclass-',
   // Online requests must check for fresh lesson, notes and shared auth code.
   // The shared worker retains a cached copy as an offline fallback.
