@@ -54,6 +54,13 @@
   }
   toggle.onclick=()=>{
     if(!menu.hidden){closeMenu();return}
+    // PWA installation help can overlap the header menu on small screens.
+    // Collapse it before showing any account or notes action.
+    const help=document.getElementById('inclassPwaHelp');
+    if(help&&!help.hidden){
+      help.hidden=true;
+      document.getElementById('installInClassButton')?.setAttribute('aria-expanded','false');
+    }
     place();menu.hidden=false;toggle.setAttribute('aria-expanded','true');
   };
   document.addEventListener('pointerdown',e=>{if(!root.contains(e.target))closeMenu()});
