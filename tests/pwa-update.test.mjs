@@ -15,7 +15,7 @@ test('Shared Notes is explicitly versioned, with a visible app build',()=>{
  assert.match(notes,/notes\/v1\/index\.js\?v=1\.2\.6/);
  assert.match(notes,/identity-picker\.js\?v=1\.0\.2/);
  assert.match(notes,/versionInfo:/);
- assert.match(conf,/release:\s*"2026\.11\.02\.9"/);
+ assert.match(conf,/release:\s*"2026\.11\.03\.1"/);
 });
 
 test('compact Notes actions are available on fresh and offline loads',()=>{
