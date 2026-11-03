@@ -6,7 +6,7 @@ const notes=readFileSync(new URL('../inclass-notes.js',import.meta.url),'utf8');
 const conf=readFileSync(new URL('../config/app-config.js',import.meta.url),'utf8');
 test('InClass no longer traps an older installed application on cache-first JavaScript',()=>{
  assert.match(sw,/defaultStrategy:\s*'network-first'/);
- assert.match(sw,/cacheName:\s*'inclass-shared-v15'/);
+ assert.match(sw,/cacheName:\s*'inclass-shared-v16'/);
  assert.match(sw,/\.\/inclass-notes\.js/);
  assert.match(sw,/\.\/services\/family-notes\.js/);
  assert.match(sw,/\.\/services\/app-monitor-notes\.js/);
