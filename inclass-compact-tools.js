@@ -22,8 +22,8 @@
     const install=document.getElementById('installInClassButton');
     const progress=document.getElementById('authStatus');
     const account=document.getElementById('signInButton');
-    if(install){install.setAttribute('role','menuitem');install.classList.add('inclassCompactInstall');menu.append(install)}
-    if(progress){progress.classList.add('inclassCompactStatus');menu.append(progress)}
+    if(install){install.setAttribute('role','menuitem');install.classList.add('inclassCompactInstall')}
+    if(progress){progress.classList.add('inclassCompactStatus')}
     if(account)account.hidden=true;
     header.classList.add('inclassHeaderTidy');
   }
@@ -36,6 +36,10 @@
     syncAction.title=details||'Manage private notes synchronisation';
   }
   make('⚑  Report an issue','issue');
+  const installAction=document.getElementById('installInClassButton');
+  const previewStatus=document.getElementById('authStatus');
+  if(installAction)menu.append(installAction);
+  if(previewStatus)menu.append(previewStatus);
   const message=document.createElement('p');message.setAttribute('role','status');
   message.setAttribute('aria-live','polite');menu.append(message);
   root.append(toggle,menu);
