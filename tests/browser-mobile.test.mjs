@@ -199,6 +199,7 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await touch('#inclassHomeTools .inclassCompactToggle');
  assert.equal(await evalJS('return !document.querySelector("#inclassHomeTools .inclassCompactMenu").hidden'),true,'Header Notes menu opens after login');
  await touch('#inclassHomeTools .inclassCompactMenu #installInClassButton');
+ await wait(140);
  assert.equal(await evalJS('return !document.querySelector("#inclassPwaHelp").hidden'),true,'Install app is accessible from the compact menu');
  assert.equal(await evalJS('return document.querySelector(".inclassCompactMenu").hidden'),true,'Install action closes the compact menu');
 
