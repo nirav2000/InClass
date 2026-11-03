@@ -21,3 +21,39 @@
 .inclassAccountLoader button{min-height:43px;padding:9px 16px;border:1px solid #cbdbe5;border-radius:11px;background:#fff;color:#153650;font-weight:700}
 .inclassAccountLoader button[data-retry]{background:#153d59;color:#fff}
 .inclassAccountLoader [hidden]{display:none!important}
+
+
+/* Mobile welcome header: the Notes button is the ONLY persistent control.
+   Install, account selection, and local-preview status are inside its menu. */
+.welcomeAuth.inclassHeaderTidy{display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;gap:0;min-width:0}
+.welcomeAuth.inclassHeaderTidy #signInButton,
+.welcomeAuth.inclassHeaderTidy > #installInClassButton,
+.welcomeAuth.inclassHeaderTidy > #authStatus{display:none!important}
+.welcomeAuth.inclassHeaderTidy > #inclassHomeTools{
+  display:flex;flex:0 0 auto;min-height:0;margin:0;padding:0;border:0;background:transparent;
+  width:auto;max-width:100%;
+}
+.welcomeAuth.inclassHeaderTidy .inclassCompactToggle{
+  padding:9px 13px!important;min-height:40px!important;font-size:13px!important;
+}
+.welcomeAuth.inclassHeaderTidy .inclassCompactMenu{right:0;max-width:calc(100vw - 24px)}
+.inclassCompactMenu #installInClassButton.inclassCompactInstall{
+  display:block!important;position:static!important;max-width:none!important;
+  font-size:13px!important;min-height:43px!important;padding:11px 12px!important;
+  white-space:normal!important;text-align:left!important;box-shadow:none!important;
+  background:transparent!important;border:0!important;border-radius:10px!important;
+}
+.inclassCompactMenu .inclassCompactStatus{
+  display:block;max-width:none;width:auto;white-space:normal;
+  margin:5px 3px 0;padding:10px 9px 3px;border:0;border-top:1px solid #e3ebf0;
+  border-radius:0;background:transparent;font-size:11px;color:#667c8b;
+  line-height:1.4;text-align:left;
+}
+@media(max-width:560px){
+  .welcomeNav{align-items:center!important;gap:9px!important;max-width:calc(100% - 24px);padding:15px 0!important}
+  .welcomeBrand{min-width:0;flex:1 1 auto;align-items:center}
+  .welcomeBrand strong{font-size:19px}
+  .welcomeBrand small{font-size:11px;line-height:1.25}
+  .welcomeAuth.inclassHeaderTidy{display:flex!important;justify-items:initial;gap:0!important}
+  .welcomeAuth.inclassHeaderTidy #inclassHomeTools{width:auto}
+}
