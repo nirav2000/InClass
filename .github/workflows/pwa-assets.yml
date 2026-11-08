@@ -28,3 +28,4 @@ jobs:
       verification: |
         node tests/pwa-assets.test.mjs
         node tests/avoir-concepts.test.cjs
+        node --test tests/session-recorder.test.mjs

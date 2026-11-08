@@ -1,0 +1,82 @@
+/* InClass session capture: one compact-menu action, no added header buttons.
+   Recording status remains deliberately visible throughout capture. */
+.inclassRecorderDialog {
+  box-sizing:border-box; width:min(700px,calc(100vw - 24px));
+  max-width:none; max-height:calc(100dvh - 24px); margin:auto;
+  overflow:auto; overscroll-behavior:contain;
+  border:1px solid #cedee9; border-radius:20px;
+  padding:clamp(16px,3vw,28px);
+  background:#fff; color:#19394e;
+  font:14px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+  box-shadow:0 22px 80px #0b263a66;
+}
+.inclassRecorderDialog::backdrop { background:#0e2339b0; backdrop-filter:blur(3px) }
+.inclassRecorderDialog [hidden], .inclassRecordingBadge[hidden] { display:none!important }
+.inclassRecorderHead { display:flex; align-items:flex-start; justify-content:space-between; gap:16px }
+.inclassRecorderHead h2 { margin:2px 0 0; color:#122e42; font-size:clamp(22px,4.5vw,28px); line-height:1.2; letter-spacing:-.025em }
+.inclassRecorderEyebrow { margin:0; font-size:11px; font-weight:800; letter-spacing:.07em; color:#247991 }
+.inclassRecorderHead button { flex:0 0 auto; border:0; border-radius:50%; background:#eef3f7; color:#24455a; font-size:19px; width:44px; min-height:44px; padding:0 }
+.inclassRecorderIntro { margin:12px 0; color:#405c6b }
+.inclassRecorderPrivacy { padding:12px 14px; margin:10px 0; background:#eff5f8; border-radius:11px; border-left:3px solid #267b99; font-size:12px }
+.inclassRecorderConsent { display:flex; align-items:flex-start; gap:10px; padding:10px 0 6px; font-size:13px; font-weight:600; line-height:1.5 }
+.inclassRecorderConsent input { margin-top:4px; width:18px; height:18px; flex:0 0 auto; accent-color:#137494 }
+.inclassRecorderActions { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 }
+.inclassRecorderActions button, .inclassRecorderSectionHead button,
+.inclassRecorderObservations button {
+  appearance:none; min-height:44px; border-radius:10px;
+  border:1px solid #bcd0db; background:#fff;
+  padding:10px 13px; color:#1d485f; font:700 13px/1.3 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  cursor:pointer;
+}
+.inclassRecorderActions .inclassRecorderPrimary { background:#135e79; color:#fff; border-color:#135e79 }
+.inclassRecorderActions button:disabled { opacity:.45; cursor:not-allowed }
+.inclassRecorderDanger { color:#a02f36!important; border-color:#dfb2b6!important }
+.inclassRecorderDialog button:focus-visible,
+.inclassRecorderDialog select:focus-visible,
+.inclassRecorderDialog textarea:focus-visible,
+.inclassRecordingBadge button:focus-visible { outline:3px solid #78bfde; outline-offset:2px }
+.inclassRecorderHint { font-size:12px; line-height:1.5; color:#5b7685 }
+.inclassRecorderGuide { margin:10px 0; padding:9px 11px; background:#f8fafc; border:1px solid #dde8ee; border-radius:10px }
+.inclassRecorderGuide summary { color:#155c75; font-weight:750; cursor:pointer }
+.inclassRecorderGuide ol { margin:12px 0; padding-left:24px }
+.inclassRecorderGuide li { margin:5px 0 }
+.inclassRecorderStatus { min-height:20px; font-size:13px; font-weight:650; color:#135f7b; overflow-wrap:anywhere }
+.inclassRecorderSectionHead { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:18px 0 8px }
+.inclassRecorderSectionHead h3, .inclassRecorderReview h3 { font-size:18px; margin:0 }
+.inclassRecorderList { display:grid; gap:7px }
+.inclassRecorderItem { display:block; width:100%; min-height:47px; padding:11px 13px; text-align:left;
+  border:1px solid #d7e2ea; border-radius:10px; background:#fff; color:#234b61;
+  font:650 13px/1.45 -apple-system,BlinkMacSystemFont,system-ui,sans-serif; cursor:pointer }
+.inclassRecorderItem:hover { background:#eff7fa }
+.inclassRecorderReview { border-top:1px solid #d8e4ec; padding-top:18px; margin-top:20px }
+.inclassRecorderReview video { display:block; width:100%; max-height:min(54dvh,460px); margin-top:12px;
+  background:#071523; border-radius:12px }
+.inclassRecorderObservations { display:grid; gap:9px; padding:12px; margin:12px 0;
+  border:1px solid #d5e6ed; border-radius:11px; background:#f8fbfd }
+.inclassRecorderObservations label { display:grid; gap:5px; font-size:13px; font-weight:700; color:#2e536a }
+.inclassRecorderObservations textarea, .inclassRecorderObservations select {
+  display:block; box-sizing:border-box; width:100%; padding:9px; min-height:44px;
+  font-size:14px; line-height:1.5; font-family:inherit; color:#17394c; background:#fff; border:1px solid #bfccd7; border-radius:9px }
+.inclassRecorderObservations textarea { resize:vertical; min-height:60px }
+.inclassRecorderTimeline { display:grid; gap:5px; margin-top:12px; max-height:380px; overflow:auto }
+.inclassRecorderTimeline h4 { margin:4px 0; font-size:14px }
+.inclassRecorderTimeline button { text-align:left; width:100%; min-height:36px; padding:7px 10px;
+  border:0; border-radius:8px; background:#f1f5f7; color:#1a4960; font:13px/1.4 inherit; cursor:pointer }
+.inclassRecorderTimeline .inclassRecorderMarker { border-left:3px solid #d69e2e; background:#fffaeb }
+.inclassRecordingBadge { box-sizing:border-box; position:fixed; z-index:2147481000;
+  right:max(12px,env(safe-area-inset-right)); bottom:max(14px,env(safe-area-inset-bottom));
+  display:flex; align-items:center; gap:7px; max-width:calc(100vw - 24px);
+  padding:8px 10px; border:1px solid #d1e1e9; border-radius:14px;
+  background:#102c42; color:#fff; box-shadow:0 7px 28px #081b2d80;
+  font:700 13px -apple-system,BlinkMacSystemFont,system-ui,sans-serif }
+.inclassRecordingBadge span { color:#ff858b; white-space:nowrap; font-variant-numeric:tabular-nums }
+.inclassRecordingBadge button { min-height:42px; border-radius:9px; border:1px solid #7e9bab;
+  background:#234b64; color:#fff; padding:8px 9px; font:700 12px -apple-system,BlinkMacSystemFont,system-ui,sans-serif }
+.inclassRecordingBadge button[data-session-stop] { color:#fff; background:#a73843; border-color:#a73843 }
+@media(max-width:510px) {
+  .inclassRecorderDialog { width:calc(100vw - 12px); max-height:calc(100dvh - 12px); padding:14px; border-radius:16px }
+  .inclassRecorderActions button { flex:1 1 140px }
+  .inclassRecordingBadge { right:6px; bottom:max(6px,env(safe-area-inset-bottom)); padding:6px; gap:4px }
+  .inclassRecordingBadge button { min-height:40px; padding:6px }
+}
+@media(prefers-reduced-motion:reduce) { .inclassRecorderDialog *, .inclassRecordingBadge * { scroll-behavior:auto!important } }

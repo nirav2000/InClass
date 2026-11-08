@@ -36,6 +36,7 @@
     syncAction.title=details||'Manage private notes synchronisation';
   }
   make('⚑  Report an issue','issue');
+  make('●  Session recorder','record');
   const installAction=document.getElementById('installInClassButton');
   const previewStatus=document.getElementById('authStatus');
   if(installAction)menu.append(installAction);
@@ -130,6 +131,10 @@
     if(action==='notes')void openNotes();
     if(action==='sync')openSync();
     if(action==='issue')openFeedback();
+    if(action==='record'){
+      closeMenu();
+      window.dispatchEvent(new Event('inclass:open-session-recorder'));
+    }
   };
   window.InClassCompactTools={openSync,openMenu:()=>toggle.click(),closeMenu,setSyncStatus};
   window.addEventListener('inclass:toolshostchange',place);

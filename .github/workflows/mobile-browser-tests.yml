@@ -9,6 +9,9 @@ on:
       - 'inclass-notes.js'
       - 'inclass-compact-tools.js'
       - 'inclass-compact-tools.css'
+      - 'inclass-session-recorder.js'
+      - 'inclass-session-recorder.css'
+      - 'tests/session-recorder.test.mjs'
       - 'index.html'
       - 'styles.css'
       - 'sw.js'
@@ -39,7 +42,10 @@ jobs:
         run: |
           node --check inclass-development-feedback.js
           node --check inclass-compact-tools.js
+          node --check inclass-session-recorder.js
           node --check welcome.js
           node --experimental-default-type=module --check inclass-notes.js
+      - name: Recorder privacy and capability tests
+        run: node --test tests/session-recorder.test.mjs
       - name: Real mobile Chrome interaction test
         run: timeout 195s node --test tests/browser-mobile.test.mjs

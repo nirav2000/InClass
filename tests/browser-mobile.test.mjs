@@ -236,4 +236,24 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  assert.equal(await evalJS('const r=document.querySelector("dialog.inclass-dev-dialog").getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight'),true,'Feedback panel fits iPad screen');
  await evalJS('document.querySelector("[data-dev-cancel]").click();return true');
 
+ // Recorder must be reachable inside the existing ONE compact iPad toolbar.
+ await evalJS('document.querySelector(".inclassCompactToggle").click();document.querySelector(".inclassCompactMenu [data-action=record]").click();return true');
+ assert.equal(await evalJS('return !!document.querySelector("dialog.inclassRecorderDialog[open]")'),true,'Recorder opens on the first tap from the compact menu');
+ assert.equal(await evalJS('return !!document.querySelector("dialog.inclassRecorderDialog video")'),true,'Parent review video exists');
+ const withoutApproval=await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-import]").click();return d.querySelector("[data-session-status]").textContent;');
+ assert.match(withoutApproval,/parental approval/i,'Import requires parent approval');
+ await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-consent]").checked=true;const input=d.querySelector("[data-session-file]");const f=new File([new Uint8Array(512)],"sample-learning.mp4",{type:"video/mp4"});Object.defineProperty(input,"files",{configurable:true,value:[f]});input.dispatchEvent(new Event("change",{bubbles:true}));return true');
+ await until(()=>evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");return !!d?.querySelector(".inclassRecorderItem")&&!d.querySelector("[data-session-review]").hidden'),'local video import and preview');
+ await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-note-type]").value="confusion";d.querySelector("[data-session-note-text]").value="Learner asked why the rule changes";d.querySelector("[data-session-note]").click();return true');
+ await until(()=>evalJS('return /Observation saved locally/.test(document.querySelector("[data-session-status]")?.textContent||"")'),'locally saved parent observation');
+ const recordedMeta=await evalJS('return await new Promise((resolve,reject)=>{const req=indexedDB.open("inclass-session-recordings-v1",1);req.onerror=()=>reject(req.error);req.onsuccess=()=>{const q=req.result.transaction("sessions").objectStore("sessions").getAll();q.onerror=()=>reject(q.error);q.onsuccess=()=>resolve(q.result.map(v=>({source:v.source,markers:v.markers.length})));}})');
+ assert.equal(recordedMeta.length,1,'One locally imported recording');
+ assert.equal(recordedMeta[0].source,'import');
+ assert.equal(recordedMeta[0].markers,1,'Parent observation saved');
+ assert.equal(await evalJS('return window.__submitCalls.length'),1,'Child recording never creates a public GitHub issue');
+ await evalJS('window.confirm=()=>true;document.querySelector("dialog.inclassRecorderDialog [data-session-delete]").click();return true');
+ await until(()=>evalJS('return document.querySelector("dialog.inclassRecorderDialog [data-session-review]")?.hidden===true'),'local video deleted');
+ assert.equal(await evalJS('return document.querySelectorAll("dialog.inclassRecorderDialog .inclassRecorderItem").length'),0,'No deleted video remains in the library');
+ await evalJS('document.querySelector("dialog.inclassRecorderDialog").close();return true');
+
 });
