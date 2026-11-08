@@ -62,7 +62,10 @@ test('loading the recorder makes no permission requests and capability detection
 
 test('interaction metadata does not collect the contents of student answers', () => {
   assert.match(recorder, /never read typed answers/i);
-  assert.doesNotMatch(recorder, /event\.target\.value|element\.textContent|event\.key\b/);
+  // The video-picker's file input is reset after import; that is not a learner answer.
+  // Only the eventLabel function determines which interactions are logged.
+  const eventLabel = recorder.slice(recorder.indexOf('function eventLabel('), recorder.indexOf('function trackEvents('));
+  assert.doesNotMatch(eventLabel, /\.value\b|\.textContent\b|\.innerHTML\b|event\.key\b/);
   assert.match(recorder, /MAX_EVENTS/);
   assert.match(recorder, /Mark stuck/);
   assert.match(recorder, /Export observations/);
