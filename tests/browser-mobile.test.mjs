@@ -250,7 +250,7 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  assert.equal(recordedMeta.length,1,'One locally imported recording');
  assert.equal(recordedMeta[0].source,'import');
  assert.equal(recordedMeta[0].markers,1,'Parent observation saved');
- assert.equal(await evalJS('return window.__submitCalls.length'),1,'Child recording never creates a public GitHub issue');
+ assert.equal(await evalJS('return window.__submitCalls.length'),0,'Child recording never creates a public GitHub issue (fresh page after reload)');
  await evalJS('window.confirm=()=>true;document.querySelector("dialog.inclassRecorderDialog [data-session-delete]").click();return true');
  await until(()=>evalJS('return document.querySelector("dialog.inclassRecorderDialog [data-session-review]")?.hidden===true'),'local video deleted');
  assert.equal(await evalJS('return document.querySelectorAll("dialog.inclassRecorderDialog .inclassRecorderItem").length'),0,'No deleted video remains in the library');
