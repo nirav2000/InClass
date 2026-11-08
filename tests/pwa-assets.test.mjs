@@ -14,6 +14,8 @@ assert.match(html,/rel=["']apple-touch-icon["'][^>]*icons\/icon-180.png/);
 assert.match(html,/Apps\/pwa\/v1\/index.js/);
 assert.match(html,/serviceWorkerUrl:\s*['"]\.\/sw.js['"]/);
 assert.match(sw,/Apps\/pwa\/v1\/service-worker.js/);
+assert.match(sw,/\.\/inclass-session-recorder\.js/,'Session capture must be available to the installed app');
+assert.match(sw,/\.\/inclass-session-recorder\.css/,'Session review styling must be available offline');
 assert.match(sw,/APPS_PWA_CONFIG/);
 assert.match(sw,/2026-11-02-french-avoir\.js/,'Latest French homework must remain precached');
 assert.match(sw,/2026-09-french-pets\.js/,'Earlier French homework must stay preserved');
