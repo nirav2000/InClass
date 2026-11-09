@@ -218,7 +218,9 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
 
  await send('Page.reload',{ignoreCache:true});
  await until(()=>evalJS('const b=document.querySelector("#enterAppButton");return document.readyState==="complete"&&!!b?.offsetWidth&&!b.disabled&&typeof b.onclick==="function"'),'interactive app reload');
- await evalJS('document.querySelector("#enterAppButton").click();return true');
+ const launchResult=await evalJS('try{document.querySelector("#enterAppButton").onclick();return "ok"}catch(error){return error?.stack||String(error)}');
+ console.log('INCLASS_LAUNCH_RESULT',launchResult);
+ assert.equal(launchResult,'ok','Latest lesson must open without throwing an exception');
  await wait(500);
  console.log('INCLASS_RELOAD_DIAG',JSON.stringify(await evalJS(`return {ready:document.readyState,lesson:document.querySelector('#weekSelect')?.value,shellHidden:document.querySelector('#appShell')?.classList.contains('hidden'),notesStatus:document.querySelector('#inclassNotesStatus')?.textContent,launchers:document.querySelectorAll('.apps-notes-launcher').length,syncButtons:document.querySelectorAll('[data-inclass-sync-button]').length,errors:window.__browserErrors||[]}`)));
  await until(()=>evalJS('return !!document.querySelector("#inclassLessonTools .inclassCompactToggle")?.getClientRects().length'),'compact Notes menu after reload');
