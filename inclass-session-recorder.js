@@ -270,6 +270,7 @@
     const index = part.nextChunk++;
     state.queuedChunks++;
     if (state.queuedChunks > MAX_PENDING_CHUNKS) {
+      state.queuedChunks--;
       state.writeFailed = Error('Browser storage is too slow to keep up.');
       inform('Recording stopped because storage writes could not keep up. Saved parts remain available.');
       stopCapture('slow-storage');
@@ -652,6 +653,7 @@
       notice.setAttribute('role', 'region');
       notice.setAttribute('aria-label', 'Visible session recording controls');
       notice.innerHTML = '<span data-session-elapsed aria-live="off">● 00:00</span>' +
+        '<small data-session-space>Saving every 5 seconds</small>' +
         '<button type="button" data-session-stuck>Mark stuck</button>' +
         '<button type="button" data-session-stop>■ Stop & save</button>';
       notice.querySelector('[data-session-stop]').onclick = () => stopCapture('manual');
@@ -671,11 +673,14 @@
     };
     update();
     state.timer = setInterval(update, 1000);
-    state.limit = setTimeout(() => stopCapture('limit'), LIMIT_MS);
+    void updateStorageIndicator(state);
   }
   function hideNotice(state) {
     clearInterval(state?.timer);
-    clearTimeout(state?.limit);
+    if (state?.part) {
+      clearTimeout(state.part.rotateTimer);
+      clearInterval(state.part.flushTimer);
+    }
     if (notice) notice.hidden = true;
   }
   function release(state) {
@@ -689,6 +694,77 @@
     const supported = window.MediaRecorder.isTypeSupported?.bind(window.MediaRecorder);
     return ['video/mp4;codecs=h264,aac', 'video/mp4', 'video/webm;codecs=vp8,opus',
       'video/webm;codecs=vp9,opus', 'video/webm'].find(type => supported && supported(type));
+  }
+  function startPart(state) {
+    // Each 5-minute part is its OWN valid MediaRecorder file, but the screen
+    // and microphone streams are shared so permissions are NOT requested again.
+    const mime = pickMime();
+    const recorder = new MediaRecorder(state.combined, mime ? {mimeType: mime} : undefined);
+    const part = {
+      index: state.nextPart++, startedAtMs: Date.now() - state.started,
+      nextChunk: 0, persistedChunks: 0, persistedBytes: 0,
+      mimeType: recorder.mimeType || mime || 'video/webm',
+      endedAtMs: 0, rotateTimer: null, flushTimer: null, rotating: false
+    };
+    state.recorder = recorder;
+    state.part = part;
+    recorder.ondataavailable = event => {
+      if (event.data?.size) addChunk(state, part, event.data);
+    };
+    recorder.onerror = event => {
+      state.captureError = event.error?.message || 'Media recording error';
+      stopCapture('error');
+    };
+    recorder.onstop = () => { void finishPart(state, part); };
+    recorder.start(CHUNK_MS);
+    // Some iPads ignore MediaRecorder.start(timeslice). requestData helps
+    // flush usable blocks when the browser supports it.
+    if (typeof recorder.requestData === 'function') {
+      part.flushTimer = setInterval(() => {
+        if (recorder.state === 'recording') {
+          try { recorder.requestData(); } catch {}
+        }
+      }, CHUNK_MS);
+    }
+    part.rotateTimer = setTimeout(() => rotatePart(state), SEGMENT_MS);
+  }
+  function rotatePart(state) {
+    const part = state?.part;
+    if (!part || part.rotating || state.recorder?.state === 'inactive') return;
+    part.rotating = true;
+    clearTimeout(part.rotateTimer);
+    clearInterval(part.flushTimer);
+    try { state.recorder.stop(); }
+    catch (error) {
+      state.captureError = error?.message || String(error);
+      state.stopping = true;
+      void finishPart(state, part);
+    }
+  }
+  async function finishPart(state, part) {
+    if (part.finished) return;
+    part.finished = true;
+    clearTimeout(part.rotateTimer);
+    clearInterval(part.flushTimer);
+    part.endedAtMs = Date.now() - state.started;
+    // The final dataavailable event fires BEFORE the recorder's stop event.
+    await state.writeQueue;
+    if (part.persistedChunks) {
+      try { await completeSegment(state, part); }
+      catch (error) {
+        state.writeFailed ||= error;
+        inform('Unable to finish a recording checkpoint. Earlier saved parts remain available.');
+      }
+    }
+    if (current !== state) return;
+    if (!state.stopping && !state.writeFailed) {
+      try { startPart(state); }
+      catch (error) {
+        state.captureError = error?.message || String(error);
+        state.stopping = true;
+        await finishCapture(state);
+      }
+    } else await finishCapture(state);
   }
   async function startCapture(options = {}) {
     if (current || pendingStart) return;
@@ -740,28 +816,38 @@
         }
       }
       combined = new MediaStream([...display.getVideoTracks(), audioOutput]);
-      const mime = pickMime();
-      const recorder = new MediaRecorder(combined, mime ? {mimeType:mime} : undefined);
       const info = options.info || lessonInfo();
+      const started = Date.now();
       const state = {
-        display, mic, mixer, combined, recorder, chunks: [], started:Date.now(),
-        info:{subject:String(info.subject || 'home').slice(0,80), week:String(info.week || 'general').slice(0,120)},
-        automatic, events:[], markers:[], stopping:false, captureError:null
+        display, mic, mixer, combined, recorder: null, part: null,
+        started, info: {subject: String(info.subject || 'home').slice(0, 80),
+          week: String(info.week || 'general').slice(0, 120)},
+        automatic, events: [], markers: [], stopping: false, captureError: null,
+        persistedBytes: 0, nextPart: 0, queuedChunks: 0,
+        writeQueue: Promise.resolve(), writeFailed: null, lowSpaceWarned: false
       };
-      recorder.ondataavailable = event => { if (event.data?.size) state.chunks.push(event.data); };
-      recorder.onerror = event => {
-        state.captureError = event.error?.message || 'Media recording error';
-        stopCapture('error');
+      state.meta = {
+        id: uniqueId(), createdAt: new Date(started).toISOString(),
+        subject: state.info.subject, week: state.info.week,
+        source: 'screen', storageFormat: 'chunks-v2', automatic,
+        status: 'recording', durationMs: 0, segmentCount: 0,
+        byteCount: 0, events: [], markers: []
       };
-      recorder.onstop = () => { void finishCapture(state); };
+      await createRecording(state);
+      if (endingLesson) throw Error('Lesson was closed before recording began.');
       current = state;
-      recorder.start(1500);
+      startPart(state);
       display.getVideoTracks()[0].addEventListener('ended', () => stopCapture('screen-ended'), {once:true});
       trackEvents(state);
       showNotice(state);
     } catch (error) {
       const wasEnding = endingLesson;
-      if (current && current.display === display) { release(current); current = null; }
+      if (current && current.display === display) {
+        const pending = current;
+        current = null;
+        release(pending);
+        if (pending.meta) void updateSession(snapshotRecording(pending, {status:'interrupted'})).catch(() => {});
+      }
       [display, mic, combined].forEach(stream => stream?.getTracks?.().forEach(track => {
         try { track.stop(); } catch {}
       }));
@@ -797,50 +883,51 @@
     state.stopping = true;
     state.stopReason = reason;
     hideNotice(state);
-    if (state.recorder.state !== 'inactive') {
-      try { state.recorder.stop(); } catch (error) {
-        state.captureError = error.message;
-        void finishCapture(state);
-      }
-    } else void finishCapture(state);
+    if (state.part?.rotating) return; // onstop will close the active part.
+    if (state.recorder?.state !== 'inactive') rotatePart(state);
+    else void finishCapture(state);
   }
   async function finishCapture(state) {
-    if (current !== state) return;
+    if (current !== state || state.finalising) return;
+    state.finalising = true;
+    await state.writeQueue;
+    const durationMs = Math.max(0, Date.now() - state.started);
+    const hasVideo = state.persistedBytes > 0;
+    const status = state.writeFailed || state.captureError ? 'partial' :
+      hasVideo ? 'saved' : 'empty';
+    const meta = snapshotRecording(state, {
+      status, durationMs, stopReason: state.stopReason || 'ended',
+      recordingError: state.writeFailed?.message || state.captureError || null
+    });
+    try { await updateSession(meta); }
+    catch (error) { inform('Recording ended, but status could not be updated: ' + (error?.message || error)); }
     current = null;
     release(state);
-    const type = state.recorder.mimeType || 'video/webm';
-    const video = new Blob(state.chunks, {type});
-    state.chunks = [];
-    // Auto-save without bringing the review modal over the learner's work.
     if (!state.automatic) openDialog();
-    if (!video.size) {
-      const warning = 'No video data was recorded. ' +
-        (state.captureError || 'Try again or use Apple Screen Recording.');
-      if (state.automatic) inform(warning);
-      else message(warning);
-      return;
-    }
-    const meta = {
-      id:uniqueId(), createdAt:new Date(state.started).toISOString(),
-      subject:state.info.subject, week:state.info.week, source:'screen',
-      automatic:state.automatic, durationMs:Date.now() - state.started,
-      events:state.events, markers:state.markers
-    };
     try {
-      await saveSession(meta, video);
       await renderLibrary();
-      if (state.automatic) inform('Lesson recording saved privately (' + clock(meta.durationMs) + ').',
-        {kind:'review', meta});
-      else {
-        message('Screen + microphone recording saved on this device only.' +
-          (state.stopReason === 'limit' ? ' The 20-minute recording limit was reached.' : ''));
+      void refreshStorage();
+      if (!hasVideo) {
+        const warning = 'No video data could be saved. ' +
+          (state.captureError || state.writeFailed?.message || 'Please retry.');
+        if (state.automatic) inform(warning);
+        else message(warning);
+        return;
+      }
+      if (state.automatic) {
+        inform(status === 'saved'
+          ? 'Lesson saved in ' + (meta.segmentCount || 1) + ' part(s) (' + clock(durationMs) + ').'
+          : 'Recording stopped early; saved parts can still be reviewed.',
+          {kind:'review', meta});
+      } else {
+        message(status === 'saved'
+          ? 'Screen + microphone recording saved on this device only.'
+          : 'Recording stopped early. Previously saved parts remain available.');
         await showSession(meta);
       }
     } catch (error) {
-      openDialog();
-      message('Local storage failed (' + (error?.message || error) +
-        '). Download this temporary video now to avoid losing it.');
-      await showSession(meta, video);
+      inform('Recording parts were saved, but the library could not refresh: ' +
+        (error?.message || error));
     }
   }
   window.addEventListener('beforeunload', event => {
