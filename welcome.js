@@ -109,6 +109,9 @@
   }
   function launchPack(id,learnerName){
     const pack=WEEKS.find(w=>w.id===id);
+    // This is directly called by the learner's homework-card button.
+    // A browser screen-sharing prompt requires this original tap.
+    window.InClassSessionRecorder?.beginLesson({subject:pack?.subject, week:pack?.id});
     selectLearner(learnerName);
     if(pack){
       $("#subjectSelect").value=pack.subject;
@@ -123,6 +126,7 @@
     window.scrollTo({top:0,behavior:"smooth"});
   }
   function showHome(){
+    window.InClassSessionRecorder?.endLesson();
     $("#appShell").classList.add("hidden");
     $("#welcomeScreen").classList.remove("hidden");
     const s=session();
