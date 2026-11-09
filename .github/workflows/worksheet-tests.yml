@@ -7,6 +7,7 @@ on:
       - 'data/**'
       - 'worksheets/**'
       - 'tests/worksheets.test.mjs'
+      - 'tests/worksheets-browser.test.mjs'
       - 'index.html'
       - 'welcome.js'
       - 'sw.js'
@@ -16,7 +17,7 @@ permissions:
 jobs:
   worksheet-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,6 +31,14 @@ jobs:
           node --check welcome.js
       - name: Curated content, preservation, marking and print rendering checks
         run: node --test tests/worksheets.test.mjs
+      - name: Render and check all child and adult PDFs using real Chromium
+        run: node --test tests/worksheets-browser.test.mjs
+      - name: Archive verified printable lesson PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: InClass-printable-worksheets-and-parent-guides
+          path: .tmp/worksheet-pdfs/*.pdf
+          retention-days: 30
       - name: Existing lesson and PWA regressions
         run: |
           node --test tests/english-floss.test.mjs tests/french-spider-alphabet.test.mjs tests/avoir-concepts.test.cjs
