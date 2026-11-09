@@ -1,5 +1,5 @@
 window.INCLASS_CONFIG = {
-  release: "2026.11.03.1",
+  release: "2026.11.09.1",
   mode: "local",
   pronunciation: {
     referenceEndpoint: "https://apps-pronunciation-api.nirav2000-github.workers.dev/reference",
