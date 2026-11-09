@@ -71,7 +71,7 @@ test("Loaded from correct script order and retained offline, with prior weeks un
 });
 
 function makeBrowser(){
-  const w=load(),elements=new Map(),attempts=[];
+  const w=load(),elements=new Map(),attempts=[],selectorCache=new Map();
   let p={};
   const get=id=>{
     if(!elements.has(id)){
@@ -97,6 +97,9 @@ function makeBrowser(){
         rx=/data-fl-review="(\d+)" data-fl-mark="(yes|no)"/g;
         for(let m;(m=rx.exec(html));)matches.push({dataset:{flReview:m[1],flMark:m[2]},onclick:null});
       }
+      const key=selector+"\n"+html;
+      if(selectorCache.has(key))return selectorCache.get(key);
+      selectorCache.set(key,matches);
       return matches;
     }
   };
