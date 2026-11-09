@@ -1,0 +1,58 @@
+/* 9 November French homework. Scoped styles: do not change older lesson layouts. */
+.sa-due{display:inline-block;font-weight:800;padding:6px 12px;background:#fff5c9;border-radius:999px;color:#674b13}
+.sa-brief{background:#f5f9fc;border:1px solid #dce8ef;border-radius:16px;padding:16px;margin-bottom:14px}
+.sa-brief p{margin:10px 0 0}
+.sa-checks{display:grid;gap:10px;margin:14px 0}
+.sa-checks label{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid #dae4ea;border-radius:14px;padding:14px;cursor:pointer}
+.sa-checks input{flex:0 0 22px;width:22px;height:22px;accent-color:#0b7285;margin:1px 0 0}
+.sa-checks span{display:grid;gap:3px}
+.sa-checks small{font-size:13px;color:#52657a}
+.sa-footnote,.sa-attribution{font-size:13px;color:#51657a}
+.sa-map{background:#edf6f9;border:1px solid #cfe5ea;border-radius:22px;padding:14px}
+.sa-map-center{background:#176b89;color:white;border-radius:15px;font-weight:800;padding:12px;text-align:center;margin:0 auto 15px;max-width:240px}
+.sa-map-center span{display:block;color:#d8eff5;font-weight:500;font-size:12px}
+.sa-map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sa-branch{min-width:0;background:#fff;border:1px solid #cfe1e9;border-radius:16px;padding:12px}
+.sa-branch:last-child{grid-column:1/-1}
+.sa-branch h4{margin:0;font-size:17px}
+.sa-branch-head{display:grid;gap:4px;margin-bottom:10px}
+.sa-branch-head span{font-size:13px;color:#51657a}
+.sa-branch label{font-size:13px;display:block;margin:0 0 6px}
+.sa-branch textarea{display:block;width:100%;resize:vertical;border:1px solid #b6cdda;border-radius:10px;min-height:80px;padding:10px;background:#fff;font-size:16px}
+.sa-branch details{margin-top:10px}
+.sa-branch summary,.sa-optional summary{font-weight:700;cursor:pointer;min-height:38px}
+.sa-branch-bank{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.sa-branch-bank button{min-height:38px}
+.sa-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.sa-status{font-size:13px;color:#51657a}
+.sa-alphabet{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:14px 0}
+.sa-letter{border-radius:14px;border:1px solid #b7d5df;background:#fff;display:grid;justify-items:center;gap:2px;padding:9px 4px;min-height:76px}
+.sa-letter strong{font-size:23px;color:#176b89}
+.sa-letter span{font-size:11px;color:#52657a;overflow-wrap:anywhere}
+.sa-letter small{font-size:14px}
+.sa-letter:hover,.sa-letter:focus-visible{background:#e8f5fb}
+.sa-practice-box{border:1px solid #d7e4ec;border-radius:16px;padding:14px;margin:16px 0;background:#f7fafc}
+.sa-practice-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.sa-practice-top p{margin:3px 0 0;font-size:14px;color:#52657a}
+.sa-practice-box h4{font-size:19px;margin:8px 0 12px}
+.sa-quiz{border-top:1px solid #d7e4ec;padding-top:14px;margin-top:14px}
+.sa-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.sa-options button{min-height:48px;background:#fff;border:1px solid #a9c8d4;border-radius:12px;font-size:19px;font-weight:800}
+.sa-options button.sa-correct{border-color:#1d845d;background:#e5f5e9}
+.sa-options button:disabled{opacity:.75;cursor:default}
+.sa-answer{display:grid;gap:9px;max-width:540px}
+.sa-answer input{font-size:18px;min-height:48px;border:1px solid #b7cbd9;background:#fff;border-radius:12px;padding:10px 12px}
+.sa-answer button{justify-self:start}
+.sa-optional{border:1px solid #dbe4eb;border-radius:14px;padding:12px 14px;margin-bottom:16px;background:#fff}
+.sa-explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.sa-explain-grid article{background:#f7fafc;border-radius:12px;padding:12px}
+.sa-explain-grid p{font-size:14px}
+.sa-result{padding:16px 0}
+.sa-result>strong{font-size:34px}
+@media(max-width:620px){
+  .sa-map-grid,.sa-explain-grid{grid-template-columns:1fr}
+  .sa-branch:last-child{grid-column:auto}
+  .sa-alphabet{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .sa-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sa-practice-top>button{width:100%}
+}
