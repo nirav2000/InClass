@@ -195,6 +195,22 @@ function renderProgress(){
       ["Meanings",(p.meaningCorrect||0)+"/"+(p.meaningAttempts||0)],
       ["Best test",p.bestTest===undefined?"—":p.bestTest+"/12"]
     ];
+  } else if(state.week.spiderAlphabetHomework){
+    var paperDone=!!p.spiderPaperDone, alphabetDone=!!p.alphabetRevised;
+    pct=Math.round((Number(paperDone)+Number(alphabetDone))/2*100);
+    stats=[
+      ["Paper spider",paperDone?"Marked done":"Not yet"],
+      ["Alphabet revision",alphabetDone?"Marked done":"Not yet"],
+      ["Alphabet listening",Object.keys(p.alphabetHeard||{}).length+"/26"],
+      ["Alphabet quiz",typeof p.alphabetBest==="number"?p.alphabetBest+"/8":"—"],
+      ["Revision mock",typeof p.mockBest==="number"?p.mockBest+"/12":"—"]
+    ];
+  } else if(state.week.spiderAlphabetHomework){
+    $("#sourceNote").innerHTML=
+      '<strong>9 November school assignment · Monsieur Bloom</strong>'+
+      '<p>Due Friday 13 November at 08:30. Complete the spider diagram stuck in the French exercise book; revise the French alphabet sheet. The following two French lessons will include end-of-unit tests.</p>'+
+      '<p><strong>Source versus practice:</strong> The printed diagram visibly gives j’aime, un chien, rouge, petit and intelligent. Other suggested French words come from earlier InClass packs or are labelled extra study support. The alphabet sheet and official test questions were not supplied.</p>'+
+      '<p><strong>Submission:</strong> Checking off paper tasks in InClass does not mark the homework handed in on Teams. A separate optional diagnostic test is provided, not a school-issued test.</p>';
   } else if(state.week.avoirHomework){
     var seen=Object.keys(p.avoirHeard||{}).length;
     var spell=Math.min((p.spellCorrect||0)/6,1);
