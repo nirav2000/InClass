@@ -2,9 +2,24 @@
 
 A lightweight, dated school-homework app. Each homework pack is retained as a permanent week and selected by **subject → week**.
 
-Current release: **v2026.09.29.9**
+Current release: **v2026.11.09.1**
 
 ## Current packs
+
+### French · 5F-Fr · 9 November 2026 (due Friday 13 November, 08:30)
+Source: parent-provided screenshot of Mr Bloom's Microsoft Teams assignment **French Prep (9.11.26)**.
+
+The assignment requires two physical-book tasks: complete the **pets spider diagram** (opinions, pets, colours, size and personality) and revise the **French alphabet reference sheet** stuck in the exercise book last week. The teacher also announced two upcoming end-of-unit tests; no official test paper, exact tested topics, or alphabet sheet was supplied.
+
+InClass now provides:
+- school instructions and self-reported **paper diagram** / **alphabet revision** checkboxes, explicitly distinct from submission to Teams;
+- five free-response spider branches with locally saved drafts, the exact five printed examples (j’aime, un chien, rouge, petit, intelligent), and **collapsed, labelled** study suggestions reused from older French packs;
+- 26 French letter-name playback buttons with listening and letter-recognition practice (8 questions);
+- optional explanations connecting j’ai / j’aime, adjective agreement and plural nouns;
+- a twelve-question **unofficial** mixed-term revision mock spanning existing pets, colours, opinions, size, personality and avoir content, with attempt-level accuracy and elapsed-time records;
+- a visible **5F-Fr · Mr Bloom** class context and direct links to previous lesson packs, without replacing historical packs or progress.
+
+The printed worksheet and alphabet sheet remain in the exercise book. InClass does **not** claim a complete official answer key or a direct Teams connection. No screenshot containing school-account data was committed to this public repository. The new pack is loaded after earlier French data and precached for offline access. Regression coverage: `tests/french-spider-alphabet.test.mjs`.
 
 ### English · Year 5 · Friday 25 September 2026
 Source: the supplied school homework slides.
