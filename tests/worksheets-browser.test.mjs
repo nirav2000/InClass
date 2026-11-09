@@ -12,8 +12,6 @@ const OUT=join(ROOT,".tmp","worksheet-pdfs");
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const read=file=>readFileSync(join(ROOT,file),"utf8");
 const sources=Array.from(read("index.html").matchAll(/src="(data[/][^"]+[.]js)"/g),m=>m[1]).filter(x=>x!=="data/manifest.js");
-const lessonIds=sources.filter(x=>x!=="data/2026-10-05-french-opinions-v2.js").map(file=>file.replace(/^data[/]/,"").replace(/[.]js$/,""))
-  .concat(["2026-10-05-french-opinions-v2"]);
 // The URLs, not inferred filename IDs, are the authority; derive all lesson IDs
 // from executing the same lesson data files that the app itself loads.
 function serve(){
@@ -104,12 +102,12 @@ test("Actual headless Chrome renders every lesson as 2 separate printable PDFs",
    await chrome.send("Page.navigate",{url:url+"?lesson="+encodeURIComponent(id)+"&mode="+mode});
    let result;
    for(let tick=0;tick<100;tick++){
-    result=await chrome.evalJS('(function(){const root=document.getElementById("printRoot"),error=document.getElementById("error");return {ready:!!root?.querySelector(".sheetTitle"),error:error?.hidden===false?error.textContent:"",n:root?.querySelectorAll(".question").length||0,answers:root?.querySelectorAll(".answerBlock").length||0,title:root?.querySelector(".sheetTitle")?.textContent||"",oversize:!!(root&&root.scrollWidth>root.clientWidth+3)};})()');
+    result=await chrome.evalJS('(function(){const root=document.getElementById("printRoot"),error=document.getElementById("error");return {ready:!!root?.querySelector(".sheetTitle"),error:error?.hidden===false?error.textContent:"",n:root?.querySelectorAll(".question").length||0,answers:root?.querySelectorAll(".answerBlock").length||0,title:root?.querySelector(".sheetTitle")?.textContent||"",oversize:!!(root&&root.scrollWidth>root.clientWidth+3),actualId:document.getElementById("lessonPicker")?.value,actualMode:document.getElementById("modePicker")?.value};})()');
     if(result?.error)throw Error("Print view error "+id+": "+result.error);
-    if(result?.ready&&result.n>=3)break;
+    if(result?.ready&&result.n>=3&&result.actualId===id&&result.actualMode===mode)break;
     await wait(80);
    }
-   assert.ok(result?.ready&&result.n>=3,id+" "+mode+" did not render");
+   assert.ok(result?.ready&&result.n>=3&&result.actualId===id&&result.actualMode===mode,id+" "+mode+" did not render");
    assert.equal(result.oversize,false,id+" "+mode+" has horizontal overflow");
    if(mode==="student")assert.equal(result.answers,0,id+" child sheet accidentally reveals answers");
    else assert.ok(result.answers>=result.n,id+" parent sheet missing an answer");
