@@ -250,7 +250,7 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await until(()=>evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");return !!d?.querySelector(".inclassRecorderItem")&&!d.querySelector("[data-session-review]").hidden'),'local video import and preview');
  await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-note-type]").value="confusion";d.querySelector("[data-session-note-text]").value="Learner asked why the rule changes";d.querySelector("[data-session-note]").click();return true');
  await until(()=>evalJS('return /Observation saved locally/.test(document.querySelector("[data-session-status]")?.textContent||"")'),'locally saved parent observation');
- const recordedMeta=await evalJS('return await new Promise((resolve,reject)=>{const req=indexedDB.open("inclass-session-recordings-v1",1);req.onerror=()=>reject(req.error);req.onsuccess=()=>{const q=req.result.transaction("sessions").objectStore("sessions").getAll();q.onerror=()=>reject(q.error);q.onsuccess=()=>resolve(q.result.map(v=>({source:v.source,markers:v.markers.length})));}})');
+ const recordedMeta=await evalJS('return await new Promise((resolve,reject)=>{const req=indexedDB.open("inclass-session-recordings-v1");req.onerror=()=>reject(req.error);req.onsuccess=()=>{const q=req.result.transaction("sessions").objectStore("sessions").getAll();q.onerror=()=>reject(q.error);q.onsuccess=()=>resolve(q.result.map(v=>({source:v.source,markers:v.markers.length})));}})');
  assert.equal(recordedMeta.length,1,'One locally imported recording');
  assert.equal(recordedMeta[0].source,'import');
  assert.equal(recordedMeta[0].markers,1,'Parent observation saved');
