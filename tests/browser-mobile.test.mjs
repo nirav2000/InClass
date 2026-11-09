@@ -267,4 +267,40 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  assert.equal(await evalJS('return !!document.querySelector("dialog.inclassRecorderDialog[open]")'),false,'The recorder dialog does not block the lesson');
  await evalJS('window.InClassSessionRecorder.setAutoEnabled(false);document.querySelector("#homeButton").click();document.querySelector(".welcomeHomeworkCard").click();return true');
  assert.equal(await evalJS('return window.__screenCalls'),1,'Turning off auto-record prevents permission prompts');
+ // Exercise real IndexedDB persistence with a deterministic media encoder.
+ // This verifies multiple segments, no repeated sharing picker, review and recovery
+ // without waiting five actual minutes in CI.
+ await evalJS('window.__screens=0;window.__mics=0;window.__encoders=[];class TestTrack{constructor(kind){this.kind=kind;this.readyState="live"}stop(){this.readyState="ended"}addEventListener(name,callback){if(name==="ended")this.onended=callback}}class TestStream{constructor(tracks=[]){this.tracks=tracks}getTracks(){return this.tracks}getVideoTracks(){return this.tracks.filter(t=>t.kind==="video")}getAudioTracks(){return this.tracks.filter(t=>t.kind==="audio")}}class TestRecorder{static isTypeSupported(type){return type==="video/webm"}constructor(stream){this.stream=stream;this.state="inactive";this.mimeType="video/webm";window.__encoders.push(this)}start(){this.state="recording"}requestData(){if(this.state==="recording")this.ondataavailable?.({data:new Blob(["checkpoint-data-"+window.__encoders.indexOf(this)],{type:"video/webm"})})}stop(){this.requestData();this.state="inactive";queueMicrotask(()=>this.onstop?.())}}window.MediaRecorder=TestRecorder;window.MediaStream=TestStream;Object.defineProperty(navigator.mediaDevices,"getDisplayMedia",{configurable:true,value:()=>{window.__screens++;return Promise.resolve(new TestStream([new TestTrack("video")]))}});Object.defineProperty(navigator.mediaDevices,"getUserMedia",{configurable:true,value:()=>{window.__mics++;return Promise.resolve(new TestStream([new TestTrack("audio")]))}});Object.defineProperty(navigator,"storage",{configurable:true,value:{estimate:async()=>({quota:1000000000,usage:250000000})}});return true');
+ await evalJS('window.__partsState=async()=>{const db=await new Promise((ok,bad)=>{const r=indexedDB.open("inclass-session-recordings-v1");r.onsuccess=()=>ok(r.result);r.onerror=()=>bad(r.error)});return await new Promise((ok,bad)=>{const tx=db.transaction(["sessions","segments","chunks"]);const a=tx.objectStore("sessions").getAll(),b=tx.objectStore("segments").getAll(),c=tx.objectStore("chunks").getAll();tx.oncomplete=()=>{db.close();ok({sessions:a.result,parts:b.result,chunks:c.result})};tx.onerror=()=>bad(tx.error)})};window.__simulateInterruption=async()=>{const db=await new Promise((ok,bad)=>{const r=indexedDB.open("inclass-session-recordings-v1");r.onsuccess=()=>ok(r.result);r.onerror=()=>bad(r.error)});await new Promise((ok,bad)=>{const tx=db.transaction("sessions","readwrite");const store=tx.objectStore("sessions"),req=store.getAll();req.onsuccess=()=>{const meta=req.result.find(x=>x.storageFormat==="chunks-v2");meta.status="recording";meta.updatedAt=new Date(Date.now()-120000).toISOString();store.put(meta)};tx.oncomplete=ok;tx.onerror=()=>bad(tx.error)});db.close()};return true');
+ await evalJS('window.InClassSessionRecorder.setAutoEnabled(true);document.querySelector("#homeButton").click();document.querySelector(".welcomeHomeworkCard").click();return true');
+ await until(()=>evalJS('return !!document.querySelector(".inclassRecordingBadge:not([hidden])") && window.__encoders.length===1'),'synthetic recording underway');
+ await evalJS('window.InClassSessionRecorder.checkpointNow();return true');
+ await until(()=>evalJS('return window.__partsState().then(x=>x.parts.length===1&&x.parts[0].status==="complete"&&window.__encoders.length===2)'),'first durable five-minute segment');
+ assert.equal(await evalJS('return window.__screens'),1,'Rotating into the next part does not request screen permission again');
+ assert.equal(await evalJS('return window.__mics'),1,'Microphone permission is not requested again');
+ await evalJS('document.querySelector(".inclassRecordingBadge [data-session-stop]").click();return true');
+ await until(()=>evalJS('return window.__partsState().then(x=>x.sessions.length===1&&x.sessions[0].status==="saved"&&x.parts.length===2&&x.chunks.length===2)'),'stop saves a second part and finalises session');
+ const recordedParts=await evalJS('return await window.__partsState()');
+ assert.equal(recordedParts.parts.every(p=>p.status==='complete'&&p.sizeBytes>0),true,'Each part has independently durable video data');
+ assert.equal(recordedParts.sessions[0].storageFormat,'chunks-v2');
+ assert.equal(await evalJS('return window.__screens'),1,'One screen picker per session, even with multiple parts');
+ await evalJS('window.InClassSessionRecorder.open();return true');
+ await until(()=>evalJS('return document.querySelector("[data-session-storage-usage]")?.textContent.includes("750.0 MB")'),'storage allowance shown in MB');
+ assert.match(await evalJS('return document.querySelector("[data-session-storage-time]").textContent'),/Estimated recording time remaining: about/);
+ await evalJS('document.querySelector("dialog.inclassRecorderDialog .inclassRecorderItem").click();return true');
+ await until(()=>evalJS('return document.querySelectorAll("[data-session-part-list] button").length===2'),'segmented video review');
+ assert.match(await evalJS('return document.querySelector("[data-session-part-status]").textContent'),/Part 1 of 2/);
+ await evalJS('document.querySelector("[data-session-part-next]").click();return true');
+ await until(()=>evalJS('return document.querySelector("[data-session-part-status]").textContent.includes("Part 2 of 2")'),'next-part navigation');
+ assert.match(await evalJS('return document.querySelector("[data-session-download]").textContent'),/Download this part/);
+ // Simulate an old recording whose last tab vanished before updating status.
+ await evalJS('return await window.__simulateInterruption()');
+ await evalJS('document.querySelector("dialog.inclassRecorderDialog").close();window.InClassSessionRecorder.open();return true');
+ await until(()=>evalJS('return document.querySelector(".inclassRecorderItem")?.textContent.includes("Recoverable parts")'),'recover stale recording without discarding saved parts');
+ assert.equal((await evalJS('return await window.__partsState()')).parts.length,2,'Recovery leaves committed parts untouched');
+ await evalJS('document.querySelector("dialog.inclassRecorderDialog .inclassRecorderItem").click();return true');
+ await until(()=>evalJS('return document.querySelectorAll("[data-session-part-list] button").length===2'),'recovered parts are reviewable');
+ await evalJS('document.querySelector("dialog.inclassRecorderDialog [data-session-delete]").click();return true');
+ await until(()=>evalJS('return window.__partsState().then(x=>x.sessions.length===0&&x.parts.length===0&&x.chunks.length===0)'),'delete clears session metadata and every stored chunk');
+
 });
