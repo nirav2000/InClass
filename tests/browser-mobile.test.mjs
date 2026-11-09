@@ -216,8 +216,10 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await until(()=>evalJS('return !!document.querySelector("dialog.apps-notes-identity[open]")'),'sync account picker after retry');
  await evalJS('document.querySelector("dialog.apps-notes-identity [data-action=close]").click();return true');
 
+ const previousOrigin=await evalJS('return performance.timeOrigin');
  await send('Page.reload',{ignoreCache:true});
- await until(()=>evalJS('const b=document.querySelector("#enterAppButton");return document.readyState==="complete"&&!!b?.offsetWidth&&!b.disabled&&typeof b.onclick==="function"'),'interactive app reload');
+ await wait(450);
+ await until(()=>evalJS('const b=document.querySelector("#enterAppButton");return performance.timeOrigin>'+previousOrigin+'&&document.readyState==="complete"&&!!b?.offsetWidth&&!b.disabled&&typeof b.onclick==="function"'),'fresh interactive app reload');
  const launchResult=await evalJS('try{document.querySelector("#enterAppButton").onclick();return "ok"}catch(error){return error?.stack||String(error)}');
  console.log('INCLASS_LAUNCH_RESULT',launchResult);
  assert.equal(launchResult,'ok','Latest lesson must open without throwing an exception');
