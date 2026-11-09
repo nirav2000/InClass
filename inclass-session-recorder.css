@@ -97,3 +97,26 @@
 @media(max-width:510px) {
   .inclassRecorderNotification { right:8px; left:8px; bottom:max(8px,env(safe-area-inset-bottom)) }
 }
+
+/* Storage is a browser-origin estimate, not a claim about iPad physical capacity. */
+.inclassRecorderSpace { padding:10px 14px; margin:14px 0; border:1px solid #cbdce7;
+  background:#f7fafc; border-radius:12px }
+.inclassRecorderSpace .inclassRecorderSectionHead {margin:0 0 7px}
+.inclassRecorderSpace .inclassRecorderSectionHead h3 {font-size:15px}
+.inclassRecorderSpace p { margin:5px 0; font-size:13px; color:#21485d }
+.inclassRecorderSpace small {display:block; margin-top:6px; font-size:11px; color:#5a7381}
+.inclassRecorderParts {margin:14px 0 8px; padding:11px;
+  border:1px solid #d4e4ed; border-radius:11px; background:#f8fbfd }
+.inclassRecorderParts[hidden] {display:none!important}
+.inclassRecorderParts strong {display:block; font-size:13px; margin-bottom:6px}
+.inclassRecorderParts small {display:block; color:#536f7e; font-size:11px; line-height:1.45; margin-top:6px}
+.inclassRecorderParts .inclassRecorderActions {margin:5px 0}
+.inclassRecorderPartList {display:flex; flex-wrap:wrap; gap:5px}
+.inclassRecorderPart {border:1px solid #a8c4d2; padding:7px 9px; min-height:38px;
+  background:#fff; color:#21516a; border-radius:8px; font:600 12px system-ui,sans-serif}
+.inclassRecorderPart.active {background:#175b79; color:#fff; border-color:#175b79}
+.inclassRecordingBadge [data-session-space] {font-size:11px; font-weight:500; color:#dceef8}
+@media(max-width:510px) {
+  .inclassRecordingBadge [data-session-space] {display:none}
+  .inclassRecorderSpace {padding:10px}
+}
