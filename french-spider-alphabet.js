@@ -60,6 +60,14 @@
       '</div></details>';
   }
 
+  function classHistory(w) {
+    const known = (w.priorPacks || []).map(id => WEEKS.find(pack => pack.id === id)).filter(Boolean);
+    return '<div class="sa-history"><strong>Earlier French lessons in 5F-Fr</strong>' +
+      '<p>Use these topics to revise or work on a weakness. Opening one keeps its original lesson and saved progress intact.</p><div>' +
+      known.map(pack => '<button type="button" class="secondary" data-sa-prior="' + esc(pack.id) + '">' + esc(pack.title) + ' →</button>').join("") +
+      '</div></div>';
+  }
+
   function mockHTML() {
     return '<p class="tip">InClass practice, <strong>not an official school paper</strong>. The teacher has not supplied an end-of-unit test specification. This quiz draws on the French lessons already stored in InClass. Spell carefully and answer independently before checking.</p>' +
       '<div class="sa-practice-box"><div class="sa-practice-top"><div><strong>12-question mixed revision</strong><p>Pets, colours, opinions, size, personality and <em>avoir</em>.</p></div><button class="primary" id="saStartMock" type="button">Start mock test</button></div><div id="saMockArea" aria-live="polite"></div></div>' +
@@ -71,6 +79,7 @@
     setNav([["sa-1","School homework"],["sa-2","Spider diagram"],["sa-3","Alphabet"],["sa-4","Revision"]]);
     byId("lessonRoot").innerHTML =
       heading(1,"What Mr Bloom asked you to do",
+        '<div class="sa-class-label"><strong>5F-Fr · Year 5 French</strong><span>Monsieur Bloom · School homework</span></div>' +
         '<div class="sa-brief"><span class="sa-due">Due Friday 13 November 2026 · 08:30</span>' +
         '<p><strong>Required 1:</strong> Complete the spider diagram on the sheet stuck into your French exercise book.</p>' +
         '<p><strong>Required 2:</strong> Revise the French alphabet using the sheet stuck into your book last week.</p>' +
@@ -78,7 +87,7 @@
         '<p class="sa-footnote">Checking these boxes saves progress in InClass only. It does not submit homework to Microsoft Teams.</p>') +
       heading(2,"Rebuild the pet spider diagram",spiderHTML(w,p)) +
       heading(3,"French alphabet · listen and recognise",alphabetHTML(w,p)) +
-      heading(4,"Prepare for the end-of-unit tests",understandingHTML()+mockHTML());
+      heading(4,"Prepare for the end-of-unit tests",classHistory(w)+understandingHTML()+mockHTML());
 
     byId("saPaperComplete").onchange = e => update({spiderPaperDone: e.target.checked});
     byId("saAlphabetRevised").onchange = e => update({alphabetRevised: e.target.checked});
@@ -102,6 +111,16 @@
         speak(x[1],"fr-FR");
         const p=data(); p.alphabetHeard=p.alphabetHeard || {};
         p.alphabetHeard[x[0]]=true; saveProgress(p);
+      };
+    });
+    document.querySelectorAll("[data-sa-prior]").forEach(button => {
+      button.onclick = () => {
+        const prior = WEEKS.find(pack => pack.id === button.dataset.saPrior);
+        if (!prior) return;
+        byId("subjectSelect").value = prior.subject;
+        localStorage.setItem("inclass:lastWeek",prior.id);
+        populateWeeks(prior.id);
+        window.scrollTo({top:0,behavior:"smooth"});
       };
     });
     byId("saStartAlphabet").onclick = startAlphabet;
