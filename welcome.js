@@ -53,11 +53,13 @@
   function homeworkCards(learnerName){
     return WEEKS.slice().reverse().map(pack=>{
       const p=progressFor(pack,learnerName),pct=completionFor(pack,learnerName);
-      return '<button class="welcomeHomeworkCard" data-pack="'+pack.id+'" data-learner="'+learnerName+'">'+
+      const paper=window.InClassPaper?.get(pack.id,learnerName)||{};
+      const completionLabel=paper.completed?"Paper completed · "+pct+"% interactive":pct+"% complete";
+      return '<div class="welcomeHomeworkItem"><button class="welcomeHomeworkCard" data-pack="'+pack.id+'" data-learner="'+learnerName+'">'+
         '<span class="subjectOrb '+pack.subjectKey+'">'+(pack.subjectKey==="french"?"FR":"EN")+'</span>'+
-        '<span class="welcomeHomeworkText"><small>'+pack.subject+' · '+pack.date+'</small><strong>'+pack.title+'</strong><span>'+pct+'% complete</span></span>'+
+        '<span class="welcomeHomeworkText"><small>'+pack.subject+' · '+pack.date+'</small><strong>'+pack.title+'</strong><span>'+completionLabel+'</span></span>'+
         '<span class="homeworkArrow">→</span>'+
-      '</button>';
+      '</button><div class="welcomeWorksheetLinks"><a target="_blank" rel="noopener" href="'+window.InClassPaper.link(pack.id,"student")+'">Printable worksheet</a>'+ (session().role==="parent"?'<a target="_blank" rel="noopener" href="'+window.InClassPaper.link(pack.id,"answers")+'">Parent key</a>':'') +'</div></div>';
     }).join("");
   }
   function issuesFor(name){
