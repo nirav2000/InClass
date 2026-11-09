@@ -35,7 +35,7 @@ test("School assignment is preserved without inventing an official answer key",(
   assert.equal(p.alphabet.length,26);
   for(const [id,text] of Object.entries(p.schoolTask.printedExamples))
     assert.equal(p.spiderCategories.find(x=>x.id===id)?.printed,text);
-  assert.match(p.note,/not a teacher-provided answer key/);
+  assert.match(p.note,/not treated as an official answer key/);
   assert.match(p.sourceInstruction,/next two lessons/);
 });
 
