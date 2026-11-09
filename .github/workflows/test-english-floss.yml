@@ -1,0 +1,36 @@
+name: Verify Year 5 English FLOSS homework
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'data/2026-11-09-english-floss-y5.js'
+      - 'english-floss.js'
+      - 'english-floss.css'
+      - 'app.js'
+      - 'welcome.js'
+      - 'index.html'
+      - 'sw.js'
+      - 'tests/english-floss.test.mjs'
+      - '.github/workflows/test-english-floss.yml'
+permissions:
+  contents: read
+jobs:
+  english-floss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check english-floss.js
+          node --check data/2026-11-09-english-floss-y5.js
+          node --check app.js
+          node --check welcome.js
+      - name: Lesson, assessment and backwards-compatibility tests
+        run: node --test tests/english-floss.test.mjs
+      - name: PWA asset and historical homework regression checks
+        run: node tests/pwa-assets.test.mjs

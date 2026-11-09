@@ -14,6 +14,15 @@
     return window.InClassData?window.InClassData.getJson(key,{}):{};
   }
   function progressPercent(pack,p,learnerName){
+    if(pack.flossHomework){
+      const m=[
+        Math.min((p.flossSpellingCorrect||0)/8,1),
+        Math.min((p.flossMeaningCorrect||0)/6,1),
+        Math.min((p.flossSentenceSubmitted||0)/4,1),
+        Math.min((p.flossTestsCompleted||0),1)
+      ];
+      return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
+    }
     if(pack.subjectKey==="english"){
       const m=[Math.min((p.ruleCorrect||0)/4,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.meaningCorrect||0)/6,1),Math.min((p.sentencesGood||0)/4,1),Math.min((p.testsCompleted||0),1)];
       return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);

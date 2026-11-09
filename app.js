@@ -180,7 +180,27 @@ function panel(id,step,title,body,action){
 function renderProgress(){
   if(!state.week)return;
   var p=getProgress(), pct=0, stats=[];
-  if(state.week.subjectKey==="english"){
+  if(state.week.flossHomework){
+    var schoolChecks=[
+      Math.min((p.flossSpellingCorrect||0)/8,1),
+      Math.min((p.flossMeaningCorrect||0)/6,1),
+      Math.min((p.flossSentenceSubmitted||0)/4,1),
+      Math.min((p.flossTestsCompleted||0),1)
+    ];
+    pct=Math.round(schoolChecks.reduce(function(a,b){return a+b;},0)/schoolChecks.length*100);
+    var mastered=Object.values(p.flossConceptMastery||{}).filter(Boolean).length;
+    var tests=p.flossTests||[], latest=tests.length?tests[tests.length-1]:null;
+    var sentenceReviews=latest?latest.answers.filter(function(a){return a.type==="sentence";}):[];
+    var approved=sentenceReviews.filter(function(a){return a.review===true;}).length;
+    stats=[
+      ["Spell practice",(p.flossSpellingCorrect||0)+"/"+(p.flossSpellingAttempts||0)],
+      ["Meanings",(p.flossMeaningCorrect||0)+"/"+(p.flossMeaningAttempts||0)],
+      ["Concept mastery",mastered+"/"+state.week.conceptChecks.length],
+      ["Latest recall",latest?latest.recall+"/8":"—"],
+      ["Sentences reviewed",latest?approved+"/4":"—"],
+      ["School-format attempts",p.flossTestsCompleted||0]
+    ];
+  } else if(state.week.subjectKey==="english"){
     var measures=[
       Math.min((p.ruleCorrect||0)/4,1),
       Math.min((p.spellCorrect||0)/8,1),
@@ -263,7 +283,13 @@ function renderProgress(){
 }
 
 function renderSourceNote(){
-  if(state.week.subjectKey==="english"){
+  if(state.week.flossHomework){
+    $("#sourceNote").innerHTML=
+      '<strong>English Spelling 3 · source dated Friday 6 November 2026</strong>'+
+      '<p><strong>School task:</strong> Learn the exact 12 Year 5 words, their meanings, and sentence use. The planned test has four heard spellings, four definitions, and four original sentences. The test date was left blank on the slide.</p>'+
+      '<p><strong>Understanding:</strong> The FLOSS rule covers short-vowel one-syllable words ending f, l, s or z. Some assigned words have other doubling patterns; <em>bristling</em> has none. The optional Year 6 list is not treated as assigned homework.</p>'+
+      '<p><strong>Next rule named by the school:</strong> -sion and -tion. Concept checks and parent-reviewed sentence meanings are recorded separately from automatically marked recall.</p>';
+  } else if(state.week.subjectKey==="english"){
     $("#sourceNote").innerHTML=
       '<strong>School homework retained</strong>'+
       '<p>The Year 5 spelling list, plural rule, irregular-plural warm-up and the stated 12-question test structure remain the required path. The supplied slide leaves the test date blank and says next week\'s rule is <em>Double consonants</em>.</p>'+
