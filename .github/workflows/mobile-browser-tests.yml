@@ -12,6 +12,11 @@ on:
       - 'inclass-session-recorder.js'
       - 'inclass-session-recorder.css'
       - 'tests/session-recorder.test.mjs'
+      - 'data/2026-11-09-french-spider-alphabet.js'
+      - 'french-spider-alphabet.js'
+      - 'french-spider-alphabet.css'
+      - 'tests/french-spider-alphabet.test.mjs'
+      - 'app.js'
       - 'index.html'
       - 'styles.css'
       - 'sw.js'
@@ -43,8 +48,13 @@ jobs:
           node --check inclass-development-feedback.js
           node --check inclass-compact-tools.js
           node --check inclass-session-recorder.js
+          node --check app.js
+          node --check data/2026-11-09-french-spider-alphabet.js
+          node --check french-spider-alphabet.js
           node --check welcome.js
           node --experimental-default-type=module --check inclass-notes.js
+      - name: French lesson and regression tests
+        run: node --test tests/french-spider-alphabet.test.mjs
       - name: Recorder privacy and capability tests
         run: node --test tests/session-recorder.test.mjs
       - name: Real mobile Chrome interaction test
