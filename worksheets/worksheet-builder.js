@@ -7,6 +7,16 @@ const S=(title,tier,questions,note="",pageBreak=false)=>({title,tier,questions,n
 const T=(term,meaning)=>({term,meaning});
 const study=(title,text)=>({title,text});
 const code={required:"School task",understanding:"Understand why",extension:"Optional extension"};
+const connections={
+ "2026-09-25-english-plurals-y5":{backward:"Use nouns you already know, then distinguish one object from many.",forward:"Recognising a suffix helps with future word-building and sentence grammar.",crossTopic:"Combine spelling choice, vocabulary meaning and original sentences."},
+ "2026-10-05-english-cat-vocabulary":{backward:"Use earlier sentence work to spot which noun, verb or adjective belongs in a blank.",forward:"Precise word choices prepare you for reading comprehension and explanations of writer's effects.",crossTopic:"Use grammar, word meanings, context and creative writing together."},
+ "2026-11-09-english-floss-y5":{backward:"Revisit 'bristling' from cat vocabulary and 'classes' from the plurals lesson.",forward:"Notice the separate -sion / -tion endings mentioned for next week's school spelling rule.",crossTopic:"Connect hearing vowel sounds, spelling patterns, meanings and written sentences."},
+ "2026-09-french-pets":{backward:"Start with the English idea of naming and describing familiar pets.",forward:"The nouns and colours are the building blocks for future opinions and avoir sentences.",crossTopic:"Say a French noun, choose its article, agree its describing word and write the full sentence."},
+ "2026-10-05-french-opinions":{backward:"Recycle the animals from Week 1 and move from un chien (one dog) to les chiens (dogs in general).",forward:"Opinion phrases will later combine with new verb forms and reasons.",crossTopic:"Connect French pronunciation, plural nouns, connectors and handwritten sentences."},
+ "2026-10-05-french-opinions-v2":{backward:"Start from Week 1 pet vocabulary; use familiar animal nouns in a new pattern.",forward:"Speaking and transforming sentence patterns helps with unseen writing later.",crossTopic:"Hear, say, understand, transform, read and write the same idea."},
+ "2026-11-02-french-avoir":{backward:"Reuse Week 1 pet words while you practise all six forms of avoir.",forward:"Avoir is a verb used to build many more sentences in other tenses and topics.",crossTopic:"Hear the phrase, spot the pronoun, choose the form and write it accurately."},
+ "2026-11-09-french-spider-alphabet":{backward:"Retrieve pets, colours, opinions and avoir from all prior French lessons.",forward:"Use the spider diagram and French letter names to prepare for the upcoming unit assessments.",crossTopic:"Combine alphabet sounds, accurate spelling, grammar and original pet sentences."}
+};
 function build(w){
  if(!w||!w.id)return null;
  let school="",note="",focus="",concepts=[],guide=[],sections=[],source=w.source||"";
@@ -160,13 +170,14 @@ function build(w){
    ])
   ];
  } else return null;
- return {id:w.id,title:w.title,subject:w.subject,yearGroup:w.yearGroup||"Year 5",date:w.date,focus,school,note,source,guide,concepts,sections,version:1};
+ return {id:w.id,title:w.title,subject:w.subject,yearGroup:w.yearGroup||"Year 5",date:w.date,focus,school,note,source,guide,concepts,sections,connections:connections[w.id],version:1};
 }
 function audit(pack){
  if(!pack)return ["No curated worksheet for lesson"];
  const issues=[];
  if(!pack.school||!pack.focus)issues.push("Missing purpose or preserved school assignment");
  if(!Array.isArray(pack.concepts)||pack.concepts.length<3)issues.push("Missing term/prerequisite explanations");
+ if(!pack.connections||["backward","forward","crossTopic"].some(k=>!pack.connections[k]))issues.push("Missing backward, forward or cross-topic link");
  for(const tier of ["required","understanding","extension"]){
   const qs=pack.sections.filter(s=>s.tier===tier).flatMap(s=>s.questions);
   if(qs.length<(tier==="required"?2:1))issues.push("Insufficient "+tier+" practice");
