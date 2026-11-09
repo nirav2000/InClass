@@ -199,7 +199,7 @@
   function snapshotRecording(state, changes = {}) {
     return {...state.meta, durationMs: Math.max(0, Date.now() - state.started),
       events: state.events.slice(-MAX_EVENTS), markers: state.markers.slice(),
-      byteCount: state.persistedBytes, ...changes};
+      byteCount: state.persistedBytes, updatedAt: new Date().toISOString(), ...changes};
   }
   async function persistChunk(state, part, chunkIndex, blob) {
     const db = await database();
@@ -288,7 +288,11 @@
       const items = await allSessions();
       for (const meta of items) {
         if (meta.status !== 'recording' || meta.id === current?.meta?.id) continue;
-        await updateSession({...meta, status: 'interrupted'});
+        // Do not mark a recording in another open tab as crashed. The last
+        // durable chunk write is a heartbeat; stale sessions remain reviewable.
+        const lastUpdate = Date.parse(meta.updatedAt || meta.createdAt);
+        if (Date.now() - lastUpdate > 60000)
+          await updateSession({...meta, status: 'interrupted'});
       }
     })().finally(() => { recovering = null; });
     return recovering;
@@ -334,12 +338,12 @@
       ' · Used by this website: ' + formatBytes(estimate.usage) +
       ' · Allowance: ' + formatBytes(estimate.quota);
     try {
-      const bytesPerMs = await recordingRate();
-      time.textContent = bytesPerMs > 0
-        ? 'Estimated recording time remaining: about ' +
-          formatDuration(estimate.remaining * 0.8 / bytesPerMs) +
-          ' (based on ' + formatBytes(bytesPerMs * 60000) + '/min, with 20% safety margin).'
-        : 'Time remaining: estimating after 30 seconds of a recorded lesson.';
+      const measuredRate = await recordingRate();
+      const bytesPerMs = measuredRate > 0 ? measuredRate : (15e6 / 60000);
+      time.textContent = 'Estimated recording time remaining: about ' +
+        formatDuration(estimate.remaining * 0.8 / bytesPerMs) +
+        (measuredRate > 0 ? ' (measured ' : ' (initial approximation: ') +
+        formatBytes(bytesPerMs * 60000) + '/min; 20% safety margin).';
     } catch {
       time.textContent = 'Time remaining: not yet measurable.';
     }
@@ -354,7 +358,11 @@
     if (current !== state || !estimate) return;
     label.textContent = formatBytes(state.persistedBytes) + ' saved · ' +
       formatBytes(estimate.remaining) + ' available';
-    if (estimate.remaining < 200 * 1e6 && !state.lowSpaceWarned) {
+    if (estimate.remaining < 50 * 1e6) {
+      inform('Browser storage is almost full (' + formatBytes(estimate.remaining) +
+        '). Stopping safely; export older recordings to free space.');
+      stopCapture('low-storage');
+    } else if (estimate.remaining < 200 * 1e6 && !state.lowSpaceWarned) {
       state.lowSpaceWarned = true;
       inform('Low browser storage (' + formatBytes(estimate.remaining) +
         '). Recording continues, but export older videos or free space soon.');
@@ -494,7 +502,7 @@
         item.type = 'button';
         item.className = 'inclassRecorderItem';
         const state = meta.status === 'interrupted' || meta.status === 'partial'
-          ? ' · Recoverable parts' : meta.status === 'recording' ? ' · Recording' : '';
+          ? ' · Recoverable parts' : meta.status === 'recording' ? ' · Recording or interrupted' : '';
         const pieces = meta.storageFormat === 'chunks-v2'
           ? ' · ' + (meta.segmentCount || 0) + ' part(s)'
           : '';
@@ -1010,6 +1018,7 @@
     hideNotice(state);
     if (state.part?.rotating) return; // onstop will close the active part.
     if (state.recorder?.state !== 'inactive') rotatePart(state);
+    else if (state.part && !state.part.finished) void finishPart(state, state.part);
     else void finishCapture(state);
   }
   async function finishCapture(state) {
@@ -1062,6 +1071,7 @@
   window.addEventListener('inclass:open-session-recorder', openDialog);
   window.InClassSessionRecorder = {
     open:openDialog, beginLesson, endLesson, autoEnabled, setAutoEnabled,
+    checkpointNow:() => { if (current && !current.stopping) rotatePart(current); },
     capabilities:() => ({screenAndMic:capable(), localLibrary:Boolean(window.indexedDB),
       autoStart:autoEnabled()})
   };
