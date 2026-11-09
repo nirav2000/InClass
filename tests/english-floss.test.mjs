@@ -67,7 +67,7 @@ test("Loaded from correct script order and retained offline, with prior weeks un
   assert.ok(html.includes("data/2026-09-25-english-plurals-y5.js"));
   assert.ok(html.includes("data/2026-10-05-english-cat-vocabulary.js"));
   assert.ok(html.includes("data/2026-11-09-french-spider-alphabet.js"));
-  assert.match(sw,/inclass-shared-v19/);
+  assert.match(sw,/inclass-shared-v20/);
 });
 
 function makeBrowser(){
