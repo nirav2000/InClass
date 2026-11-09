@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>InClass · Paper worksheets</title>
+<link rel="stylesheet" href="worksheet-print.css" />
+</head>
+<body>
+<div class="screenBar">
+  <a href="../index.html" class="backLink">← InClass home</a>
+  <label for="lessonPicker">Lesson</label><select id="lessonPicker" aria-label="Choose lesson"></select>
+  <label for="modePicker">Print</label><select id="modePicker"><option value="student">Child worksheet</option><option value="answers">Parent answer & marking guide</option></select>
+  <button id="printButton" type="button">Print / save PDF</button>
+</div>
+<div id="error" class="error" hidden></div>
+<main id="printRoot" aria-label="Printable learning material"></main>
+<script src="../data/manifest.js"></script>
+<script src="../data/2026-09-25-english-plurals-y5.js"></script>
+<script src="../data/2026-10-05-english-cat-vocabulary.js"></script>
+<script src="../data/2026-09-french-pets.js"></script>
+<script src="../data/2026-10-05-french-opinions.js"></script>
+<script src="../data/2026-10-05-french-opinions-v2.js"></script>
+<script src="../data/2026-11-02-french-avoir.js"></script>
+<script src="../data/2026-11-09-french-spider-alphabet.js"></script>
+<script src="../data/2026-11-09-english-floss-y5.js"></script>
+<script src="worksheet-builder.js"></script>
+<script src="worksheet-print.js"></script>
+</body>
+</html>
