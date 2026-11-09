@@ -334,6 +334,17 @@
       time.textContent = 'Recording time cannot be estimated without a storage allowance.';
       return;
     }
+    const protect = by('[data-session-persist]');
+    const protectionStatus = by('[data-session-persist-status]');
+    if (protect && protectionStatus) {
+      protect.hidden = !navigator.storage?.persist;
+      let persisted = false;
+      try { persisted = Boolean(await navigator.storage?.persisted?.()); } catch {}
+      protectionStatus.textContent = persisted ? 'Browser storage protection: granted.' :
+        navigator.storage?.persist ? 'Browser storage protection: not granted.' :
+          'Browser storage protection: unsupported.';
+      protect.hidden = !navigator.storage?.persist || persisted;
+    }
     usage.textContent = 'Browser allowance remaining: ' + formatBytes(estimate.remaining) +
       ' · Used by this website: ' + formatBytes(estimate.usage) +
       ' · Allowance: ' + formatBytes(estimate.quota);
@@ -405,7 +416,9 @@
       '<div class="inclassRecorderSectionHead"><h3>Storage & recording time</h3><button type="button" data-session-storage-refresh>Refresh</button></div>',
       '<p data-session-storage-usage>Checking browser storage…</p>',
       '<p data-session-storage-time>Estimating recording time…</p>',
-      '<small>This is this website’s browser storage allowance, not the device’s physical free space. Estimates can change and are not a guarantee.</small></section>',
+      '<small>This is this website’s browser storage allowance, not the device’s physical free space. Estimates can change and are not a guarantee.</small>',
+      '<div class="inclassRecorderStorageProtection"><span data-session-persist-status></span>',
+      '<button type="button" data-session-persist hidden>Request storage protection</button></div></section>',
       '<div class="inclassRecorderActions"><button type="button" class="inclassRecorderPrimary" data-session-start>● Record screen + microphone</button>',
       '<button type="button" data-session-import>Import Apple screen recording</button>',
       '<input type="file" accept="video/*,.mov,.mp4,.webm" data-session-file hidden></div>',
@@ -458,6 +471,16 @@
     });
     dialog.querySelector('[data-session-refresh]').onclick = () => { void renderLibrary(); void refreshStorage(); };
     dialog.querySelector('[data-session-storage-refresh]').onclick = () => { void refreshStorage(); };
+    dialog.querySelector('[data-session-persist]').onclick = async () => {
+      try {
+        const granted = await navigator.storage.persist();
+        message(granted ? 'Browser storage protection enabled. Keep external video backups too.' :
+          'The browser did not grant persistent storage. Export important recordings.');
+        void refreshStorage();
+      } catch (error) {
+        message('Storage protection was unavailable: ' + (error?.message || error));
+      }
+    };
     dialog.querySelector('[data-session-part-previous]').onclick = () => { void openPart(activeSegmentIndex - 1, 0); };
     dialog.querySelector('[data-session-part-next]').onclick = () => { void openPart(activeSegmentIndex + 1, 0); };
     dialog.querySelector('[data-session-note]').onclick = () => { void addObservation(); };
@@ -1068,6 +1091,12 @@
     if (current) { event.preventDefault(); event.returnValue = ''; }
   });
   window.addEventListener('pagehide', () => { if (current) stopCapture('pagehide'); });
+  // A best-effort flush before an iPad backgrounds/suspends the page.
+  document.addEventListener?.('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && current?.recorder?.state === 'recording') {
+      try { current.recorder.requestData?.(); } catch {}
+    }
+  });
   window.addEventListener('inclass:open-session-recorder', openDialog);
   window.InClassSessionRecorder = {
     open:openDialog, beginLesson, endLesson, autoEnabled, setAutoEnabled,
