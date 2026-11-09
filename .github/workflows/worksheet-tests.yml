@@ -1,0 +1,36 @@
+name: InClass printed worksheets - lesson coverage and rendering
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'data/**'
+      - 'worksheets/**'
+      - 'tests/worksheets.test.mjs'
+      - 'index.html'
+      - 'welcome.js'
+      - 'sw.js'
+      - '.github/workflows/worksheet-tests.yml'
+permissions:
+  contents: read
+jobs:
+  worksheet-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check worksheets/worksheet-builder.js
+          node --check worksheets/worksheet-print.js
+          node --check worksheets/worksheet-links.js
+          node --check welcome.js
+      - name: Curated content, preservation, marking and print rendering checks
+        run: node --test tests/worksheets.test.mjs
+      - name: Existing lesson and PWA regressions
+        run: |
+          node --test tests/english-floss.test.mjs tests/french-spider-alphabet.test.mjs tests/avoir-concepts.test.cjs
+          node tests/pwa-assets.test.mjs
