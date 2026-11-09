@@ -307,7 +307,7 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  // Newly assigned English pack: exercise actual iPhone-sized tap targets,
  // correct route, concept feedback, independent explanation and mock test launch.
  await send('Emulation.setDeviceMetricsOverride',{width:390,height:740,deviceScaleFactor:2,mobile:true});
- await evalJS('window.InClassSessionRecorder.setAutoEnabled(false);document.querySelector("#subjectSelect").value="English";document.querySelector("#subjectSelect").dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("#weekSelect").value="2026-11-09-english-floss-y5";document.querySelector("#weekSelect").dispatchEvent(new Event("change",{bubbles:true}));return true');
+ await evalJS('window.InClassSessionRecorder.setAutoEnabled(false);document.querySelector("dialog.inclassRecorderDialog[open]")?.close();document.querySelector("#subjectSelect").value="English";document.querySelector("#subjectSelect").dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("#weekSelect").value="2026-11-09-english-floss-y5";document.querySelector("#weekSelect").dispatchEvent(new Event("change",{bubbles:true}));return true');
  await until(()=>evalJS('return !!document.querySelector("#fl-school") && !!document.querySelector("#flStartConcepts")'),'FLOSS Year 5 lesson route');
  const spellBank=await evalJS('return Array.from(document.querySelectorAll("#fl-bank .fl-word-line strong"),e=>e.textContent)');
  assert.deepEqual(spellBank,['thrill','drizzle','grizzled','muffled','tassel','bristling','snazzy','nuzzling','paddle','muzzle','sniffle','tussle']);
