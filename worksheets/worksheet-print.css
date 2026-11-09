@@ -1,0 +1,26 @@
+:root{color-scheme:light;font-family:Arial,Helvetica,sans-serif;--ink:#1f3040;--mid:#516477;--accent:#214f69;--line:#b9cbd3}
+*{box-sizing:border-box}body{margin:0;background:#ecf1f4;color:var(--ink);font-size:13.5px;line-height:1.45}
+.screenBar{position:sticky;top:0;z-index:2;display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px max(14px,calc((100vw - 830px)/2));background:#fff;border-bottom:1px solid #d4dfe5;box-shadow:0 2px 10px #1d385515}
+.screenBar label{font-weight:700;font-size:12px}.screenBar select,.screenBar button,.backLink{font:inherit;border-radius:7px;border:1px solid #a9bbc6;background:#fff;padding:8px;color:#203a50}.screenBar select:first-of-type{max-width:265px}.screenBar button{background:#1c4b66;color:#fff;cursor:pointer;border-color:#1c4b66}.backLink{text-decoration:none}
+#printRoot{width:min(100%,210mm);margin:20px auto 40px;padding:16mm 15mm 18mm;background:#fff;box-shadow:0 2px 20px #24364422;min-height:297mm}
+header.sheetHead{border-bottom:2px solid #203e53;padding-bottom:12px;margin-bottom:14px}.brand{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:#395c6f;font-weight:700}.sheetTitle{font-size:23px;line-height:1.22;margin:6px 0}.sheetSub{font-size:12px;color:var(--mid);margin:4px 0}.pupilMeta{display:flex;gap:26px;margin:13px 0 2px;font-size:13px}.blankShort{display:inline-block;width:128px;border-bottom:1px solid #697f8b;transform:translateY(-2px)}
+.purpose{background:#f4f7f9;border-left:3px solid #527d92;padding:9px 11px;margin:16px 0}.purpose p{margin:5px 0}
+h2{font-size:15.5px;border-bottom:1px solid #c1ccd2;padding-bottom:4px;margin:19px 0 9px}h3{font-size:13.5px;margin:10px 0 5px}.tier{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#406377;font-weight:700}
+.small{font-size:11.5px;color:var(--mid)}.notice{font-size:12px;border-left:2px solid #b3c4ca;padding-left:9px;margin:11px 0}.studyList{margin-top:12px;display:grid;gap:7px}.study{background:#f7f9fa;padding:8px 10px;border:1px solid #dce5e9;border-radius:4px}.study p{margin:4px 0 0}.conceptGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.concept{border:1px solid #dce4e8;padding:8px 9px;border-radius:4px;font-size:12px}.concept strong{display:block;margin-bottom:3px}
+.worksheetSection{margin-top:19px;break-inside:auto}.worksheetSection .sectionNote{font-size:12px;color:#465763;margin:3px 0 11px}.questions{padding-left:22px;margin:0}.question{padding-left:3px;margin:9px 0 15px;break-inside:avoid}.qPrompt{font-size:13px;font-weight:600}.writing{margin-top:8px;background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(9mm - 1px),#a5b6be calc(9mm - 1px),#a5b6be 9mm);height:var(--lines);min-height:9mm}.draw{height:62mm;border:1px dashed #9bb0bb;margin-top:9px;border-radius:4px;background:linear-gradient(#fff,#fff)}
+.answerBlock{margin-top:5px;border-left:3px solid #91b3c3;padding:7px 9px;background:#f5f8fa;overflow-wrap:anywhere}.answerBlock strong{font-size:11px;text-transform:uppercase;color:#49647a}.answerText{white-space:pre-line}.parentNote{font-size:11.5px;color:#42576a}.questions.answers .question{margin:8px 0 11px}.answers .qPrompt{font-weight:500}.markGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.markCell{border:1px solid #cad5d9;padding:9px;font-size:11.5px}.reflection{margin-top:22px;padding-top:9px;border-top:1px solid #bdc9d0}
+footer{margin-top:18px;padding-top:7px;border-top:1px solid #c1ccd0;display:flex;justify-content:space-between;font-size:10px;color:#637480}.error{margin:15px auto;padding:15px;max-width:600px;background:#fff0ef}
+@media print{
+ @page{size:A4;margin:13mm 14mm 14mm}
+ html,body{background:white;color:#111;font-size:12.5px}
+ .screenBar,.error{display:none!important}
+ #printRoot{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}
+ .purpose,.study,.answerBlock{background:white!important}
+ .worksheetSection.printBreak{break-before:page}
+ .question,.study,.concept,header.sheetHead{break-inside:avoid}
+ .writing{background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(9mm - 1px),#a5b6be calc(9mm - 1px),#a5b6be 9mm)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .draw{border:1px dashed #9bb0bb}
+ .sheetTitle{font-size:21px}
+ footer{break-inside:avoid}
+}
+@media(max-width:650px){#printRoot{margin:0;padding:18px 15px}.conceptGrid,.markGrid{grid-template-columns:1fr}.screenBar{position:static}}
