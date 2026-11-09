@@ -303,7 +303,7 @@ window.INCLASS_WEEKS.push({
     },
     {
       "word": "bristling",
-      "parts": "bris-tling",
+      "parts": "brist-ling",
       "pattern": "No doubled letter",
       "definition": "having hairs or fur standing stiffly upright, often from alarm or anger",
       "example": "The frightened cat stood with its fur bristling.",
