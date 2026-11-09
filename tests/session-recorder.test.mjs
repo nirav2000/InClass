@@ -22,7 +22,13 @@ test('recordings are local and never silently uploaded to public feedback, Notes
   assert.match(recorder, /indexedDB\.open\(DB_NAME/);
   assert.match(recorder, /'sessions'/);
   assert.match(recorder, /'videos'/);
-  assert.match(recorder, /data-session-consent/);
+  assert.doesNotMatch(recorder, /data-session-consent|parental approval/i);
+  assert.match(recorder, /data-session-auto/);
+  assert.match(recorder, /inclass:recorder:auto-v1/);
+  assert.match(recorder, /function beginLesson\(/);
+  assert.match(recorder, /function endLesson\(/);
+  assert.match(read('welcome.js'), /InClassSessionRecorder\?\.beginLesson/);
+  assert.match(read('welcome.js'), /InClassSessionRecorder\?\.endLesson/);
   assert.match(recorder, /getDisplayMedia/);
   assert.match(recorder, /getUserMedia/);
   assert.match(recorder, /new MediaRecorder/);
@@ -69,4 +75,30 @@ test('interaction metadata does not collect the contents of student answers', ()
   assert.match(recorder, /MAX_EVENTS/);
   assert.match(recorder, /Mark stuck/);
   assert.match(recorder, /Export observations/);
+});
+
+test('auto recording defaults off and a homework tap requests capture only once', () => {
+  let screenCalls = 0;
+  const values = new Map();
+  const storage = {getItem: key => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value)};
+  const window = {
+    isSecureContext: true, MediaRecorder: class {}, indexedDB: {},
+    crypto: {}, addEventListener() {}
+  };
+  const navigator = {mediaDevices: {
+    getDisplayMedia: () => { screenCalls++; return new Promise(() => {}); },
+    getUserMedia: () => { throw Error('Microphone should be requested only after screen sharing'); }
+  }};
+  vm.runInNewContext(recorder, {
+    window, navigator, document: {getElementById: () => null}, localStorage: storage
+  }, {filename: 'inclass-session-recorder.js'});
+  assert.equal(window.InClassSessionRecorder.autoEnabled(), false);
+  window.InClassSessionRecorder.beginLesson({subject: 'French', week: 'avoir'});
+  assert.equal(screenCalls, 0, 'New devices do not start recording without choosing auto-record');
+  window.InClassSessionRecorder.setAutoEnabled(true);
+  window.InClassSessionRecorder.beginLesson({subject: 'French', week: 'avoir'});
+  window.InClassSessionRecorder.beginLesson({subject: 'French', week: 'avoir'});
+  assert.equal(screenCalls, 1, 'Two lesson events cannot open duplicate screen-sharing pickers');
+  assert.equal(window.InClassSessionRecorder.capabilities().autoStart, true);
 });
