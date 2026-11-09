@@ -17,6 +17,8 @@ footer{margin-top:18px;padding-top:7px;border-top:1px solid #c1ccd0;display:flex
  #printRoot{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}
  .purpose,.study,.answerBlock{background:white!important}
  .worksheetSection.printBreak{break-before:page}
+ .worksheetSection .tier,.worksheetSection h2,.worksheetSection .sectionNote{break-after:avoid-page;page-break-after:avoid}
+ .worksheetSection .questions li:first-child{break-before:avoid-page}
  .question,.study,.concept,header.sheetHead{break-inside:avoid}
  .writing{background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(9mm - 1px),#a5b6be calc(9mm - 1px),#a5b6be 9mm)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .draw{border:1px dashed #9bb0bb}
