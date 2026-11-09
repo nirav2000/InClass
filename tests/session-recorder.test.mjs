@@ -102,3 +102,34 @@ test('auto recording defaults off and a homework tap requests capture only once'
   assert.equal(screenCalls, 1, 'Two lesson events cannot open duplicate screen-sharing pickers');
   assert.equal(window.InClassSessionRecorder.capabilities().autoStart, true);
 });
+
+test('long-session recording uses bounded chunks and independent checkpoint parts instead of 20-minute memory buffers', () => {
+  assert.match(recorder, /const SEGMENT_MS = 5 \* 60 \* 1000/);
+  assert.match(recorder, /const CHUNK_MS = 5000/);
+  assert.match(recorder, /const MAX_PENDING_CHUNKS = 12/);
+  assert.doesNotMatch(recorder, /LIMIT_MS|20-minute recording limit was reached|chunks:\s*\[\]/);
+  assert.match(recorder, /indexedDB\.open\(DB_NAME, 2\)/, 'Upgrade existing IndexedDB in-place');
+  assert.match(recorder, /'segments'/);
+  assert.match(recorder, /'chunks'/);
+  assert.match(recorder, /state\.writeQueue/);
+  assert.match(recorder, /tx\.objectStore\('chunks'\)\.put/, 'Persist each recorded blob');
+  assert.match(recorder, /function startPart\(state\)/);
+  assert.match(recorder, /function rotatePart\(state\)/);
+  assert.match(recorder, /setTimeout\(\(\) => rotatePart\(state\), SEGMENT_MS\)/);
+  assert.match(recorder, /storageFormat: 'chunks-v2'/);
+  assert.match(recorder, /async function recoverInterrupted\(/);
+  assert.match(recorder, /function deleteSession\(/);
+  assert.match(recorder, /getSegmentVideo\(id, part\)/);
+  assert.match(recorder, /document\.addEventListener\?\.\('visibilitychange'/);
+});
+
+test('storage display distinguishes origin quota from device space and estimates time with a safety margin', () => {
+  assert.match(recorder, /navigator\.storage\.estimate\(\)/);
+  assert.match(recorder, /data-session-storage-usage/);
+  assert.match(recorder, /data-session-storage-time/);
+  assert.match(recorder, /browser storage allowance, not the device/i);
+  assert.match(recorder, /15e6 \/ 60000/);
+  assert.match(recorder, /estimate\.remaining \* 0\.8 \/ bytesPerMs/);
+  assert.match(recorder, /navigator\.storage\.persist\(\)/);
+  assert.match(recorder, /low-storage/);
+});
