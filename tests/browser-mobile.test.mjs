@@ -303,4 +303,26 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await evalJS('document.querySelector("dialog.inclassRecorderDialog [data-session-delete]").click();return true');
  await until(()=>evalJS('return window.__partsState().then(x=>x.sessions.length===0&&x.parts.length===0&&x.chunks.length===0)'),'delete clears session metadata and every stored chunk');
 
+
+ // Newly assigned English pack: exercise actual iPhone-sized tap targets,
+ // correct route, concept feedback, independent explanation and mock test launch.
+ await send('Emulation.setDeviceMetricsOverride',{width:390,height:740,deviceScaleFactor:2,mobile:true});
+ await evalJS('window.InClassSessionRecorder.setAutoEnabled(false);document.querySelector("#subjectSelect").value="English";document.querySelector("#subjectSelect").dispatchEvent(new Event("change",{bubbles:true}));document.querySelector("#weekSelect").value="2026-11-09-english-floss-y5";document.querySelector("#weekSelect").dispatchEvent(new Event("change",{bubbles:true}));return true');
+ await until(()=>evalJS('return !!document.querySelector("#fl-school") && !!document.querySelector("#flStartConcepts")'),'FLOSS Year 5 lesson route');
+ const spellBank=await evalJS('return Array.from(document.querySelectorAll("#fl-bank .fl-word strong"),e=>e.textContent)');
+ assert.deepEqual(spellBank,['thrill','drizzle','grizzled','muffled','tassel','bristling','snazzy','nuzzling','paddle','muzzle','sniffle','tussle']);
+ await touch('#flStartConcepts');
+ await until(()=>evalJS('return !!document.querySelector("#flConceptArea [data-fl-choice]")'),'FLOSS concept buttons');
+ await touch('#flConceptArea [data-fl-choice="0"]');
+ assert.match(await evalJS('return document.querySelector("#flConceptWhy").textContent'),/short.*sound/i);
+ await touch('#flConceptNext');
+ assert.match(await evalJS('return document.querySelector("#flConceptArea").textContent'),/syllables/i);
+ await evalJS('document.querySelector("#flTeachBackText").value="The short vowel sound is like u in puff. FLOSS words usually have one syllable and finish with f l s or z. Puff uses ff but roof has a long oo and just f. Not every double letter follows FLOSS.";return true');
+ await touch('#flSaveTeachBack');
+ assert.match(await evalJS('return document.querySelector("#flTeachBackFeedback").textContent'),/Saved for a parent or tutor/i);
+ await touch('#flStartTest');
+ await until(()=>evalJS('return !!document.querySelector("#flTestAnswer") && !!document.querySelector("#flTestHear")'),'12-question English practice test');
+ await touch('#flTestHear');
+ assert.equal(await evalJS('return document.querySelector("#flTestAnswer").getBoundingClientRect().width>100'),true,'School-format test input is usable on iPhone width');
+
 });
