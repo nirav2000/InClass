@@ -59,7 +59,7 @@ test("English school assessment formats and exact lists are kept",()=>{
  assert.match(floss.note,/Forbidden.*not strict|forbidden.*not strict/i);
  const cat=api.build(packs.find(x=>x.vocabularyChoiceHomework));
  assert.equal(cat.sections[0].questions.length,20);
- assert.match(cat.note,/third page/);
+ assert.match(cat.note,/third (source )?page/);
 });
 
 test("French paper sheets do not invent official school questions",()=>{
