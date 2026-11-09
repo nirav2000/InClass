@@ -196,6 +196,7 @@ function renderProgress(){
       ["Spell practice",(p.flossSpellingCorrect||0)+"/"+(p.flossSpellingAttempts||0)],
       ["Meanings",(p.flossMeaningCorrect||0)+"/"+(p.flossMeaningAttempts||0)],
       ["Concept mastery",mastered+"/"+state.week.conceptChecks.length],
+      ["Explain independently",p.flossTeachBack?(p.flossTeachBack.reviewed===true?"Reviewed ✓":p.flossTeachBack.reviewed===false?"Retry needed":"Review pending"):"Not started"],
       ["Latest recall",latest?latest.recall+"/8":"—"],
       ["Sentences reviewed",latest?approved+"/4":"—"],
       ["School-format attempts",p.flossTestsCompleted||0]
