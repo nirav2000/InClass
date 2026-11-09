@@ -92,7 +92,7 @@ test("Interactive lesson saves drafts, paper checks and unaided quiz attempts",(
     }
   };
   const state={week:w,learner:"Sai"};
-  const context={window:{renderFrench(){throw Error("should route into new lesson")}},
+  const context={WEEKS:loadData(),window:{renderFrench(){throw Error("should route into new lesson")}},
     state,document,Date,Math,encodeURIComponent,decodeURIComponent,
     getProgress:()=>progress,saveProgress:p=>Object.assign(progress,p),
     recordLearningAttempt:(a,i,c,meta)=>attempts.push({a,i,c,meta}),
