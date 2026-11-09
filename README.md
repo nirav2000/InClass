@@ -254,3 +254,11 @@ The shared Apps browser test separately verifies the identity picker renders its
 - On opening the library, a stale recording with no recent saved data is marked **interrupted**. Its completed video parts remain available; the final part is labelled incomplete and may not play, depending on browser/container behaviour. An interrupted browser page cannot resume the same screen-sharing stream without a new user permission gesture.
 - The IndexedDB schema was upgraded from v1 to v2 **in place**, retaining historical `sessions` and `videos` data. Existing imported screen recordings remain accessible.
 - The new long-session design is covered by browser regression tests with a deterministic simulated recorder and actual IndexedDB transactions. Test results do **not** replace physical iPad Safari verification of native capture permissions, audio and video codecs.
+
+## Print-friendly worksheets · every existing lesson
+
+Every homework version has a separately authored **A4 pencil-and-paper worksheet**, available as an alternative to the screen-based exercises. Open [the printable worksheet selector](worksheets/print.html), choose any English or French lesson and **Child worksheet**, then use **Print / save PDF**. Select **Parent answer & marking guide** for worked answers, dictation cues and a separate review of school recall, conceptual understanding and unfamiliar transfer. You can also open each sheet straight from the home dashboard or within its lesson.
+
+Worksheets preserve the actual teacher requirements (including missing test dates or source ambiguities), explain prerequisites before practice, use handwriting and creative writing space, and connect earlier, next and cross-topic learning as clearly labelled optional material. In the app, a parent can manually record paper completion and scores without accidentally awarding interactive marks. A parent dashboard displays any paper misconceptions or support notes. This does not submit work to Teams or automatically mark handwriting.
+
+For all future homework, the **[paper worksheet standard](docs/PAPER_WORKSHEET_STANDARD.md)** is now mandatory. The CI worksheet test checks every lesson ID in the app; it blocks new lessons that do not have a curated worksheet and answer guide. The existing eight lesson versions and their stored interactive progress are unchanged.
