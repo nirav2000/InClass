@@ -7,16 +7,9 @@ import {fileURLToPath} from "node:url";
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
-const sourceFiles=[
- "data/2026-09-25-english-plurals-y5.js",
- "data/2026-10-05-english-cat-vocabulary.js",
- "data/2026-09-french-pets.js",
- "data/2026-10-05-french-opinions.js",
- "data/2026-10-05-french-opinions-v2.js",
- "data/2026-11-02-french-avoir.js",
- "data/2026-11-09-french-spider-alphabet.js",
- "data/2026-11-09-english-floss-y5.js"
-];
+// Match the scripts actually loaded by InClass. Adding a lesson to the app
+// without adding a print sheet must fail this test and block the release gate.
+const sourceFiles=Array.from(read("index.html").matchAll(/<script\\s+src="(data\\/[^"]+\\.js)"\\s*><\\/script>/g),m=>m[1]).filter(x=>x!=="data/manifest.js");
 function load(){
  const window={INCLASS_WEEKS:[]};
  const context=vm.createContext({window});
@@ -36,6 +29,7 @@ test("Eight existing lesson versions each have an individually curated worksheet
    assert.equal(worksheet.subject,lesson.subject);
    assert.ok(worksheet.school.length>60,lesson.id+" loses the school task");
    assert.ok(worksheet.concepts.length>=3);
+   for(const field of ["backward","forward","crossTopic"])assert.ok(worksheet.connections[field].length>40,lesson.id+" missing "+field);
    const school=worksheet.sections.filter(s=>s.tier==="required").flatMap(s=>s.questions);
    const understanding=worksheet.sections.filter(s=>s.tier==="understanding").flatMap(s=>s.questions);
    const extension=worksheet.sections.filter(s=>s.tier==="extension").flatMap(s=>s.questions);
