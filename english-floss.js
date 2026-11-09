@@ -120,7 +120,13 @@
       panel("fl-bank",4,"This week's 12 Year 5 spelling words",renderBank(w))+
       panel("fl-concepts",5,"Can you explain the rule, not just remember it?",
         '<p class="tip">These checks assess understanding <strong>separately</strong> from school spelling marks. Some examples are words you have not been taught.</p>'+
-        '<button class="primary" type="button" id="flStartConcepts">Start 10 why-and-how checks</button><div id="flConceptArea" aria-live="polite"></div>')+
+        '<button class="primary" type="button" id="flStartConcepts">Start 10 why-and-how checks</button><div id="flConceptArea" aria-live="polite"></div>'+
+        '<div class="fl-teach-back"><h4>Teach the rule back in your own words</h4>'+
+        '<p>Without looking at the examples: what is a short vowel, when do we use FLOSS, and why is <em>puff</em> spelt with ff but <em>roof</em> with one f? Explain why the rule cannot cover every double letter.</p>'+
+        '<label for="flTeachBackText">My explanation (not a multiple-choice answer)</label>'+
+        '<textarea id="flTeachBackText" rows="4" placeholder="I would explain it like this…"></textarea>'+
+        '<button class="primary" type="button" id="flSaveTeachBack">Save my explanation</button>'+
+        '<p id="flTeachBackFeedback" class="feedback" role="status"></p><div id="flTeachBackReview"></div></div>')+
       panel("fl-practice",6,"Practise spelling, meaning and sentences",renderPractice(w))+
       panel("fl-test",7,"School-format 12-question practice test",
         '<div class="testBreakdown"><div><strong>4</strong><span>hear & spell</span></div><div><strong>4</strong><span>definition → word</span></div><div><strong>4</strong><span>original sentences</span></div></div>'+
@@ -138,12 +144,55 @@
       };
     });
     byId("flStartConcepts").onclick=()=>startConceptChecks(w);
+    byId("flSaveTeachBack").onclick=saveTeachBack;
+    renderTeachBackReview();
     byId("flStartSpelling").onclick=()=>startDrill(w,"spell");
     byId("flStartMeaning").onclick=()=>startDrill(w,"meaning");
     byId("flSentenceCheck").onclick=checkSentencePractice;
     byId("flStartTest").onclick=()=>startTest(w);
     showExistingReview();
     renderProgress();
+  }
+
+
+  function saveTeachBack(){
+    const text=byId("flTeachBackText").value.trim(), feedback=byId("flTeachBackFeedback");
+    if(wordsIn(text).length < 15){
+      feedback.textContent="Explain at least three ideas: short vowel, the FLOSS ending, and the puff versus roof example. Add enough detail for someone else to learn from you.";
+      feedback.className="feedback try";return;
+    }
+    const p=progress();
+    p.flossTeachBack={answer:text,reviewed:null,updatedAt:new Date().toISOString()};
+    store(p);
+    feedback.textContent="Saved for a parent or tutor to review. Writing a long answer does not prove it is correct.";
+    feedback.className="feedback good";
+    renderTeachBackReview();
+  }
+  function renderTeachBackReview(){
+    const saved=progress().flossTeachBack, root=byId("flTeachBackReview");
+    if(!root)return;
+    if(!saved||!saved.answer){root.innerHTML="";return;}
+    byId("flTeachBackText").value=saved.answer;
+    root.innerHTML='<details class="fl-extension"><summary>Parent or tutor: review the explanation'+
+      (saved.reviewed===true?" · demonstrated":saved.reviewed===false?" · revisit":" · not yet marked")+'</summary>'+
+      '<p>Look for: (1) a <strong>short vowel sound</strong>; (2) usually a <strong>one-syllable</strong> word;'+
+      ' (3) final <strong>f/l/s/z</strong>; (4) doubled final letter usually, not always;'+
+      ' (5) <strong>puff</strong> has a short u, <strong>roof</strong> has a long oo sound;'+
+      ' (6) other doubles such as <strong>dd</strong> can have different explanations.</p>'+
+      '<p>Assess the meaning of the explanation, not its length. A parent/tutor should mark this; the app cannot verify the reviewer’s identity.</p>'+
+      '<button type="button" class="secondary" data-fl-teach-mark="yes">Clear independent understanding</button> '+
+      '<button type="button" class="secondary" data-fl-teach-mark="no">Needs another explanation</button></details>';
+    all("[data-fl-teach-mark]").forEach(button=>{
+      button.onclick=()=>{
+        const p=progress(),ok=button.dataset.flTeachMark==="yes";
+        if(p.flossTeachBack.reviewed!==ok){
+          p.flossTeachBack.reviewed=ok;
+          store(p);
+          attempt("floss-teach-back","short vowel + FLOSS + puff/roof",ok,"understanding",{reviewed:true});
+        }
+        renderTeachBackReview();
+      };
+    });
   }
 
   function startConceptChecks(w) {
