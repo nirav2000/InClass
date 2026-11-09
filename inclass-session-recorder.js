@@ -1,5 +1,5 @@
 /* InClass lesson-session recorder.
- * Explicit, visible recording only. Recordings remain in this browser's
+ * Visible, permission-controlled recording. Recordings remain in this browser's
  * IndexedDB until a person deliberately downloads or deletes them.
  * Nothing is sent to Notes, Firebase, analytics or public GitHub issues.
  */
@@ -16,6 +16,49 @@
   let selected = null;
   let playbackUrl = null;
   let transientVideo = null;
+  let pendingStart = false;
+  let endingLesson = false;
+  let notification = null;
+  let notificationAction = null;
+  const AUTO_KEY = 'inclass:recorder:auto-v1';
+
+  function autoEnabled() {
+    try { return localStorage.getItem(AUTO_KEY) === 'on'; } catch { return false; }
+  }
+  function setAutoEnabled(value) {
+    try { localStorage.setItem(AUTO_KEY, value ? 'on' : 'off'); } catch {}
+  }
+  function dismissNotification() {
+    if (notification) notification.hidden = true;
+    notificationAction = null;
+  }
+  function inform(text, action = {kind: 'open'}) {
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.className = 'inclassRecorderNotification';
+      notification.setAttribute('role', 'status');
+      notification.setAttribute('aria-live', 'polite');
+      notification.innerHTML = '<span data-recorder-notice-text></span>' +
+        '<button type="button" data-recorder-notice-action>Open recorder</button>' +
+        '<button type="button" data-recorder-notice-dismiss aria-label="Dismiss">✕</button>';
+      notification.querySelector('[data-recorder-notice-action]').onclick = () => {
+        const action = notificationAction;
+        dismissNotification();
+        if (action?.kind === 'retry') void startCapture({automatic:true, info:action.info});
+        else {
+          openDialog();
+          if (action?.kind === 'review' && action.meta) void showSession(action.meta);
+        }
+      };
+      notification.querySelector('[data-recorder-notice-dismiss]').onclick = dismissNotification;
+      document.body.append(notification);
+    }
+    notificationAction = action;
+    notification.querySelector('[data-recorder-notice-text]').textContent = text;
+    notification.querySelector('[data-recorder-notice-action]').textContent =
+      action.kind === 'retry' ? 'Try recording' : action.kind === 'review' ? 'Review' : 'Open recorder';
+    notification.hidden = false;
+  }
 
   const by = selector => dialog && dialog.querySelector(selector);
   const capable = () => Boolean(window.isSecureContext && window.MediaRecorder &&
@@ -127,8 +170,8 @@
       '<p class="inclassRecorderPrivacy"><strong>Private by default.</strong> Videos contain screen content and voices. ',
       'They remain in this device’s browser storage, not in Firebase, Notes, analytics or public GitHub issues. ',
       'Anyone using this browser profile may be able to view them. Export or delete them yourself.</p>',
-      '<label class="inclassRecorderConsent"><input type="checkbox" data-session-consent> ',
-      'I am the parent/carer and approve recording this learning session with the child’s knowledge.</label>',
+      '<label class="inclassRecorderAuto"><input type="checkbox" data-session-auto> ',
+      '<span><strong>Auto-record lessons</strong><small>Start recording when homework opens. The device will still ask for screen and microphone permission. Recording remains visible.</small></span></label>',
       '<div class="inclassRecorderActions"><button type="button" class="inclassRecorderPrimary" data-session-start>● Record screen + microphone</button>',
       '<button type="button" data-session-import>Import Apple screen recording</button>',
       '<input type="file" accept="video/*,.mov,.mp4,.webm" data-session-file hidden></div>',
@@ -160,11 +203,14 @@
       '<div data-session-events class="inclassRecorderTimeline"></div></section>'
     ].join('');
     dialog.querySelector('[data-session-close]').onclick = () => dialog.close();
-    dialog.querySelector('[data-session-start]').onclick = () => { void startCapture(); };
-    dialog.querySelector('[data-session-import]').onclick = () => {
-      if (!approved()) return;
-      by('[data-session-file]').click();
-    };
+    dialog.querySelector('[data-session-start]').onclick = () => { void startCapture({automatic: false}); };
+    dialog.querySelector('[data-session-import]').onclick = () => { by('[data-session-file]').click(); };
+    dialog.querySelector('[data-session-auto]').addEventListener('change', event => {
+      setAutoEnabled(event.target.checked);
+      message(event.target.checked
+        ? 'Auto-record is enabled for future lessons. System permission is still required.'
+        : 'Auto-record is off; manual recording remains available.');
+    });
     dialog.querySelector('[data-session-file]').addEventListener('change', async event => {
       const file = event.target.files?.[0];
       event.target.value = '';
@@ -179,24 +225,18 @@
     document.body.append(dialog);
     return dialog;
   }
-  function approved() {
-    if (by('[data-session-consent]')?.checked) return true;
-    message('Please confirm parental approval before starting or importing a recording.');
-    by('[data-session-consent]')?.focus();
-    return false;
-  }
   function openDialog() {
     const el = ensureDialog();
     if (!el.open) {
-      by('[data-session-consent]').checked = false;
       el.showModal();
     }
+    by('[data-session-auto]').checked = autoEnabled();
     const canRecord = capable();
     const button = by('[data-session-start]');
-    button.disabled = !canRecord || Boolean(current);
+    button.disabled = !canRecord || Boolean(current) || pendingStart;
     by('[data-session-capability]').textContent = canRecord
-      ? 'This device offers browser screen capture. Choose the InClass tab or screen when prompted; allow microphone access separately.'
-      : 'This browser does not expose screen + microphone capture here. Use the built-in Apple screen recorder above, then import its video.';
+      ? 'System permission is needed for each screen-sharing session. Select the InClass screen, then allow microphone access.'
+      : 'Browser screen and microphone capture is unavailable here. Use Apple Screen Recording, then import the video.';
     void renderLibrary();
   }
   async function renderLibrary() {
@@ -336,7 +376,6 @@
     } catch (error) { message('Could not delete recording: ' + (error?.message || error)); }
   }
   async function importVideo(file) {
-    if (!approved()) return;
     if (!file.type.startsWith('video/') && !/\.(mov|mp4|webm)$/i.test(file.name)) {
       message('Select a video recording, not an audio or document file.');
       return;
@@ -431,43 +470,63 @@
     return ['video/mp4;codecs=h264,aac', 'video/mp4', 'video/webm;codecs=vp8,opus',
       'video/webm;codecs=vp9,opus', 'video/webm'].find(type => supported && supported(type));
   }
-  async function startCapture() {
-    if (current || !approved()) return;
-    if (!capable()) { message('Browser screen capture is unavailable. Use Apple Screen Recording and import.'); return; }
+  async function startCapture(options = {}) {
+    if (current || pendingStart) return;
+    const automatic = Boolean(options.automatic);
+    if (!capable()) {
+      const detail = 'Screen capture is unavailable. Use Apple Screen Recording and import the video.';
+      if (automatic) inform(detail);
+      else message(detail);
+      return;
+    }
+    // Call getDisplayMedia in the SAME learner click/tap. No asynchronous
+    // prerequisite and no extra approval checkbox. iPad permission cannot be bypassed.
+    pendingStart = true;
+    endingLesson = false;
+    dismissNotification();
     const button = by('[data-session-start]');
-    button.disabled = true;
-    message('Choose the InClass screen/tab and grant microphone access.');
+    if (button) button.disabled = true;
+    message('Choose the InClass screen in the sharing picker. Microphone permission follows.');
+    // Do not include the app's own recorder modal in the opening video.
+    if (dialog?.open) dialog.close();
     let display = null, mic = null, mixer = null, combined = null;
     try {
-      // This call must begin directly from a click for the browser permission picker.
       display = await navigator.mediaDevices.getDisplayMedia({video: {frameRate: 12}, audio: true});
-      if (!display.getVideoTracks().length) throw Error('No screen track was selected.');
-      mic = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}});
-      const audioTracks = mic.getAudioTracks();
-      if (!audioTracks.length) throw Error('Microphone audio was not available.');
-      let audioOutput = audioTracks[0];
+      if (endingLesson) throw Error('Lesson was closed before recording began.');
+      if (!display.getVideoTracks().length) throw Error('No screen was selected.');
+      mic = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation:true, noiseSuppression:true}});
+      if (endingLesson) throw Error('Lesson was closed before recording began.');
+      if (!mic.getAudioTracks().length) throw Error('No microphone was available.');
+      let audioOutput = mic.getAudioTracks()[0];
       const Audio = window.AudioContext || window.webkitAudioContext;
-      if (Audio) {
+      if (Audio && display.getAudioTracks().length) {
         try {
           mixer = new Audio();
-          const dest = mixer.createMediaStreamDestination();
-          [mic, display].forEach(stream => {
-            if (stream.getAudioTracks().length)
-              mixer.createMediaStreamSource(new MediaStream(stream.getAudioTracks())).connect(dest);
-          });
-          audioOutput = dest.stream.getAudioTracks()[0] || audioOutput;
-          if (mixer.state === 'suspended') void mixer.resume().catch(() => {});
+          if (mixer.state === 'running') {
+            const dest = mixer.createMediaStreamDestination();
+            [mic, display].forEach(stream => {
+              if (stream.getAudioTracks().length)
+                mixer.createMediaStreamSource(new MediaStream(stream.getAudioTracks())).connect(dest);
+            });
+            audioOutput = dest.stream.getAudioTracks()[0] || audioOutput;
+          } else {
+            // A suspended iPad AudioContext silently records nothing. Keep raw mic.
+            void mixer.close().catch(() => {});
+            mixer = null;
+          }
         } catch (error) {
-          console.warn('System audio mix unavailable; recording microphone only.', error);
+          console.warn('Audio mix unavailable; keeping microphone audio.', error);
           if (mixer) { void mixer.close().catch(() => {}); mixer = null; }
         }
       }
       combined = new MediaStream([...display.getVideoTracks(), audioOutput]);
       const mime = pickMime();
-      const recorder = new MediaRecorder(combined, mime ? {mimeType: mime} : undefined);
+      const recorder = new MediaRecorder(combined, mime ? {mimeType:mime} : undefined);
+      const info = options.info || lessonInfo();
       const state = {
-        display, mic, mixer, combined, recorder, chunks: [], started: Date.now(),
-        info: lessonInfo(), events: [], markers: [], stopping: false, captureError: null
+        display, mic, mixer, combined, recorder, chunks: [], started:Date.now(),
+        info:{subject:String(info.subject || 'home').slice(0,80), week:String(info.week || 'general').slice(0,120)},
+        automatic, events:[], markers:[], stopping:false, captureError:null
       };
       recorder.ondataavailable = event => { if (event.data?.size) state.chunks.push(event.data); };
       recorder.onerror = event => {
@@ -477,19 +536,40 @@
       recorder.onstop = () => { void finishCapture(state); };
       current = state;
       recorder.start(1500);
-      display.getVideoTracks()[0].addEventListener('ended', () => stopCapture('screen-ended'), {once: true});
+      display.getVideoTracks()[0].addEventListener('ended', () => stopCapture('screen-ended'), {once:true});
       trackEvents(state);
       showNotice(state);
-      dialog.close();
     } catch (error) {
+      const wasEnding = endingLesson;
       if (current && current.display === display) { release(current); current = null; }
-      [display, mic, combined].forEach(stream => stream?.getTracks?.().forEach(track => track.stop()));
+      [display, mic, combined].forEach(stream => stream?.getTracks?.().forEach(track => {
+        try { track.stop(); } catch {}
+      }));
       if (mixer) void mixer.close().catch(() => {});
-      message('Recording did not start: ' + (error?.message || error) +
-        '. You can still use Apple Screen Recording and import the result.');
+      if (!wasEnding) {
+        const explanation = error?.name === 'NotAllowedError' || error?.name === 'AbortError'
+          ? 'Screen or microphone permission was cancelled or denied.'
+          : (error?.message || String(error));
+        if (automatic) inform('Automatic recording did not start: ' + explanation,
+          {kind:'retry', info:options.info || lessonInfo()});
+        else {
+          openDialog();
+          message('Recording did not start: ' + explanation + ' Retry or import an Apple recording.');
+        }
+      }
     } finally {
-      button.disabled = !capable() || Boolean(current);
+      pendingStart = false;
+      endingLesson = false;
+      if (button) button.disabled = !capable() || Boolean(current);
     }
+  }
+  function beginLesson(info) {
+    if (autoEnabled() && !current && !pendingStart)
+      void startCapture({automatic:true, info:info || lessonInfo()});
+  }
+  function endLesson() {
+    if (pendingStart) endingLesson = true;
+    if (current) stopCapture('lesson-ended');
   }
   function stopCapture(reason) {
     const state = current;
@@ -511,25 +591,34 @@
     const type = state.recorder.mimeType || 'video/webm';
     const video = new Blob(state.chunks, {type});
     state.chunks = [];
-    openDialog();
+    // Auto-save without bringing the review modal over the learner's work.
+    if (!state.automatic) openDialog();
     if (!video.size) {
-      message('No video data was recorded. ' + (state.captureError || 'Please retry or use Apple Screen Recording.'));
+      const warning = 'No video data was recorded. ' +
+        (state.captureError || 'Try again or use Apple Screen Recording.');
+      if (state.automatic) inform(warning);
+      else message(warning);
       return;
     }
     const meta = {
-      id: uniqueId(), createdAt: new Date(state.started).toISOString(),
-      subject: state.info.subject, week: state.info.week, source: 'screen',
-      durationMs: Date.now() - state.started,
-      events: state.events, markers: state.markers
+      id:uniqueId(), createdAt:new Date(state.started).toISOString(),
+      subject:state.info.subject, week:state.info.week, source:'screen',
+      automatic:state.automatic, durationMs:Date.now() - state.started,
+      events:state.events, markers:state.markers
     };
     try {
       await saveSession(meta, video);
-      message('Screen + microphone recording saved on this device only.' +
-        (state.stopReason === 'limit' ? ' The 20-minute recording limit was reached.' : ''));
       await renderLibrary();
-      await showSession(meta);
+      if (state.automatic) inform('Lesson recording saved privately (' + clock(meta.durationMs) + ').',
+        {kind:'review', meta});
+      else {
+        message('Screen + microphone recording saved on this device only.' +
+          (state.stopReason === 'limit' ? ' The 20-minute recording limit was reached.' : ''));
+        await showSession(meta);
+      }
     } catch (error) {
-      message('Recording finished, but local storage failed (' + (error?.message || error) +
+      openDialog();
+      message('Local storage failed (' + (error?.message || error) +
         '). Download this temporary video now to avoid losing it.');
       await showSession(meta, video);
     }
@@ -539,5 +628,9 @@
   });
   window.addEventListener('pagehide', () => { if (current) stopCapture('pagehide'); });
   window.addEventListener('inclass:open-session-recorder', openDialog);
-  window.InClassSessionRecorder = {open: openDialog, capabilities: () => ({screenAndMic: capable(), localLibrary: Boolean(window.indexedDB)})};
+  window.InClassSessionRecorder = {
+    open:openDialog, beginLesson, endLesson, autoEnabled, setAutoEnabled,
+    capabilities:() => ({screenAndMic:capable(), localLibrary:Boolean(window.indexedDB),
+      autoStart:autoEnabled()})
+  };
 })();
