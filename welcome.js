@@ -62,6 +62,19 @@
       '</button><div class="welcomeWorksheetLinks"><a target="_blank" rel="noopener" href="'+window.InClassPaper.link(pack.id,"student")+'">Printable worksheet</a>'+ (session().role==="parent"?'<a target="_blank" rel="noopener" href="'+window.InClassPaper.link(pack.id,"answers")+'">Parent key</a>':'') +'</div></div>';
     }).join("");
   }
+  function safePaperText(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function paperReviewSummary(learnerName){
+    const reviewed=WEEKS.slice().reverse().map(pack=>({pack,paper:window.InClassPaper?.get(pack.id,learnerName)||{}})).filter(x=>x.paper.updatedAt);
+    if(!reviewed.length)return "";
+    const score=(paper,key)=>paper[key]?paper[key].correct+"/"+paper[key].total:"not assessed";
+    return '<div class="issuesCard"><strong>Paper worksheet reviews · entered by an adult</strong><div>'+
+      reviewed.map(({pack,paper})=>'<section class="paperReviewSummary"><strong>'+safePaperText(pack.title)+'</strong>'+
+        '<p>'+(paper.completed?'Completed on paper':'Review recorded')+' · School recall: '+score(paper,"school")+
+        ' · Understanding: '+score(paper,"understanding")+' · Unseen transfer: '+score(paper,"transfer")+'</p>'+
+        (paper.notes?'<p><em>Support or misconception:</em> '+safePaperText(paper.notes)+'</p>':'')+
+      '</section>').join("")+
+      '</div><p>Scores here are manually reviewed. They do not count as automatically assessed interactive results.</p></div>';
+  }
   function issuesFor(name){
     return window.InClassData?.learnerSummary(name)||{total:0,accuracy:null,issues:[]};
   }
@@ -74,7 +87,7 @@
         return '<section class="parentChildSection">'+
           '<div class="childCard"><div class="childAvatar">'+child.name.charAt(0).toUpperCase()+'</div><div class="childIdentity"><strong>'+child.name+'</strong><span>'+child.yearGroup+'</span></div>'+
           '<div class="childMetric"><b>'+completion+'%</b><small>homework progress</small></div><div class="childMetric"><b>'+(s.requiredAccuracy===null?"—":s.requiredAccuracy+"%")+'</b><small>required accuracy</small></div><div class="childMetric"><b>'+s.extensionTotal+'</b><small>extension attempts</small></div></div>'+
-          '<div class="welcomeHomeworkGrid">'+homeworkCards(child.name)+'</div>'+
+          '<div class="welcomeHomeworkGrid">'+homeworkCards(child.name)+'</div>'+paperReviewSummary(child.name)+
           '<div class="issuesCard"><strong>Things to revisit</strong><div>'+(s.issues.length?s.issues.map(x=>'<span>'+x.item+' · '+x.wrong+' miss'+(x.wrong===1?"":"es")+'</span>').join(""):'<span>No item-level issues recorded yet. Missed answers will appear here automatically.</span>')+'</div>'+ 
           (s.understandingTotal?'<p><strong>Concept understanding:</strong> '+s.understandingCorrect+'/'+s.understandingTotal+' correct checks (separate from school test accuracy).</p>'+ 
           (s.understandingIssues?.length?'<p><strong>Concepts to revisit:</strong> '+s.understandingIssues.map(x=>x.item+' ('+x.wrong+')').join(', ')+'</p>':''):'')+'</div>'+
