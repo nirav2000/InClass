@@ -68,3 +68,9 @@
  #lessonRoot .fl-pattern>div{padding:13px 4px}
  #lessonRoot .fl-pattern strong{font-size:21px}
 }
+#lessonRoot .fl-teach-back{max-width:760px;margin:22px auto 0;padding:20px;border:1px solid #d8e4ef;background:#f5fafb;border-radius:18px}
+#lessonRoot .fl-teach-back h4{margin:0 0 8px;font-size:19px}
+#lessonRoot .fl-teach-back p{line-height:1.6}
+#lessonRoot .fl-teach-back label{display:block;font-weight:750;margin:15px 0 7px}
+#lessonRoot .fl-teach-back textarea{display:block;width:100%;min-height:110px;background:white;color:#102a43;border:2px solid #d9e2ec;border-radius:12px;padding:14px;margin-bottom:12px;font:inherit;resize:vertical}
+#lessonRoot .fl-teach-back details button{margin:6px 5px 0 0;white-space:normal}
