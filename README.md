@@ -6,6 +6,18 @@ Current release: **v2026.11.09.1**
 
 ## Current packs
 
+### English · Year 5 · 9 November 2026 (source dated Friday 6 November)
+
+Source: parent-provided screenshots of the school's **Spelling 3 — FLOSS rule** slides. The test-date box is blank; no date has been inferred. Next week's spelling topic is given as **-sion and -tion**.
+
+**The 12 required Year 5 spellings (in source order):** thrill, drizzle, grizzled, muffled, tassel, bristling, snazzy, nuzzling, paddle, muzzle, sniffle, tussle. The separate Year 6 list is labelled **optional**, not set as Year 5 homework.
+
+The lesson teaches first principles of letters versus sounds, short/long vowels, consonants, syllables, stress, roots and suffixes. It illustrates the usual **one-syllable short-vowel + final f/l/s/z** FLOSS spelling convention, as well as other reasons for doubling (e.g. `forbidden`, `paddle`) and words with no doubled letter (`bristling`). It explicitly does not teach FLOSS as a universal rule. The school warm-up asks why `forbidden` has a doubled consonant; the explanation distinguishes it from FLOSS.
+
+The new lesson has spoken vocabulary, word-by-word meanings and examples, spelling and definition drills, ten automatically marked **concept/transfer** checks, an independent **teach-back** response reviewed by a parent, and a **school-format 12-question** practice test: four heard spellings, four definitions, four original sentences. The latter receive human meaning review, not a misleading automatically awarded mark. Required recall, independent conceptual mastery and parental feedback are stored separately. Optional extensions link to the earlier precise-cat-vocabulary and plural lessons and preview next week's spelling topic.
+
+The lesson is data-driven, preserving older weeks and their progress. Files: `data/2026-11-09-english-floss-y5.js`, `english-floss.js`, `english-floss.css`. Test suite: `tests/english-floss.test.mjs`; iPhone-width Chromium interactions: `tests/browser-mobile.test.mjs`. Shared PWA offline precache includes the new lesson and existing lessons.
+
 ### French · 5F-Fr · 9 November 2026 (due Friday 13 November, 08:30)
 Source: parent-provided screenshot of Mr Bloom's Microsoft Teams assignment **French Prep (9.11.26)**.
 
