@@ -181,7 +181,7 @@
       '<li>Touch and hold <strong>Screen Recording</strong>, switch <strong>Microphone On</strong>, then tap Start Recording.</li>',
       '<li>Return to InClass and work through the lesson. Stop via the red recording indicator.</li>',
       '<li>Return here and use <strong>Import Apple screen recording</strong> to select it from Photos or Files.</li></ol>',
-      '<p>On iOS/iPadOS 26, websites cannot start full-screen capture. Safari 27 may offer in-app capture; actual recording support is checked on this device.</p></details>',
+      '<p>If the Record button is enabled, this browser supports requesting screen sharing directly. The system still asks for permission each session. Other devices can use Apple Control Centre and import the video.</p></details>',
       '<p data-session-status class="inclassRecorderStatus" role="status" aria-live="polite"></p>',
       '<div class="inclassRecorderSectionHead"><h3>Recordings on this device</h3><button type="button" data-session-refresh>Refresh</button></div>',
       '<div data-session-list class="inclassRecorderList"></div>',
