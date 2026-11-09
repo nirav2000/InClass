@@ -10,3 +10,7 @@ This app uses the shared Apps Version Lab. Read and obey https://nirav2000.githu
 - Use the existing `.github/workflows/pwa-assets.yml` to generate Apple 180, PWA 192/512, maskable 512, favicon and manifest. Run `tests/pwa-assets.test.mjs` and existing lesson tests before accepting generated changes.
 - Preserve earlier homework and all learning data; shared PWA adoption must not modify lesson content.
 - App Monitor's PWA audit is a public-file check, **not** proof of iPhone/iPad Home Screen installation. Record physical-device testing separately.
+
+## Printed homework option (mandatory for every new lesson)
+
+Read and obey [the paper worksheet standard](docs/PAPER_WORKSHEET_STANDARD.md) before adding any lesson to `window.INCLASS_WEEKS`. Every version needs a **curated** A4, single-sided child worksheet with clear writing space and a **separate adult answer/marking guide**. Preserve the exact teacher assignment and its source, add clear term/prerequisite explanations and independent why/how questions, unseen transfer, and backward/forward/cross-topic connections. Register the pack's ID in `worksheets/worksheet-builder.js`, load the data in `worksheets/print.html`, precache it with the **existing** shared service worker, and run the mandatory `tests/worksheets.test.mjs` plus lesson/PWA regressions. Do not declare a new homework lesson complete unless both modes render legibly and its worksheet audit passes. Keep paper results separate from interactive test results.
