@@ -97,7 +97,7 @@ function build(w){
   const v2=!!w.opinionsV2;
   focus=v2?"Say, understand, change and then write new French opinions.":"Express likes and dislikes about animals using plural nouns.";
   school="Use the five opinion phrases and animal words to write joined opinions for Chantal, Ahmed, Ethan and Sophie from the supplied clues.";
-  note="The school's printed Chantal sentence says she hates birds although the negative picture appears to show a goldfish. The answer guide follows the picture/reference sheet and flags this as uncertain, not an official correction.";
+  note="The school's printed Chantal sentence says she hates birds, which conflicts with the negative picture that appears to show a goldfish. The answer guide follows the picture/reference sheet and flags this as uncertain, not an official correction.";
   guide=[study("Opinion phrase bank",w.opinions.map(x=>x.fr+" = "+x.en).join(" · ")),study("Useful nouns",w.opinionAnimals.map(x=>x.fr+" = "+x.en).join(" · ")),study("Worked example","J'aime les chats mais je n'aime pas les chiens. = I like cats but I do not like dogs.")];
   concepts=[T("Opinion","A statement about what you think or feel, not a proven fact."),T("Plural","More than one; French often says les chiens for dogs in general."),T("Elision","French shortens je to j' before a vowel, so je + aime becomes j'aime."),T("Connector","Et means and; mais means but, often showing contrast.")];
   const people=[
@@ -143,7 +143,7 @@ function build(w){
   school="Complete the ORIGINAL spider diagram in the school exercise book, revise the ORIGINAL alphabet sheet in the book; two end-of-unit tests were announced without exact test papers.";
   note="This worksheet is extra revision; it does not replace the diagram glued into the exercise book or submit anything to Microsoft Teams. Only the five anchors are confirmed on the school sheet.";
   concepts=[T("Spider diagram","A central idea with branches for related words. It helps organise and retrieve what you know."),T("Alphabet letter name","The spoken name of a letter; it may sound different in French and English."),T("Opinion vs possession","J'aime means I like; j'ai means I have. Different verbs even though both start with j'."),T("Agreement","Some French adjectives change spelling depending on the noun they describe.")];
-  guide=[study("Five printed branch examples","Opinions: j'aime · Pets: un chien · Colours: rouge · Size: petit · Personality: intelligent"),study("Alphabet rehearsal","Ask an adult to say the letters A–Z in random order. Point to each, say its French name, then write the letters you hear.")];
+  guide=[study("Five printed branch examples","Opinions: j'aime · Pets: un chien · Colours: rouge · Size: petit · Personality: intelligent"),study("Alphabet rehearsal","Ask an adult to say the letters A–Z in random order. Point to each, say its French name, then write the letters you hear."),study("French letter-name guide (check against your exercise-book sheet)",w.alphabet.map(x=>x[0]+" = "+x[1]).join(" · "))];
   sections=[
    S("School exercise-book task","required",[
     Q("In your EXERCISE BOOK, finish all five branches: Opinions / Pets / Colours / Size / Personality. On the space here, sketch your own memory spider without a word bank.","Check the school-book diagram is completed. Extra memory spider should have the five categories and relevant French words.","writing",1,{draw:true}),
