@@ -6,7 +6,9 @@
 (function () {
   'use strict';
   const DB_NAME = 'inclass-session-recordings-v1';
-  const LIMIT_MS = 20 * 60 * 1000;
+  const SEGMENT_MS = 5 * 60 * 1000;
+  const CHUNK_MS = 5000;
+  const MAX_PENDING_CHUNKS = 12;
   const MAX_IMPORT_BYTES = 750 * 1024 * 1024;
   const MAX_EVENTS = 4000;
   let dbPromise = null;
@@ -16,6 +18,11 @@
   let selected = null;
   let playbackUrl = null;
   let transientVideo = null;
+  let selectedSegments = [];
+  let activeSegmentIndex = 0;
+  let pendingSeek = null;
+  let reviewToken = 0;
+  let recovering = null;
   let pendingStart = false;
   let endingLesson = false;
   let notification = null;
@@ -81,11 +88,16 @@
     if (!window.indexedDB) return Promise.reject(Error('Local video storage is unavailable.'));
     if (dbPromise) return dbPromise;
     dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
+      const request = indexedDB.open(DB_NAME, 2);
       request.onupgradeneeded = () => {
         const db = request.result;
         if (!db.objectStoreNames.contains('sessions')) db.createObjectStore('sessions', { keyPath: 'id' });
         if (!db.objectStoreNames.contains('videos')) db.createObjectStore('videos');
+        // Preserve v1 sessions/videos; v2 adds rolling, crash-recoverable chunks.
+        if (!db.objectStoreNames.contains('segments'))
+          db.createObjectStore('segments', {keyPath: ['sessionId', 'index']});
+        if (!db.objectStoreNames.contains('chunks'))
+          db.createObjectStore('chunks', {keyPath: ['sessionId', 'segmentIndex', 'chunkIndex']});
       };
       request.onsuccess = () => { request.result.onversionchange = () => request.result.close(); resolve(request.result); };
       request.onerror = () => reject(request.error || Error('Could not open recording library.'));
@@ -129,15 +141,223 @@
       request.onerror = () => reject(request.error);
     });
   }
+
+  const partsRange = id => IDBKeyRange.bound([id, 0], [id, Number.MAX_SAFE_INTEGER]);
+  const chunksRange = (id, index) => IDBKeyRange.bound(
+    [id, index, 0], [id, index, Number.MAX_SAFE_INTEGER]);
+  function removeByCursor(store, range) {
+    const request = store.openCursor(range);
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (cursor) { cursor.delete(); cursor.continue(); }
+    };
+  }
   async function deleteSession(id) {
     const db = await database();
     return new Promise((resolve, reject) => {
-      const tx = db.transaction(['sessions', 'videos'], 'readwrite');
+      const tx = db.transaction(['sessions', 'videos', 'segments', 'chunks'], 'readwrite');
       tx.objectStore('sessions').delete(id);
       tx.objectStore('videos').delete(id);
+      removeByCursor(tx.objectStore('segments'), partsRange(id));
+      removeByCursor(tx.objectStore('chunks'),
+        IDBKeyRange.bound([id, 0, 0], [id, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]));
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error || Error('Delete failed.'));
+      tx.onabort = () => reject(tx.error || Error('Delete was interrupted.'));
     });
+  }
+  async function segmentRows(id) {
+    const db = await database();
+    return new Promise((resolve, reject) => {
+      const request = db.transaction('segments').objectStore('segments').getAll(partsRange(id));
+      request.onsuccess = () => resolve((request.result || [])
+        .filter(part => part.sizeBytes > 0 && part.chunkCount > 0)
+        .sort((a, b) => a.index - b.index));
+      request.onerror = () => reject(request.error || Error('Could not read recording parts.'));
+    });
+  }
+  async function getSegmentVideo(id, part) {
+    const db = await database();
+    const rows = await new Promise((resolve, reject) => {
+      const request = db.transaction('chunks').objectStore('chunks').getAll(chunksRange(id, part.index));
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error || Error('Recording part could not be opened.'));
+    });
+    if (!rows.length) return null;
+    return new Blob(rows.map(row => row.video), {type: part.mimeType || 'video/webm'});
+  }
+  async function createRecording(state) {
+    const db = await database();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('sessions', 'readwrite');
+      tx.objectStore('sessions').put(state.meta);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || Error('Could not initialise recording storage.'));
+      tx.onabort = () => reject(tx.error || Error('Not enough storage to start recording.'));
+    });
+  }
+  function snapshotRecording(state, changes = {}) {
+    return {...state.meta, durationMs: Math.max(0, Date.now() - state.started),
+      events: state.events.slice(-MAX_EVENTS), markers: state.markers.slice(),
+      byteCount: state.persistedBytes, ...changes};
+  }
+  async function persistChunk(state, part, chunkIndex, blob) {
+    const db = await database();
+    return new Promise((resolve, reject) => {
+      const updatedBytes = state.persistedBytes + blob.size;
+      const seg = {
+        sessionId: state.meta.id, index: part.index, startedAtMs: part.startedAtMs,
+        durationMs: Math.max(0, Date.now() - state.started - part.startedAtMs),
+        mimeType: part.mimeType, sizeBytes: part.persistedBytes + blob.size,
+        chunkCount: part.persistedChunks + 1, status: 'writing'
+      };
+      const meta = snapshotRecording(state, {byteCount: updatedBytes, status: 'recording',
+        segmentCount: Math.max(state.meta.segmentCount || 0, part.index + 1)});
+      const tx = db.transaction(['sessions', 'segments', 'chunks'], 'readwrite');
+      tx.objectStore('chunks').put({
+        sessionId: state.meta.id, segmentIndex: part.index, chunkIndex, video: blob
+      });
+      tx.objectStore('segments').put(seg);
+      tx.objectStore('sessions').put(meta);
+      tx.oncomplete = () => {
+        state.persistedBytes = updatedBytes;
+        state.meta = meta;
+        part.persistedBytes += blob.size;
+        part.persistedChunks++;
+        resolve();
+      };
+      tx.onerror = () => reject(tx.error || Error('Video chunk could not be saved.'));
+      tx.onabort = () => reject(tx.error || Error('Browser storage quota exceeded.'));
+    });
+  }
+  async function completeSegment(state, part) {
+    if (!part.persistedChunks) return;
+    const db = await database();
+    return new Promise((resolve, reject) => {
+      const seg = {
+        sessionId: state.meta.id, index: part.index, startedAtMs: part.startedAtMs,
+        durationMs: Math.max(0, part.endedAtMs - part.startedAtMs),
+        mimeType: part.mimeType, sizeBytes: part.persistedBytes,
+        chunkCount: part.persistedChunks, status: state.writeFailed ? 'partial' : 'complete'
+      };
+      const meta = snapshotRecording(state, {
+        status: state.stopping && !state.writeFailed ? 'saved' : 'recording',
+        segmentCount: Math.max(state.meta.segmentCount || 0, part.index + 1)
+      });
+      const tx = db.transaction(['sessions', 'segments'], 'readwrite');
+      tx.objectStore('segments').put(seg);
+      tx.objectStore('sessions').put(meta);
+      tx.oncomplete = () => { state.meta = meta; resolve(); };
+      tx.onerror = () => reject(tx.error || Error('Checkpoint metadata could not be saved.'));
+      tx.onabort = () => reject(tx.error || Error('Checkpoint could not be finalised.'));
+    });
+  }
+  // A completed chunk is committed atomically with its session manifest; no
+  // unbounded array of video blobs is retained while the learner works.
+  function queueWrite(state, task) {
+    const next = state.writeQueue.then(task);
+    state.writeQueue = next.catch(error => {
+      if (!state.writeFailed) {
+        state.writeFailed = error;
+        inform('Storage stopped accepting recording data. Earlier saved parts are still available.');
+        if (current === state) stopCapture('storage-error');
+      }
+    });
+    return next;
+  }
+  function addChunk(state, part, blob) {
+    if (state.writeFailed || !blob?.size) return;
+    const index = part.nextChunk++;
+    state.queuedChunks++;
+    if (state.queuedChunks > MAX_PENDING_CHUNKS) {
+      state.writeFailed = Error('Browser storage is too slow to keep up.');
+      inform('Recording stopped because storage writes could not keep up. Saved parts remain available.');
+      stopCapture('slow-storage');
+      return;
+    }
+    void queueWrite(state, () => persistChunk(state, part, index, blob))
+      .catch(() => {}).finally(() => {
+        state.queuedChunks--;
+        if (current === state) updateStorageIndicator(state);
+      });
+  }
+  async function recoverInterrupted() {
+    if (recovering) return recovering;
+    recovering = (async () => {
+      const items = await allSessions();
+      for (const meta of items) {
+        if (meta.status !== 'recording' || meta.id === current?.meta?.id) continue;
+        await updateSession({...meta, status: 'interrupted'});
+      }
+    })().finally(() => { recovering = null; });
+    return recovering;
+  }
+  const formatBytes = size => {
+    if (!Number.isFinite(size) || size < 0) return 'Unavailable';
+    if (size < 1000 * 1000) return (size / 1000).toFixed(0) + ' KB';
+    if (size < 1000 * 1000 * 1000) return (size / 1e6).toFixed(1) + ' MB';
+    return (size / 1e9).toFixed(2) + ' GB';
+  };
+  const formatDuration = ms => {
+    const min = Math.max(0, Math.floor(ms / 60000));
+    return min >= 60 ? Math.floor(min / 60) + ' h ' + (min % 60) + ' min' : min + ' min';
+  };
+  async function storageEstimate() {
+    try {
+      if (!navigator.storage?.estimate) return null;
+      const data = await navigator.storage.estimate();
+      if (!Number.isFinite(data.quota) || !Number.isFinite(data.usage)) return null;
+      return {quota: data.quota, usage: data.usage,
+        remaining: Math.max(0, data.quota - data.usage)};
+    } catch { return null; }
+  }
+  async function recordingRate() {
+    if (current?.persistedBytes > 0 && Date.now() - current.started >= 30000)
+      return current.persistedBytes / Math.max(1000, Date.now() - current.started);
+    const entries = await allSessions();
+    const sample = entries.find(item => item.source === 'screen' &&
+      item.byteCount > 0 && item.durationMs >= 30000 && item.status !== 'interrupted');
+    return sample ? sample.byteCount / sample.durationMs : null;
+  }
+  async function refreshStorage() {
+    const usage = by('[data-session-storage-usage]');
+    const time = by('[data-session-storage-time]');
+    if (!usage || !time) return;
+    const estimate = await storageEstimate();
+    if (!estimate) {
+      usage.textContent = 'Browser storage allowance: unavailable on this device.';
+      time.textContent = 'Recording time cannot be estimated without a storage allowance.';
+      return;
+    }
+    usage.textContent = 'Browser allowance remaining: ' + formatBytes(estimate.remaining) +
+      ' · Used by this website: ' + formatBytes(estimate.usage) +
+      ' · Allowance: ' + formatBytes(estimate.quota);
+    try {
+      const bytesPerMs = await recordingRate();
+      time.textContent = bytesPerMs > 0
+        ? 'Estimated recording time remaining: about ' +
+          formatDuration(estimate.remaining * 0.8 / bytesPerMs) +
+          ' (based on ' + formatBytes(bytesPerMs * 60000) + '/min, with 20% safety margin).'
+        : 'Time remaining: estimating after 30 seconds of a recorded lesson.';
+    } catch {
+      time.textContent = 'Time remaining: not yet measurable.';
+    }
+  }
+  async function updateStorageIndicator(state) {
+    const label = notice?.querySelector('[data-session-space]');
+    if (!label || current !== state) return;
+    label.textContent = formatBytes(state.persistedBytes) + ' saved';
+    if (Date.now() - (state.lastStorageCheck || 0) < 30000) return;
+    state.lastStorageCheck = Date.now();
+    const estimate = await storageEstimate();
+    if (current !== state || !estimate) return;
+    label.textContent = formatBytes(state.persistedBytes) + ' saved · ' +
+      formatBytes(estimate.remaining) + ' available';
+    if (estimate.remaining < 200 * 1e6 && !state.lowSpaceWarned) {
+      state.lowSpaceWarned = true;
+      inform('Low browser storage (' + formatBytes(estimate.remaining) +
+        '). Recording continues, but export older videos or free space soon.');
+    }
   }
 
   function revokePreview() {
