@@ -9,7 +9,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 // Match the scripts actually loaded by InClass. Adding a lesson to the app
 // without adding a print sheet must fail this test and block the release gate.
-const sourceFiles=Array.from(read("index.html").matchAll(/<script\\s+src="(data\\/[^"]+\\.js)"\\s*><\\/script>/g),m=>m[1]).filter(x=>x!=="data/manifest.js");
+const sourceFiles=Array.from(read("index.html").matchAll(/src="(data[/][^"]+[.]js)"/g),m=>m[1]).filter(x=>x!=="data/manifest.js");
 function load(){
  const window={INCLASS_WEEKS:[]};
  const context=vm.createContext({window});
@@ -19,8 +19,8 @@ function load(){
 }
 const {packs,api}=load();
 
-test("Eight existing lesson versions each have an individually curated worksheet and answer key",()=>{
- assert.equal(packs.length,8);
+test("Every loaded lesson version has an individually curated worksheet and answer key",()=>{
+ assert.ok(packs.length>=8,"Historical lessons must not be removed");
  assert.equal(new Set(packs.map(w=>w.id)).size,8);
  for(const lesson of packs){
    const worksheet=api.build(lesson);
