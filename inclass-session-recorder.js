@@ -345,9 +345,18 @@
           'Browser storage protection: unsupported.';
       protect.hidden = !navigator.storage?.persist || persisted;
     }
+    let recorderBytes = 0, olderUnknown = false;
+    try {
+      (await allSessions()).forEach(meta => {
+        if (Number.isFinite(meta.byteCount)) recorderBytes += meta.byteCount;
+        else olderUnknown = true;
+      });
+    } catch {}
     usage.textContent = 'Browser allowance remaining: ' + formatBytes(estimate.remaining) +
-      ' · Used by this website: ' + formatBytes(estimate.usage) +
-      ' · Allowance: ' + formatBytes(estimate.quota);
+      ' · Used across this site (other apps included): ' + formatBytes(estimate.usage) +
+      ' · Total allowance: ' + formatBytes(estimate.quota) +
+      ' · InClass recordings: ' + formatBytes(recorderBytes) +
+      (olderUnknown ? ' + older recordings of unknown size' : '');
     try {
       const measuredRate = await recordingRate();
       const bytesPerMs = measuredRate > 0 ? measuredRate : (15e6 / 60000);
@@ -416,7 +425,7 @@
       '<div class="inclassRecorderSectionHead"><h3>Storage & recording time</h3><button type="button" data-session-storage-refresh>Refresh</button></div>',
       '<p data-session-storage-usage>Checking browser storage…</p>',
       '<p data-session-storage-time>Estimating recording time…</p>',
-      '<small>This is this website’s browser storage allowance, not the device’s physical free space. Estimates can change and are not a guarantee.</small>',
+      '<small>Browser quota is shared with other apps on this origin. It is not the iPad’s physical free space and may change.</small>',
       '<div class="inclassRecorderStorageProtection"><span data-session-persist-status></span>',
       '<button type="button" data-session-persist hidden>Request storage protection</button></div></section>',
       '<div class="inclassRecorderActions"><button type="button" class="inclassRecorderPrimary" data-session-start>● Record screen + microphone</button>',
@@ -763,7 +772,7 @@
     }
     const meta = {
       id: uniqueId(), createdAt: new Date().toISOString(), ...lessonInfo(),
-      source: 'import', durationMs: 0, events: [], markers: []
+      source: 'import', durationMs: 0, byteCount: file.size, events: [], markers: []
     };
     try {
       await saveSession(meta, file);
@@ -1050,6 +1059,8 @@
     await state.writeQueue;
     const durationMs = Math.max(0, Date.now() - state.started);
     const hasVideo = state.persistedBytes > 0;
+    const spaceStop = state.stopReason === 'low-storage' || state.stopReason === 'slow-storage' ||
+      state.stopReason === 'storage-error';
     const status = state.writeFailed || state.captureError ? 'partial' :
       hasVideo ? 'saved' : 'empty';
     const meta = snapshotRecording(state, {
@@ -1072,14 +1083,18 @@
         return;
       }
       if (state.automatic) {
-        inform(status === 'saved'
-          ? 'Lesson saved in ' + (meta.segmentCount || 1) + ' part(s) (' + clock(durationMs) + ').'
-          : 'Recording stopped early; saved parts can still be reviewed.',
+        inform(spaceStop
+          ? 'Recording stopped because browser storage was low or slow. Saved parts are available.'
+          : status === 'saved'
+            ? 'Lesson saved in ' + (meta.segmentCount || 1) + ' part(s) (' + clock(durationMs) + ').'
+            : 'Recording stopped early; saved parts can still be reviewed.',
           {kind:'review', meta});
       } else {
-        message(status === 'saved'
-          ? 'Screen + microphone recording saved on this device only.'
-          : 'Recording stopped early. Previously saved parts remain available.');
+        message(spaceStop
+          ? 'Storage stopped the recording. Previously saved parts are available.'
+          : status === 'saved'
+            ? 'Screen + microphone recording saved on this device only.'
+            : 'Recording stopped early. Previously saved parts remain available.');
         await showSession(meta);
       }
     } catch (error) {
