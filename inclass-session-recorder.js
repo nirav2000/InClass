@@ -393,6 +393,11 @@
       'Anyone using this browser profile may be able to view them. Export or delete them yourself.</p>',
       '<label class="inclassRecorderAuto"><input type="checkbox" data-session-auto> ',
       '<span><strong>Auto-record lessons</strong><small>Start recording when homework opens. The device will still ask for screen and microphone permission. Recording remains visible.</small></span></label>',
+      '<section class="inclassRecorderSpace" aria-label="Available recording storage">',
+      '<div class="inclassRecorderSectionHead"><h3>Storage & recording time</h3><button type="button" data-session-storage-refresh>Refresh</button></div>',
+      '<p data-session-storage-usage>Checking browser storage…</p>',
+      '<p data-session-storage-time>Estimating recording time…</p>',
+      '<small>This is this website’s browser storage allowance, not the device’s physical free space. Estimates can change and are not a guarantee.</small></section>',
       '<div class="inclassRecorderActions"><button type="button" class="inclassRecorderPrimary" data-session-start>● Record screen + microphone</button>',
       '<button type="button" data-session-import>Import Apple screen recording</button>',
       '<input type="file" accept="video/*,.mov,.mp4,.webm" data-session-file hidden></div>',
@@ -408,6 +413,12 @@
       '<div data-session-list class="inclassRecorderList"></div>',
       '<section data-session-review class="inclassRecorderReview" hidden>',
       '<h3 data-session-review-title>Parent review</h3>',
+      '<nav class="inclassRecorderParts" data-session-parts hidden aria-label="Recording parts">',
+      '<strong data-session-part-status></strong>',
+      '<div class="inclassRecorderActions"><button type="button" data-session-part-previous>Previous part</button>',
+      '<button type="button" data-session-part-next>Next part</button></div>',
+      '<div data-session-part-list class="inclassRecorderPartList"></div>',
+      '<small>Parts play in order. Download each part separately for long-term backup. An interrupted last part may not play.</small></nav>',
       '<video controls playsinline preload="metadata" data-session-video aria-label="Recorded lesson video"></video>',
       '<div class="inclassRecorderActions"><button type="button" data-session-download>Download video</button>',
       '<button type="button" data-session-export>Export observations (.json)</button>',
@@ -437,7 +448,10 @@
       event.target.value = '';
       if (file) await importVideo(file);
     });
-    dialog.querySelector('[data-session-refresh]').onclick = () => { void renderLibrary(); };
+    dialog.querySelector('[data-session-refresh]').onclick = () => { void renderLibrary(); void refreshStorage(); };
+    dialog.querySelector('[data-session-storage-refresh]').onclick = () => { void refreshStorage(); };
+    dialog.querySelector('[data-session-part-previous]').onclick = () => { void openPart(activeSegmentIndex - 1, 0); };
+    dialog.querySelector('[data-session-part-next]').onclick = () => { void openPart(activeSegmentIndex + 1, 0); };
     dialog.querySelector('[data-session-note]').onclick = () => { void addObservation(); };
     dialog.querySelector('[data-session-download]').onclick = () => { void exportVideo(); };
     dialog.querySelector('[data-session-export]').onclick = exportReview;
@@ -459,12 +473,14 @@
       ? 'System permission is needed for each screen-sharing session. Select the InClass screen, then allow microphone access.'
       : 'Browser screen and microphone capture is unavailable here. Use Apple Screen Recording, then import the video.';
     void renderLibrary();
+    void refreshStorage();
   }
   async function renderLibrary() {
     const list = by('[data-session-list]');
     if (!list) return;
     list.replaceChildren();
     try {
+      await recoverInterrupted();
       const entries = await allSessions();
       if (!entries.length) {
         const empty = document.createElement('p');
@@ -477,8 +493,14 @@
         const item = document.createElement('button');
         item.type = 'button';
         item.className = 'inclassRecorderItem';
+        const state = meta.status === 'interrupted' || meta.status === 'partial'
+          ? ' · Recoverable parts' : meta.status === 'recording' ? ' · Recording' : '';
+        const pieces = meta.storageFormat === 'chunks-v2'
+          ? ' · ' + (meta.segmentCount || 0) + ' part(s)'
+          : '';
         item.textContent = new Date(meta.createdAt).toLocaleString('en-GB') + ' · ' +
           (meta.subject || 'Lesson') + ' · ' + clock(meta.durationMs) +
+          pieces + (meta.byteCount ? ' · ' + formatBytes(meta.byteCount) : '') + state +
           ' · ' + (meta.source === 'import' ? 'Imported video' : 'Screen + microphone');
         item.addEventListener('click', () => { void showSession(meta); });
         list.append(item);
@@ -510,8 +532,7 @@
       button.textContent = clock(entry.at) + '  ·  ' +
         (entry.kind === 'note' ? entry.type + (entry.note ? ': ' + entry.note : '') : entry.label);
       button.onclick = () => {
-        const player = by('[data-session-video]');
-        if (player) { player.currentTime = entry.at / 1000; player.focus(); }
+        void seekVideoTime(entry.at);
       };
       area.append(button);
     });
@@ -521,26 +542,120 @@
       area.append(more);
     }
   }
-  async function showSession(meta, unsavedBlob) {
-    selected = meta;
-    const section = by('[data-session-review]');
-    section.hidden = false;
-    by('[data-session-review-title]').textContent = 'Review · ' + new Date(meta.createdAt).toLocaleString('en-GB');
-    revokePreview();
+  function renderParts() {
+    const wrap = by('[data-session-parts]');
+    if (!wrap) return;
+    wrap.hidden = !selectedSegments.length;
+    if (!selectedSegments.length) {
+      by('[data-session-download]').textContent = 'Download video';
+      return;
+    }
+    const part = selectedSegments[activeSegmentIndex];
+    const saved = selectedSegments.filter(p => p.status === 'complete').length;
+    by('[data-session-part-status]').textContent = 'Part ' + (activeSegmentIndex + 1) +
+      ' of ' + selectedSegments.length + ' · ' + formatBytes(part.sizeBytes) +
+      (part.status === 'complete' ? ' · saved' : ' · incomplete') +
+      ' · ' + saved + ' complete';
+    by('[data-session-download]').textContent = 'Download this part (' +
+      (activeSegmentIndex + 1) + '/' + selectedSegments.length + ')';
+    by('[data-session-part-previous]').disabled = activeSegmentIndex === 0;
+    by('[data-session-part-next]').disabled = activeSegmentIndex >= selectedSegments.length - 1;
+    const list = by('[data-session-part-list]');
+    list.replaceChildren();
+    selectedSegments.forEach((entry, i) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'inclassRecorderPart' + (i === activeSegmentIndex ? ' active' : '');
+      button.textContent = (i + 1) + '. ' + clock(entry.startedAtMs) + '–' +
+        clock(entry.startedAtMs + entry.durationMs) +
+        (entry.status !== 'complete' ? ' (partial)' : '');
+      button.onclick = () => { void openPart(i, 0); };
+      list.append(button);
+    });
+  }
+  async function openPart(index, localMs = 0, autoplay = false) {
+    if (!selected || index < 0 || index >= selectedSegments.length) return;
+    const token = ++reviewToken;
+    const id = selected.id;
+    const part = selectedSegments[index];
     let blob;
-    try { blob = unsavedBlob || await getVideo(meta.id); }
-    catch (error) { message('Could not open video: ' + (error?.message || error)); return; }
-    if (!blob || selected !== meta) { message('Video is missing from this device.'); return; }
-    transientVideo = unsavedBlob || null;
-    playbackUrl = URL.createObjectURL(blob);
+    try { blob = await getSegmentVideo(id, part); }
+    catch (error) { message('Could not open recording part: ' + (error?.message || error)); return; }
+    if (token !== reviewToken || selected?.id !== id) return;
+    if (!blob) { message('This recording part is missing.'); return; }
     const player = by('[data-session-video]');
+    player.pause();
+    if (playbackUrl) URL.revokeObjectURL(playbackUrl);
+    playbackUrl = URL.createObjectURL(blob);
+    activeSegmentIndex = index;
     player.src = playbackUrl;
     player.onloadedmetadata = () => {
-      if (selected !== meta || meta.durationMs || !Number.isFinite(player.duration)) return;
-      meta.durationMs = Math.max(0, Math.round(player.duration * 1000));
-      if (!unsavedBlob) void updateSession(meta).then(renderLibrary).catch(() => {});
+      const desired = localMs / 1000;
+      if (Number.isFinite(player.duration) && player.duration > 0) {
+        try { player.currentTime = Math.min(desired, Math.max(0, player.duration - 0.1)); } catch {}
+      }
+      if (autoplay) void player.play().catch(() => {});
     };
+    player.onended = () => {
+      if (selected?.id === id && index + 1 < selectedSegments.length)
+        void openPart(index + 1, 0, true);
+    };
+    player.onerror = () => message('This part cannot be played in this browser. ' +
+      'Incomplete parts may be recoverable with external video tools.');
     player.load();
+    renderParts();
+  }
+  async function seekVideoTime(milliseconds) {
+    if (!selectedSegments.length) {
+      const player = by('[data-session-video]');
+      if (player) { player.currentTime = milliseconds / 1000; player.focus(); }
+      return;
+    }
+    let index = selectedSegments.findIndex((part, i) =>
+      milliseconds >= part.startedAtMs &&
+      (i === selectedSegments.length - 1 || milliseconds < selectedSegments[i + 1].startedAtMs));
+    if (index < 0) index = 0;
+    const part = selectedSegments[index];
+    await openPart(index, Math.max(0, milliseconds - part.startedAtMs));
+    by('[data-session-video]')?.focus();
+  }
+  async function showSession(meta, unsavedBlob) {
+    selected = meta;
+    ++reviewToken;
+    const section = by('[data-session-review]');
+    section.hidden = false;
+    by('[data-session-review-title]').textContent = 'Review · ' +
+      new Date(meta.createdAt).toLocaleString('en-GB') +
+      (meta.status === 'interrupted' ? ' · interrupted session' : '');
+    revokePreview();
+    selectedSegments = [];
+    activeSegmentIndex = 0;
+    if (meta.storageFormat === 'chunks-v2') {
+      try { selectedSegments = await segmentRows(meta.id); }
+      catch (error) { message('Parts could not be read: ' + (error?.message || error)); }
+      if (selected !== meta) return;
+      if (selectedSegments.length) await openPart(0);
+      else message('No saved video parts were found for this session.');
+      renderParts();
+    } else {
+      renderParts();
+      let blob;
+      try { blob = unsavedBlob || await getVideo(meta.id); }
+      catch (error) { message('Could not open video: ' + (error?.message || error)); return; }
+      if (!blob || selected !== meta) { message('Video is missing from this device.'); return; }
+      transientVideo = unsavedBlob || null;
+      playbackUrl = URL.createObjectURL(blob);
+      const player = by('[data-session-video]');
+      player.onended = null;
+      player.onerror = null;
+      player.src = playbackUrl;
+      player.onloadedmetadata = () => {
+        if (selected !== meta || meta.durationMs || !Number.isFinite(player.duration)) return;
+        meta.durationMs = Math.max(0, Math.round(player.duration * 1000));
+        if (!unsavedBlob) void updateSession(meta).then(renderLibrary).catch(() => {});
+      };
+      player.load();
+    }
     renderTimeline();
     section.scrollIntoView({behavior: 'smooth', block: 'nearest'});
   }
@@ -549,7 +664,8 @@
     const video = by('[data-session-video]');
     selected.markers = selected.markers || [];
     selected.markers.push({
-      at: Math.max(0, Math.floor((video?.currentTime || 0) * 1000)),
+      at: Math.max(0, (selectedSegments[activeSegmentIndex]?.startedAtMs || 0) +
+        Math.floor((video?.currentTime || 0) * 1000)),
       type: by('[data-session-note-type]').value,
       note: by('[data-session-note-text]').value.trim().slice(0, 400)
     });
@@ -565,9 +681,12 @@
   async function exportVideo() {
     if (!selected) return;
     try {
-      const video = transientVideo || await getVideo(selected.id);
+      const part = selectedSegments[activeSegmentIndex];
+      const video = part ? await getSegmentVideo(selected.id, part) :
+        (transientVideo || await getVideo(selected.id));
       if (!video) throw Error('No video is available.');
-      download(video, 'inclass-session-' + selected.id + '.' + fileExtension(video.type));
+      const suffix = part ? '-part-' + String(activeSegmentIndex + 1).padStart(3, '0') : '';
+      download(video, 'inclass-session-' + selected.id + suffix + '.' + fileExtension(video.type));
     } catch (error) { message('Download failed: ' + (error?.message || error)); }
   }
   function exportReview() {
@@ -575,8 +694,12 @@
     const safe = {
       app: 'InClass', id: selected.id, createdAt: selected.createdAt,
       subject: selected.subject, week: selected.week, source: selected.source,
-      durationMs: selected.durationMs, events: selected.events || [],
-      markers: selected.markers || [],
+      durationMs: selected.durationMs, status: selected.status,
+      recordingError: selected.recordingError || null,
+      storageFormat: selected.storageFormat || 'legacy',
+      parts: selectedSegments.map(({index, startedAtMs, durationMs, sizeBytes, status, mimeType}) =>
+        ({index, startedAtMs, durationMs, sizeBytes, status, mimeType})),
+      events: selected.events || [], markers: selected.markers || [],
       recordingNotIncluded: 'Attach the separately downloaded video if you choose to share it.'
     };
     download(new Blob([JSON.stringify(safe, null, 2)], {type: 'application/json'}),
@@ -592,7 +715,9 @@
       by('[data-session-video]').removeAttribute('src');
       by('[data-session-video]').load();
       by('[data-session-review]').hidden = true;
+      selectedSegments = [];
       message('Recording permanently deleted from this browser.');
+      void refreshStorage();
       await renderLibrary();
     } catch (error) { message('Could not delete recording: ' + (error?.message || error)); }
   }
