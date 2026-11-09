@@ -18,8 +18,10 @@
 .inclassRecorderHead button { flex:0 0 auto; border:0; border-radius:50%; background:#eef3f7; color:#24455a; font-size:19px; width:44px; min-height:44px; padding:0 }
 .inclassRecorderIntro { margin:12px 0; color:#405c6b }
 .inclassRecorderPrivacy { padding:12px 14px; margin:10px 0; background:#eff5f8; border-radius:11px; border-left:3px solid #267b99; font-size:12px }
-.inclassRecorderConsent { display:flex; align-items:flex-start; gap:10px; padding:10px 0 6px; font-size:13px; font-weight:600; line-height:1.5 }
-.inclassRecorderConsent input { margin-top:4px; width:18px; height:18px; flex:0 0 auto; accent-color:#137494 }
+.inclassRecorderAuto { display:flex; align-items:flex-start; gap:10px; padding:11px 12px; margin:10px 0; font-size:13px; line-height:1.4; background:#f4f9fc; border:1px solid #d4e5ed; border-radius:10px }
+.inclassRecorderAuto input { margin-top:4px; width:19px; height:19px; flex:0 0 auto; accent-color:#137494 }
+.inclassRecorderAuto span { display:grid; gap:4px }
+.inclassRecorderAuto small { font-size:12px; color:#536f7e; font-weight:400 }
 .inclassRecorderActions { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 }
 .inclassRecorderActions button, .inclassRecorderSectionHead button,
 .inclassRecorderObservations button {
@@ -80,3 +82,18 @@
   .inclassRecordingBadge button { min-height:40px; padding:6px }
 }
 @media(prefers-reduced-motion:reduce) { .inclassRecorderDialog *, .inclassRecordingBadge * { scroll-behavior:auto!important } }
+
+/* Small review/retry notice keeps the lesson usable when the system picker closes. */
+.inclassRecorderNotification { box-sizing:border-box; position:fixed; z-index:2147481001;
+  left:max(10px,env(safe-area-inset-left)); bottom:max(14px,env(safe-area-inset-bottom));
+  display:flex; flex-wrap:wrap; align-items:center; gap:9px; max-width:min(610px,calc(100vw - 20px));
+  padding:12px; border:1px solid #bdd9e5; border-radius:12px; background:#fff; color:#173e53;
+  box-shadow:0 10px 28px #10283a44; font:600 13px/1.45 -apple-system,BlinkMacSystemFont,system-ui,sans-serif }
+.inclassRecorderNotification[hidden] { display:none!important }
+.inclassRecorderNotification [data-recorder-notice-text] { flex:1 1 180px }
+.inclassRecorderNotification button { border:1px solid #aac3d0; border-radius:9px; min-height:40px;
+  background:#eff6fa; color:#17465c; padding:6px 10px; font:700 12px system-ui,sans-serif }
+.inclassRecorderNotification button[data-recorder-notice-dismiss] { min-width:40px }
+@media(max-width:510px) {
+  .inclassRecorderNotification { right:8px; left:8px; bottom:max(8px,env(safe-area-inset-bottom)) }
+}
