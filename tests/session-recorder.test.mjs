@@ -127,7 +127,7 @@ test('storage display distinguishes origin quota from device space and estimates
   assert.match(recorder, /navigator\.storage\.estimate\(\)/);
   assert.match(recorder, /data-session-storage-usage/);
   assert.match(recorder, /data-session-storage-time/);
-  assert.match(recorder, /browser storage allowance, not the device/i);
+  assert.match(recorder, /Browser quota is shared with other apps on this origin/);
   assert.match(recorder, /15e6 \/ 60000/);
   assert.match(recorder, /estimate\.remaining \* 0\.8 \/ bytesPerMs/);
   assert.match(recorder, /navigator\.storage\.persist\(\)/);
