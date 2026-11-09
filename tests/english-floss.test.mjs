@@ -92,6 +92,10 @@ function makeBrowser(){
         html=get("flConceptArea").innerHTML;
         rx=/data-fl-choice="(\d+)"/g;
         for(let m;(m=rx.exec(html));)matches.push({dataset:{flChoice:m[1]},disabled:false,onclick:null});
+      } else if(selector==="[data-fl-teach-mark]"){
+        html=get("flTeachBackReview").innerHTML;
+        rx=/data-fl-teach-mark="(yes|no)"/g;
+        for(let m;(m=rx.exec(html));)matches.push({dataset:{flTeachMark:m[1]},onclick:null});
       } else if(selector==="[data-fl-review]"){
         html=get("flTestArea").innerHTML;
         rx=/data-fl-review="(\d+)" data-fl-mark="(yes|no)"/g;
@@ -133,6 +137,14 @@ test("Renders complete age-appropriate lesson and separately scores concept unde
   assert.equal(ui.progress().flossConceptMastery["short-vowel"],true);
   assert.equal(ui.attempts.at(-1).extra.scope,"understanding");
   assert.equal(ui.progress().flossTestsCompleted,undefined);
+  ui.get("flTeachBackText").value="A short vowel is like the u in puff. The one syllable word ends with f so we usually write ff. Roof has a long oo sound, and not all double consonants follow FLOSS.";
+  ui.get("flSaveTeachBack").onclick();
+  assert.equal(ui.progress().flossTeachBack.reviewed,null);
+  const review=ui.document.querySelectorAll("[data-fl-teach-mark]");
+  assert.equal(review.length,2);
+  review[0].onclick();
+  assert.equal(ui.progress().flossTeachBack.reviewed,true);
+  assert.equal(ui.attempts.at(-1).extra.scope,"understanding");
   ui.get("flConceptNext").onclick();
   assert.match(ui.get("flConceptArea").innerHTML,/How many syllables/);
 });
