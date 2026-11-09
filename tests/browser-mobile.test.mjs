@@ -240,9 +240,9 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await evalJS('document.querySelector(".inclassCompactToggle").click();document.querySelector(".inclassCompactMenu [data-action=record]").click();return true');
  assert.equal(await evalJS('return !!document.querySelector("dialog.inclassRecorderDialog[open]")'),true,'Recorder opens on the first tap from the compact menu');
  assert.equal(await evalJS('return !!document.querySelector("dialog.inclassRecorderDialog video")'),true,'Parent review video exists');
- const withoutApproval=await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-import]").click();return d.querySelector("[data-session-status]").textContent;');
- assert.match(withoutApproval,/parental approval/i,'Import requires parent approval');
- await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-consent]").checked=true;const input=d.querySelector("[data-session-file]");const f=new File([new Uint8Array(512)],"sample-learning.mp4",{type:"video/mp4"});Object.defineProperty(input,"files",{configurable:true,value:[f]});input.dispatchEvent(new Event("change",{bubbles:true}));return true');
+ assert.equal(await evalJS('return document.querySelector("dialog.inclassRecorderDialog [data-session-consent]") === null'),true,'Parent approval checkbox is gone');
+ assert.equal(await evalJS('return document.querySelector("dialog.inclassRecorderDialog [data-session-auto]").checked'),false,'Auto-record is initially off on a new browser');
+ await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");const input=d.querySelector("[data-session-file]");const f=new File([new Uint8Array(512)],"sample-learning.mp4",{type:"video/mp4"});Object.defineProperty(input,"files",{configurable:true,value:[f]});input.dispatchEvent(new Event("change",{bubbles:true}));return true');
  await until(()=>evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");return !!d?.querySelector(".inclassRecorderItem")&&!d.querySelector("[data-session-review]").hidden'),'local video import and preview');
  await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");d.querySelector("[data-session-note-type]").value="confusion";d.querySelector("[data-session-note-text]").value="Learner asked why the rule changes";d.querySelector("[data-session-note]").click();return true');
  await until(()=>evalJS('return /Observation saved locally/.test(document.querySelector("[data-session-status]")?.textContent||"")'),'locally saved parent observation');
@@ -254,6 +254,13 @@ test('InClass mobile UI: safe controls, two-stage feedback, notes and navigation
  await evalJS('window.confirm=()=>true;document.querySelector("dialog.inclassRecorderDialog [data-session-delete]").click();return true');
  await until(()=>evalJS('return document.querySelector("dialog.inclassRecorderDialog [data-session-review]")?.hidden===true'),'local video deleted');
  assert.equal(await evalJS('return document.querySelectorAll("dialog.inclassRecorderDialog .inclassRecorderItem").length'),0,'No deleted video remains in the library');
- await evalJS('document.querySelector("dialog.inclassRecorderDialog").close();return true');
-
+ await evalJS('const d=document.querySelector("dialog.inclassRecorderDialog");const sw=d.querySelector("[data-session-auto]");sw.checked=true;sw.dispatchEvent(new Event("change",{bubbles:true}));d.close();return true');
+ // A cancelled iPad sharing picker must leave the lesson usable and offer retry.
+ await evalJS('window.__screenCalls=0;Object.defineProperty(navigator.mediaDevices,"getDisplayMedia",{configurable:true,value:()=>{window.__screenCalls++;return Promise.reject(Object.assign(new Error("Picker cancelled"),{name:"NotAllowedError"}))}});return true');
+ await evalJS('document.querySelector("#homeButton").click();document.querySelector(".welcomeHomeworkCard").click();return true');
+ await until(()=>evalJS('return window.__screenCalls === 1 && !!document.querySelector(".inclassRecorderNotification:not([hidden])")'),'auto-record picker and retry notice');
+ assert.equal(await evalJS('return document.querySelector(".inclassRecorderNotification [data-recorder-notice-action]").textContent'), 'Try recording','Permission error offers a retry');
+ assert.equal(await evalJS('return !!document.querySelector("dialog.inclassRecorderDialog[open]")'),false,'The recorder dialog does not block the lesson');
+ await evalJS('window.InClassSessionRecorder.setAutoEnabled(false);document.querySelector("#homeButton").click();document.querySelector(".welcomeHomeworkCard").click();return true');
+ assert.equal(await evalJS('return window.__screenCalls'),1,'Turning off auto-record prevents permission prompts');
 });
