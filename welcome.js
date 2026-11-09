@@ -18,6 +18,9 @@
       const m=[Math.min((p.ruleCorrect||0)/4,1),Math.min((p.spellCorrect||0)/8,1),Math.min((p.meaningCorrect||0)/6,1),Math.min((p.sentencesGood||0)/4,1),Math.min((p.testsCompleted||0),1)];
       return Math.round(m.reduce((a,b)=>a+b,0)/m.length*100);
     }
+    if(pack.spiderAlphabetHomework){
+      return Math.round((Number(!!p.spiderPaperDone)+Number(!!p.alphabetRevised))/2*100);
+    }
     if(pack.avoirHomework){
       const seen=Object.keys(p.avoirHeard||{}).length;
       const spell=Math.min((p.spellCorrect||0)/6,1);
