@@ -1,0 +1,18 @@
+.paperPanel{border:1px solid #c9dadd;border-radius:18px;background:#fff;padding:14px 17px;margin:12px 0;color:#17324a}
+.paperPanelHead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.paperPanelHead strong{font-size:18px}.paperLabel{font-size:10px;letter-spacing:.12em;font-weight:800;color:#376d80;margin-bottom:4px}
+.paperPanelHead p{font-size:12.5px;line-height:1.4;color:#567081;margin:4px 0 0;max-width:500px}
+.paperActions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.paperActions a{font-size:13px;font-weight:700;border-radius:10px;padding:9px 12px;text-decoration:none;white-space:nowrap}
+.paperPrimary{background:#204b63;color:white}.paperSecondary{background:#f0f5f6;border:1px solid #c6d6dc;color:#28506b}
+.paperRecord{margin-top:11px;border-top:1px solid #e2ebed;padding-top:8px}.paperRecord summary{cursor:pointer;font-size:12px;font-weight:700;color:#37596b}.paperRecord summary small{font-size:11px;color:#5f7380;font-weight:400;margin-left:10px}
+.paperRecordBody{padding-top:9px}.paperRecordBody p{font-size:12px;color:#566e7d}.paperDone,.paperMetric,.paperNotes{display:block;font-size:13px}
+.paperDone input{vertical-align:middle}.paperMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:11px 0}
+.paperMetric{border:1px solid #d6e3e7;border-radius:9px;padding:9px}.paperMetric span{display:block}.paperMetricFields{white-space:nowrap}
+.paperMetricFields input{min-width:0;width:46px;max-width:46%;background:#fff;color:#17324a;border:1px solid #adbdc4;border-radius:5px;padding:5px;font-size:13px}
+.paperNotes textarea{display:block;width:100%;box-sizing:border-box;resize:vertical;margin-top:5px;min-height:48px;background:#fff;color:#17324a;border:1px solid #b3cbd1;border-radius:7px;padding:8px}
+.paperSaveRow{display:flex;flex-wrap:wrap;align-items:center;gap:11px;margin-top:9px}.paperSaveRow button{background:#204b63;color:white;border:0;border-radius:8px;padding:8px 15px;font-weight:700;cursor:pointer}
+#paperFeedback{font-size:12px;color:#3b6475}.welcomeHomeworkItem{min-width:0;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.welcomeHomeworkItem .welcomeHomeworkCard{border:0;border-radius:0;flex:1}.welcomeWorksheetLinks{display:flex;gap:12px;align-items:center;padding:0 15px 12px;font-size:12px}
+.welcomeWorksheetLinks a{color:#176082;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.welcomeWorksheetLinks a:focus-visible,.paperActions a:focus-visible{outline:3px solid #63a4c7;outline-offset:2px}
+@media(max-width:650px){.paperPanel{padding:13px}.paperMetrics{grid-template-columns:1fr}.paperActions{width:100%}.paperActions a{flex:1;text-align:center}}
